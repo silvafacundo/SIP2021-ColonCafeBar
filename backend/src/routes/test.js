@@ -1,10 +1,10 @@
 const Route = require('../models/Route');
 module.exports = class Test extends Route {
 	constructor() {
-		super('/test', 'get');
+		super('/test', 'get', { publicRoute: false });
 	}
 
 	async run(req, res) {
-		return res.send('Hello world');
+		return res.send('Heasdasdllo world');
 	}
 };

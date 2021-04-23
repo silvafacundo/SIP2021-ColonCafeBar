@@ -1,6 +1,6 @@
 
 exports.up = async function(knex) {
-    await knex.schema.createTable('roles', table => {
+	await knex.schema.createTable('roles', table => {
 		table.bigIncrements('id');
 		table.string('key').notNullable();
 		table.string('description').notNullable();
@@ -10,5 +10,5 @@ exports.up = async function(knex) {
 };
 
 exports.down = async function(knex) {
-    await knex.schema.dropTableIfExists('roles');
+	await knex.schema.dropTableIfExists('roles');
 };

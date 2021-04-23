@@ -17,7 +17,7 @@ module.exports = class RegisterPOST extends Route {
 		try {
 			// TODO: enviar email de confirmacion
 			await this.utils.users.createUser({ email, firstName, lastName, phoneNumber, password });
-	
+
 			return res.json({ message: 'User successfully registered!' });
 		} catch (error) {
 			return super.error(res, error);
