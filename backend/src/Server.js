@@ -6,6 +6,7 @@ require('dotenv').config();
 
 // Controllers
 const UserController = require('./controllers/users/UserController');
+const AddressController = require('./controllers/addresses/AddressController');
 
 module.exports = class Server {
 	constructor() {
@@ -76,6 +77,7 @@ module.exports = class Server {
 	async initializeControllers() {
 		this.utils = {
 			users: new UserController(this.db),
+			addresses: new AddressController(this.db),
 		}
 	}
 };
