@@ -46,6 +46,7 @@ module.exports = class Server {
 			routePath = `/api/${routePath}`;
 			this.webserver[route.method](routePath, route.auth.bind(route));
 		});
+		this.webserver.all('/api/*', this.handleUnknownEndpoint.bind(this));
 
 		// Serve index
 		this.webserver.get('*', (req, res) => res.sendFile(path.resolve('public/index.html')));
@@ -54,6 +55,10 @@ module.exports = class Server {
 		this.webserver.listen(process.env.PORT, () => {
 			console.log(`[WEBSERVER] Running on ${process.env.PORT}`);
 		});
+	}
+	
+	handleUnknownEndpoint(req, res) {
+		return res.status(400).json({ message: 'Route not found' });
 	}
 
 	/**
