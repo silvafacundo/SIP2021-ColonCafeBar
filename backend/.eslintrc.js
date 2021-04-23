@@ -6,7 +6,6 @@ module.exports = {
 	},
 	extends: [
 		'eslint:recommended',
-		'plugin:mocha/recommended',
 		'plugin:import/errors',
 		'plugin:import/warnings',
 	],
