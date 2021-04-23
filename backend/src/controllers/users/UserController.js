@@ -45,9 +45,13 @@ module.exports = class UserController {
 	}
 
 	async getUser({ userId, email, onlyPublic = false }) {
-		const select = onlyPublic? 'email, firstName, lastName, phoneNumber' : '*'
+		const userSelect = [];
+		if (onlyPublic) {
+			userSelect.push('users.email', 'users.firstName', 'users.lastName', 'users.phoneNumber');
+		} else userSelect.push('users.*');
+
 		const user = await this.db('users')
-			.select([select])
+			.select(userSelect)
 			.where(builder => {
 				if (userId) builder.where({ id: userId });
 				if (email) builder.where({ email });
