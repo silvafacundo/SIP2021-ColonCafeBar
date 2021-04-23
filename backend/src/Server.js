@@ -1,20 +1,21 @@
 const express = require('express');
 const jetpack = require('fs-jetpack');
-const path = require('path')
+const path = require('path');
 require('dotenv').config();
 
 module.exports = class Server {
 	constructor() {
 		this.webserver = express();
 		this.db = null;
-	} 
+	}
+
 	get port() {
-		return process.env.PORT || 3000
+		return process.env.PORT || 3000;
 	}
 
 	async initialize() {
-		await this.initializeDatabase()
-		await this.initializeWebServer()
+		await this.initializeDatabase();
+		await this.initializeWebServer();
 	}
 
 	/**
@@ -24,7 +25,7 @@ module.exports = class Server {
 	async initializeWebServer() {
 		// Accept JSON as requests
 		this.webserver.use(express.json());
-		
+
 		// Serve Static files
 		this.webserver.use('/static', express.static('public'));
 
@@ -62,4 +63,4 @@ module.exports = class Server {
 		// const test = await this.db('test').first()
 		// console.log(test);
 	}
-}
+};

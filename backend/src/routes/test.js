@@ -7,4 +7,4 @@ module.exports = class Test extends Route {
 	async run(req, res) {
 		return res.send('Hello world');
 	}
-}
+};

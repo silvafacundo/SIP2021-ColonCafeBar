@@ -4,6 +4,7 @@ class Route {
 		this._method = method;
 		this.config = config;
 	}
+
 	get method() {
 		return this._method.toLowerCase();
 	}
