@@ -5,7 +5,7 @@ class Route {
 		this.path = path;
 		this._method = method;
 		this.config = {
-			publicRoute: true,
+			isPublic: true,
 			...config
 		};
 	}
@@ -24,7 +24,7 @@ class Route {
 	}
 
 	async auth(req, res) {
-		if (this.config.publicRoute) return await this.run(req, res);
+		if (this.config.isPublic) return await this.run(req, res);
 		const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 		if (!token) return res.status(401).json({ message: 'No authorization header provided' });
 
