@@ -2,7 +2,10 @@ class Route {
 	constructor(path, method, config) {
 		this.path = path;
 		this._method = method;
-		this.config = config;
+		this.config = {
+			publicRoute: true,
+			...config
+		};
 	}
 
 	get method() {
