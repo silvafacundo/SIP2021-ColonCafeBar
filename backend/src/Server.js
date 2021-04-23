@@ -1,12 +1,17 @@
 const express = require('express');
 const jetpack = require('fs-jetpack');
 const path = require('path');
+
 require('dotenv').config();
+
+// Controllers
+const UserController = require('./controllers/users/UserController');
 
 module.exports = class Server {
 	constructor() {
 		this.webserver = express();
 		this.db = null;
+		this.utils = {};
 	}
 
 	get port() {
@@ -16,6 +21,7 @@ module.exports = class Server {
 	async initialize() {
 		await this.initializeDatabase();
 		await this.initializeWebServer();
+		await this.initializeControllers();
 	}
 
 	/**
@@ -34,7 +40,7 @@ module.exports = class Server {
 			const Route = require(path.join('..', routeFile));
 			const route = new Route();
 			if (typeof route.initialize === 'function') {
-				route.initialize(this.db);
+				route.initialize(this.db, this);
 			}
 			let routePath = route.path.replace(/^\//, '');
 			routePath = `/api/${routePath}`;
@@ -60,5 +66,11 @@ module.exports = class Server {
 
 		this.db = knex;
 		const test = await this.db('users').first();
+	}
+
+	async initializeControllers() {
+		this.utils = {
+			users: new UserController(this.db),
+		}
 	}
 };

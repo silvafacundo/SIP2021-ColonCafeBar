@@ -9,8 +9,13 @@ class Route {
 		return this._method.toLowerCase();
 	}
 
-	initialize(db) {
+	get utils() {
+		return this.server.utils;
+	}
+
+	initialize(db, server) {
 		this.db = db;
+		this.server = server;
 	}
 
 	auth(req, res) {
