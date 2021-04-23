@@ -1,7 +1,7 @@
 const Route = require('../models/Route');
 module.exports = class Test extends Route {
 	constructor() {
-		super('/test', 'get', { publicRoute: false });
+		super('/test', 'get', { isPublic: false });
 	}
 
 	async run(req, res) {

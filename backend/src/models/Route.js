@@ -53,7 +53,7 @@ class Route {
 	}
 
 	// eslint-disable-next-line no-unused-vars
-	run(req, res, db) {
+	run(req, res, db, user) {
 		// Overload!!
 		return null;
 	}
