@@ -25,6 +25,11 @@ class Route {
 		return this.run(req, res);
 	}
 
+	error(res, error) {
+		console.error(error);
+		return res.status(500).json({ message: 'Something went wrong' });
+	}
+
 	// eslint-disable-next-line no-unused-vars
 	run(req, res, db) {
 		// Overload!!

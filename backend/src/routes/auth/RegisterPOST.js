@@ -13,11 +13,15 @@ module.exports = class RegisterPOST extends Route {
 		if (!email) return res.status(400).json({ message: 'email is required!' });
 		if (!password) return res.status(400).json({ message: 'password is required!' });
 
-		// TODO: enviar email de confirmacion
 
-		const hashPassword = await bcrypt.hash(password, 10);
-		await this.utils.users.createUser({ email, firstName, lastName, phoneNumber, password: hashPassword });
+		try {
+			// TODO: enviar email de confirmacion
+			await this.utils.users.createUser({ email, firstName, lastName, phoneNumber, password });
+	
+			return res.json({ message: 'User successfully registered!' });
+		} catch (error) {
+			return super.error(res, error);
+		}
 
-		return res.json({ message: 'User successfully registered!' });
 	}
 };
