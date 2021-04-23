@@ -7,7 +7,7 @@ exports.up = async function(knex) {
 		table.string('lastName');
 		table.string('phoneNumber');
 		table.string('password');
-		table.boolean('isActive');
+		table.boolean('isActive').defaultTo(true);
 		table.timestamp('createdAt').defaultTo(knex.fn.now());
 	});
 };
