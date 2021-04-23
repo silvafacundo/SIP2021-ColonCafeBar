@@ -59,8 +59,6 @@ module.exports = class Server {
 		const knex = require('knex')(config);
 
 		this.db = knex;
-		// TODO: Test Database
-		// const test = await this.db('test').first()
-		// console.log(test);
+		const test = await this.db('users').first();
 	}
 };
