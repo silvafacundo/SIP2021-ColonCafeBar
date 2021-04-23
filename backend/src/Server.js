@@ -6,15 +6,21 @@ require('dotenv').config();
 module.exports = class Server {
 	constructor() {
 		this.webserver = express();
+		this.db = null;
 	} 
 	get port() {
 		return process.env.PORT || 3000
 	}
 
 	async initialize() {
-		await this.initializeWebServer()
 		await this.initializeDatabase()
+		await this.initializeWebServer()
 	}
+
+	/**
+	 * Initializes WebServer
+	 *
+	 */
 	async initializeWebServer() {
 		// Accept JSON as requests
 		this.webserver.use(express.json());
@@ -42,12 +48,18 @@ module.exports = class Server {
 			console.log(`[WEBSERVER] Running on ${process.env.PORT}`);
 		});
 	}
+
+	/**
+	 * Initializes database
+	 *
+	 */
 	async initializeDatabase() {
 		const config = require('../knexfile');
 		const knex = require('knex')(config);
 
 		this.db = knex;
-		const test = await this.db('test').first()
-		console.log(test);
+		// TODO: Test Database
+		// const test = await this.db('test').first()
+		// console.log(test);
 	}
 }
