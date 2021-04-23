@@ -1,47 +1,31 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "dev": "nodemon ./index.js",
-    "migrate": "knex migrate:latest --debug",
-    "rollback": "knex migrate:rollback",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "bcrypt": "^5.0.1",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "fs-jetpack": "^4.1.0",
-    "knex": "^0.95.4",
-    "pg": "^8.6.0"
-  },
-  "devDependencies": {
-    "eslint": "^7.24.0",
-    "eslint-config-aqua": "^8.1.2",
-    "nodemon": "^2.0.7"
-  },
-  "eslintConfig": {
-    "extends": [
-      "aqua"
-    ],
-    "env": {
-      "node": true
-    },
-    "rules": {
-      "func-names": 0,
-      "capitalized-comments": 0,
-      "max-len": 0,
-      "id-length": 0,
-      "no-warning-comments": 0,
-      "no-throw-literal": 0,
-      "no-console": "off",
-      "newline-per-chained-call": 0,
-      "object-curly-newline": "off"
-    }
-  }
+	"name": "backend",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"dev": "nodemon ./index.js",
+		"migrate": "knex migrate:latest --debug",
+		"rollback": "knex migrate:rollback",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"bcrypt": "^5.0.1",
+		"dotenv": "^8.2.0",
+		"express": "^4.17.1",
+		"fs-jetpack": "^4.1.0",
+		"knex": "^0.95.4",
+		"pg": "^8.6.0"
+	},
+	"devDependencies": {
+			"eslint": "^7.4.0",
+			"eslint-config-aqua": "^3.0.0",
+			"eslint-plugin-import": "^2.22.1",
+			"eslint-plugin-jsdoc": "^30.7.8",
+		"nodemon": "^2.0.7"
+	}
+
 }
