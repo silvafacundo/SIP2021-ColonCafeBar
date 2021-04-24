@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class CategoryPOST extends Route {
 	constructor() {
-		super('/category', 'post');
+		super('/category/new', 'post');
 	}
 
 	async run(req, res) {

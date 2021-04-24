@@ -34,11 +34,11 @@ module.exports = class categoriesController {
     }
 
     //Update specific Category
-    async updateCategory(name){
+    async updateCategory({id, name}){
         await this.db('categories')
             .where({ id })
             .update({
-                name : name,
+                name
             });
         return(true);
     }

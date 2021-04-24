@@ -32,7 +32,7 @@ module.exports = class productController {
     }
 
     //Get all products loaded
-    async getAllProduct(){
+    async getAllProducts(){
         const products = await this.db('products')
             .select();
         return products;
@@ -47,7 +47,7 @@ module.exports = class productController {
     }
 
     //Update specific product
-    async updateProduct(id, idCategory, name, description, price){
+    async updateProduct( {id, idCategory, name, description, price }){
         await this.db('products')
             .where({ id })
             .update({
