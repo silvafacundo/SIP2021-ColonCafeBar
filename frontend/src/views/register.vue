@@ -1,11 +1,14 @@
 <template>
 	<div>
 		<h3>Register</h3>
-		<input type="email" placeholder="Email" v-model="email">
-		<input type="text" placeholder="Nombre" v-model="firstName">
-		<input type="password" placeholder="Contraseña" v-model="password">
-		<button @click="register">Register</button>
+		<form @submit.prevent="register">
+			<input type="email" placeholder="Email" v-model="email">
+			<input type="text" placeholder="Nombre" v-model="firstName">
+			<input type="password" placeholder="Contraseña" v-model="password">
+			<button>Register</button>
+		</form>
 		<p>{{error}}</p>
+		<router-link to="/login">Login</router-link>
 	</div>
 </template>
 
@@ -22,7 +25,7 @@ export default {
 			this.error = '';
 			try {
 				await this.$store.dispatch('User/register', { email: this.email, firstName: this.firstName, password: this.password });
-				alert('Te registraste!');
+				this.$router.push({ name: 'login' });
 			} catch (err) {
 				console.error('Failed to register', err);
 				if (err && err.response && err.response.data) this.error = err.response.data.message;
