@@ -37,8 +37,10 @@ module.exports = class UserController {
 		if (lastName && typeof lastName !== 'string') throw Error('lastName must be a string!');
 		if (phoneNumber && typeof phoneNumber !== 'string') throw Error('phoneNumber must be a string!');
 
-		const hash = await this.encryptPassword(password);
+		const exists = await this.db('users').where({ email }).first();
+		if (exists) throw Error('Email already registered');
 
+		const hash = await this.encryptPassword(password);
 		await this.db('users').insert({
 			email,
 			password: hash,
