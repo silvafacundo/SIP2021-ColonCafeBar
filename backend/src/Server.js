@@ -9,6 +9,7 @@ require('dotenv').config();
 // Controllers
 const UserController = require('./controllers/users/UserController');
 const AddressController = require('./controllers/addresses/AddressController');
+const RoleController = require('./controllers/roles/RoleController');
 
 module.exports = class Server {
 	constructor() {
@@ -81,6 +82,7 @@ module.exports = class Server {
 		this.utils = {
 			users: new UserController(this.db),
 			addresses: new AddressController(this.db),
+			roles: new RoleController(this.db),
 		}
 	}
 };
