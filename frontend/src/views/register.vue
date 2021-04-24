@@ -3,8 +3,11 @@
 		<h3>Register</h3>
 		<form @submit.prevent="register">
 			<input type="email" placeholder="Email" v-model="email">
+			<br>
 			<input type="text" placeholder="Nombre" v-model="firstName">
+			<br>
 			<input type="password" placeholder="Contraseña" v-model="password">
+			<br>
 			<button>Register</button>
 		</form>
 		<p>{{error}}</p>

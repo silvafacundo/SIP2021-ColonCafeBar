@@ -3,11 +3,13 @@
 		<h3>Login</h3>
 		<form @submit.prevent="login">
 			<input type="email" name="email" v-model="email" placeholder="Email">
+			<br>
 			<input type="password" name="password" v-model="password" placeholder="Contraseña">
+			<br>
 			<button>Login</button>
 		</form>
 		<router-link to="/register">Register</router-link>
-		<p>{{ error}}</p>
+		<p>{{ error }}</p>
 	</div>
 </template>
 
