@@ -9,7 +9,9 @@ require('dotenv').config();
 // Controllers
 const UserController = require('./controllers/users/UserController');
 const AddressController = require('./controllers/addresses/AddressController');
+const CategoryController = require('./controllers/categories/CategoryController');
 const RoleController = require('./controllers/roles/RoleController');
+const ProductController = require('./controllers/products/ProductController');
 
 module.exports = class Server {
 	constructor() {
@@ -83,6 +85,8 @@ module.exports = class Server {
 			users: new UserController(this.db),
 			addresses: new AddressController(this.db),
 			roles: new RoleController(this.db),
+			categories : new CategoryController(this.db),
+			products : new ProductController(this.db)
 		}
 	}
 };
