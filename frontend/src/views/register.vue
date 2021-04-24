@@ -10,7 +10,7 @@
 			<br>
 			<button>Register</button>
 		</form>
-		<p>{{error}}</p>
+		<p>{{error && 'Error: ' + error}}</p>
 		<router-link to="/login">Login</router-link>
 	</div>
 </template>

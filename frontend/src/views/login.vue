@@ -9,7 +9,7 @@
 			<button>Login</button>
 		</form>
 		<router-link to="/register">Register</router-link>
-		<p>{{ error }}</p>
+		<p>{{error && 'Error: ' + error}}</p>
 	</div>
 </template>
 
