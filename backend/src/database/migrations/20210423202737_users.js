@@ -2,7 +2,7 @@
 exports.up = async function(knex) {
 	await knex.schema.createTable('users', table => {
 		table.bigIncrements('id');
-		table.string('email');
+		table.string('email').unique();
 		table.string('firstName');
 		table.string('lastName');
 		table.string('phoneNumber');
