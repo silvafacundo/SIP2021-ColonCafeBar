@@ -5,9 +5,9 @@ module.exports = class productController {
 	}
 
 
-    async createProduct(idCategory, name, description, price){
+    async createProduct({ idCategory, name, description, price }){
         //Check if parameters are valid
-        if (!idCategory) throw Error('idcategory is required');
+        if (!idCategory && typeof idCategory !== 'bigint') throw Error('idcategory is required');
         if (!name && typeof name !=='string') throw Error('name is required');
         if (!description && typeof description !=='string') throw Error('description is required');
         if (!price && typeof price !=='float') throw Error('price is required');
