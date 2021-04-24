@@ -2,6 +2,8 @@ const express = require('express');
 const jetpack = require('fs-jetpack');
 const path = require('path');
 
+const cors = require('cors');
+
 require('dotenv').config();
 
 // Controllers
@@ -32,6 +34,7 @@ module.exports = class Server {
 	async initializeWebServer() {
 		// Accept JSON as requests
 		this.webserver.use(express.json());
+		this.webserver.use(cors());
 
 		// Serve Static files
 		this.webserver.use('/static', express.static('public'));
@@ -57,7 +60,7 @@ module.exports = class Server {
 			console.log(`[WEBSERVER] Running on ${process.env.PORT}`);
 		});
 	}
-	
+
 	handleUnknownEndpoint(req, res) {
 		return res.status(400).json({ message: 'Route not found' });
 	}
