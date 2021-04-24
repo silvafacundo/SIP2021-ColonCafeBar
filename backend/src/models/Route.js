@@ -39,12 +39,11 @@ class Route {
 
 			// TODO: Validate iat
 
-			await this.run(req, res, user);
+			return await this.run(req, res, user);
 		} catch (err) {
 			console.error('Failed to run endpoint', err);
 			return res.status(500).json({ message: 'Unexpected error' });
 		}
-		return this.run(req, res);
 	}
 
 	error(res, error) {
