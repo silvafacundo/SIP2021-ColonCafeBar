@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import router from '../../router';
 
 const state = () => ({
 	user: null,
@@ -6,36 +7,49 @@ const state = () => ({
 });
 
 const getters = {
-	isAuth: (state) => state.user && state.token,
-	token: state => localStorage.getItem('auth-token'),
+	isAuth: (state) => !!state.user,
+	token: state => state.token || localStorage.getItem('auth-token'),
 	user: state => state.user
 };
 const mutations = {
 	setUser(state, payload) {
 		state.user = { ...payload };
+	},
+	setToken(state, token) {
+		persistToken(token);
+		state.token = token;
+		setAuthorizationHeader(token);
 	}
 };
 const actions = {
-	async checkToken({ getters, commit }) {
-		if (getters.token) {
-			setAuthorizationHeader(getters.token);
+	async checkToken({ getters, commit, dispatch }) {
+		const token = getters.token || localStorage.getItem('auth-token');
+		if (token) {
+			commit('setToken', token);
 			const response = await Vue.axios.get('/me');
 			if (response.data.user) {
 				commit('setUser', response.data.user)
+			} else {
+				return await dispatch('logOut');
 			}
 		}
 	},
-	async login({ dispatch }, { email, password }) {
+	async login({ dispatch, commit }, { email, password }) {
 		const response = await Vue.axios.post('/auth/login', { email, password });
 		const token = response.data.payload;
-		persistToken(token);
-		setAuthorizationHeader(token);
+		commit('setToken', token);
 		await dispatch('checkToken');
 
 	},
 	async register(_, payload) {
 		const response = await Vue.axios.post('/auth/register', { ...payload })
 		return response.data;
+	},
+	logOut({ commit }) {
+		commit('setToken', '');
+		commit('setUser', null);
+		router.push({ name: 'login' });
+
 	}
 };
 
