@@ -1,9 +1,13 @@
 const bcrypt = require('bcrypt');
 const JWT = require('jsonwebtoken');
 
+// Controllers
+const RoleController = require('../roles/RoleController');
+
 module.exports = class UserController {
 	constructor(db) {
 		this.db = db;
+		this.roles = new RoleController(db);
 	}
 
 	async encryptPassword(password) {
@@ -64,5 +68,23 @@ module.exports = class UserController {
 	async getUserLogin({ email, password }) {
 		const user = await this.db('users').where({ email, password }).first();
 		return user;
+	}
+
+	async assignUserRole({ userId, roleId }) {
+		const user = await this.getUser({ userId });
+		if (!user) throw Error('user does not exists!');
+		const role = await this.roles.getRole(roleId);
+		if (!role) throw Error('role does not exists!');
+
+		const userRole = await this.db('usersRoles')
+			.where('userId', userId)
+			.where('roleId', roleId).first();
+
+		if (userRole) throw Error('this user already has this role!');
+
+		await this.db('usersRoles').insert({
+			userId,
+			roleId,
+		});
 	}
 };
