@@ -34,7 +34,7 @@ module.exports = class categoriesController {
 	}
 
 	//Update specific Category
-	async updateCategory({id, name}){
+	async updateCategory({ id, name }){
 		await this.db('categories')
 			.where({ id })
 			.update({
@@ -45,8 +45,8 @@ module.exports = class categoriesController {
 
 	async isEmpty(id){
 		const flag = await this.db('categories')
-			.leftJoin('products', 'categories.id', 'products.id')
-			.where('categories.id',id)
+			.leftJoin('products', 'categories.id', 'products.idCategory')
+			.where('categories.id', id)
 			.count();
 		return flag[0].count>0;
 	}

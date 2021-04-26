@@ -12,8 +12,7 @@ module.exports = class CategoryDeletePOST extends Route {
 		try {
 			// Delete into database
 			const isEmpty = await this.utils.categories.isEmpty(id);
-
-			if (!isEmpty){
+			if (isEmpty){
 				return res.json({ message: 'You cannot delete this category it has products associated!' });
 			} else {
 				await this.utils.categories.deleteCategory(id);
