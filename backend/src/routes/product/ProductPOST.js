@@ -11,7 +11,7 @@ module.exports = class ProductPOST extends Route {
 		if (!idCategory) return res.status(400).json({ message: 'idCategory is required!' });
 		if (!name && typeof name !=='string') return res.status(400).json({ message: 'name is required!' });
 		if (!description && typeof name !=='string') return res.status(400).json({ message: 'description is required!' });
-		if (!price && typeof price !=='float') return res.status(400).json({ message: 'price is required!' });
+		if (!price && typeof price !=='number') return res.status(400).json({ message: 'price is required!' });
 
 		try {
 			// Insert into database

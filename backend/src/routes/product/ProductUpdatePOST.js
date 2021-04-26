@@ -12,7 +12,7 @@ module.exports = class ProductUpdatePOST extends Route {
 		if (!idCategory && typeof idCategory !== 'bigint') return res.status(400).json({ message: 'idCategory is required!' });
 		if (!name && typeof name !=='string') return res.status(400).json({ message: 'name is required!' });
 		if (!description && typeof description !=='string') return res.status(400).json({ message: 'description is required!' });
-		if (!price && typeof price !=='float') return res.status(400).json({ message: 'price is required!' });
+		if (!price && typeof price !=='number') return res.status(400).json({ message: 'price is required!' });
 		try {
 			var product = await this.utils.products.getProduct(id);
 			//if product doesn't exists, display a error message
