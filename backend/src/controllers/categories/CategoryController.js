@@ -42,4 +42,12 @@ module.exports = class categoriesController {
             });
         return(true);
     }
+
+    async isEmpty(id){
+        const flag = await this.db('categories')
+            .leftJoin('products', 'categories.id', 'products.id')
+            .where('categories.id',id)
+            .count();
+            return flag[0].count>0;
+    }
 }

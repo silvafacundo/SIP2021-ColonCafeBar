@@ -12,10 +12,14 @@ module.exports = class CategoryUpdatePOST extends Route {
         if (!name && typeof name !== 'string') return res.status(400).json({ message: 'name is required!' });
 
 		try {
-            
-            //controlar si id es vacio para que no crashee???
-            await this.utils.categories.updateCategory({ id, name });
-            return res.json({ message: 'Category successfully updated!' });
+            const category = await this.utils.categories.getCategory(id);
+			//if category doesn't exists, display a error message
+				if(!category){
+					res.json('There are no category with that id!');
+				}else{
+					await this.utils.categories.updateCategory({ id, name });
+           			return res.json({ message: 'Category successfully updated!' });
+				}
 		} catch (error) {
 			return super.error(res, error);
 		}

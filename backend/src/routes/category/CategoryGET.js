@@ -13,7 +13,11 @@ module.exports = class CategoryGET extends Route {
 		try {
 			//get a category 
 			const category = await this.utils.categories.getCategory( id );
-			return res.json(category);
+				if(!category){
+					return res.json('There are no category whit that id!');
+				}else{
+					return res.json(category);
+				}
 		} catch (error) {
 			return super.error(res, error);
 		}

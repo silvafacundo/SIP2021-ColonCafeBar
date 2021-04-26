@@ -13,10 +13,16 @@ module.exports = class ProductUpdatePOST extends Route {
         if (!name && typeof name !=='string') return res.status(400).json({ message: 'name is required!' });
         if (!description && typeof description !=='string') return res.status(400).json({ message: 'description is required!' });
         if (!price && typeof price !=='float') return res.status(400).json({ message: 'price is required!' });
-		try {
-			//update product 
-			const product = await this.utils.products.updateProduct({ id , idCategory, name, description, price });
-			return res.json(product);
+			try {
+				const product = await this.utils.products.getProduct(id);
+					//if product doesn't exists, display a error message
+					if (!product){
+						return res.json('There are no product with that id!');
+					}else{
+						//update product 
+						product = await this.utils.products.updateProduct({ id , idCategory, name, description, price });
+						return res.json(product);
+					}
 		} catch (error) {
 			return super.error(res, error);
 		}
