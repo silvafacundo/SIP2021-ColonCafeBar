@@ -13,12 +13,11 @@ module.exports = class ProductGET extends Route {
 		try {
 			//get a product 
 			const product = await this.utils.products.getProduct( id );
-				if(!product){
-					return res.json('There are no products with that id!');
-				}else{
-					return res.json(product);
-				}
-				
+			if (!product){
+				return res.json('There are no products with that id!');
+			} else {
+				return res.json(product);
+			}
 		} catch (error) {
 			return super.error(res, error);
 		}
