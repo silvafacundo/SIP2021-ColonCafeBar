@@ -1,17 +1,20 @@
 <template>
 	<div>
-		<h3>Register</h3>
-		<form @submit.prevent="register">
-			<input type="email" placeholder="Email" v-model="email">
-			<br>
-			<input type="text" placeholder="Nombre" v-model="firstName">
-			<br>
-			<input type="password" placeholder="Contraseña" v-model="password">
-			<br>
-			<button>Register</button>
-		</form>
-		<p>{{error && 'Error: ' + error}}</p>
-		<router-link to="/login">Login</router-link>
+		<div class="form-div">
+			<h3>Bienvenido</h3>
+			<form @submit.prevent="register">
+				<img src="../assets/images/logo.png" alt="logo">
+				<input type="email" placeholder="Email" v-model="email">
+				<br>
+				<input type="text" placeholder="Nombre" v-model="firstName">
+				<br>
+				<input type="password" placeholder="Contraseña" v-model="password">
+				<br>
+				<button>Crear cuenta</button>
+			</form>
+		<p class="error">{{error && 'Error: ' + error}}</p>
+		<router-link to="/login">Ingresar</router-link>
+		</div>
 	</div>
 </template>
 
