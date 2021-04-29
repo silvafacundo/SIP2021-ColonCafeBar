@@ -1,8 +1,8 @@
 const Route = require('../../models/Route');
 
-module.exports = class ProductDeletePOST extends Route {
+module.exports = class ProductDELETE extends Route {
 	constructor() {
-		super('/product/delete', 'post');
+		super('/product/delete', 'delete');
 	}
 
 	async run(req, res) {

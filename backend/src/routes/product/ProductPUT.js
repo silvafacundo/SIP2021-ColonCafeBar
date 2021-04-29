@@ -1,8 +1,8 @@
 const Route = require('../../models/Route');
 
-module.exports = class ProductUpdatePOST extends Route {
+module.exports = class ProductPUT extends Route {
 	constructor() {
-		super('/product/update', 'post');
+		super('/product/update', 'put');
 	}
 
 	async run(req, res) {
