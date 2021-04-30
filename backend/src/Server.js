@@ -12,6 +12,7 @@ const AddressController = require('./controllers/addresses/AddressController');
 const CategoryController = require('./controllers/categories/CategoryController');
 const RoleController = require('./controllers/roles/RoleController');
 const ProductController = require('./controllers/products/ProductController');
+const DeliveryController = require('./controllers/deliveries/DeliveryController');
 
 module.exports = class Server {
 	constructor() {
@@ -86,7 +87,8 @@ module.exports = class Server {
 			addresses: new AddressController(this.db),
 			roles: new RoleController(this.db),
 			categories : new CategoryController(this.db),
-			products : new ProductController(this.db)
+			products : new ProductController(this.db),
+			deliveries : new DeliveryController(this.db)
 		}
 	}
 };

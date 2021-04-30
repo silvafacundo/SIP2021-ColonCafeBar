@@ -1,5 +1,5 @@
 
-module.exports = class productController {
+module.exports = class ProductController {
 	constructor(db) {
 		this.db = db;
 	}

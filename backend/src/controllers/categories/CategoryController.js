@@ -1,4 +1,4 @@
-module.exports = class categoriesController {
+module.exports = class CategoriesController {
 	constructor(db) {
 		this.db = db;
 	}
