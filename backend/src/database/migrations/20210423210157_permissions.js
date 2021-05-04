@@ -4,7 +4,6 @@ exports.up = async function(knex) {
 		table.bigIncrements('id');
 		table.string('name').notNullable();
 		table.string('key').notNullable();
-		table.string('description');
 		table.boolean('isActive');
 	});
 };

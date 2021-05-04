@@ -1,6 +1,14 @@
 module.exports = class CategoriesController {
-	constructor(db) {
-		this.db = db;
+	constructor(server) {
+		this.server = server;
+	}
+
+	get db() {
+		return this.server.db;
+	}
+
+	get utils() {
+		return this.server.utils;
 	}
 
 	async createCategory({ name }){

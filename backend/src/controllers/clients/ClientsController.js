@@ -1,28 +1,14 @@
-const bcrypt = require('bcrypt');
-const JWT = require('jsonwebtoken');
-
 module.exports = class ClientController {
-	constructor(db) {
-		this.db = db;
+	constructor(server) {
+		this.server = server;
 	}
 
-	async encryptPassword(password) {
-		const hashPassword = await bcrypt.hash(password, 10);
-		return hashPassword;
+	get db() {
+		return this.server.db;
 	}
 
-	async compareHash(text, hashedText) {
-		const result = await bcrypt.compare(text, hashedText);
-		return result;
-	}
-
-	async generateJWT(client) {
-		const jwt = JWT.sign({
-			sub: client.id,
-			iat: Date.now()
-		}, process.env.JWT_SECRET, { expiresIn: '30d' });
-
-		return jwt;
+	get utils() {
+		return this.server.utils;
 	}
 
 	async createClient({ email, password, firstName, lastName, phoneNumber }) {
@@ -33,9 +19,9 @@ module.exports = class ClientController {
 		if (lastName && typeof lastName !== 'string') throw Error('lastName must be a string!');
 		if (phoneNumber && typeof phoneNumber !== 'string') throw Error('phoneNumber must be a string!');
 
-		const hash = await this.encryptPassword(password);
+		const hash = await this.utils.auth.encryptPassword(password);
 
-		await this.db('users').insert({
+		await this.db('clients').insert({
 			email,
 			password: hash,
 			firstName,
@@ -45,13 +31,13 @@ module.exports = class ClientController {
 	}
 
 	async getClient({ userId, email, onlyPublic = false }) {
-		const userSelect = [];
+		const clientsSelect = [];
 		if (onlyPublic) {
-			userSelect.push('users.email', 'users.firstName', 'users.lastName', 'users.phoneNumber');
-		} else userSelect.push('users.*');
+			clientsSelect.push('clients.email', 'clients.firstName', 'clients.lastName', 'clients.phoneNumber');
+		} else clientsSelect.push('clients.*');
 
-		const user = await this.db('users')
-			.select(userSelect)
+		const user = await this.db('clients')
+			.select(clientsSelect)
 			.where(builder => {
 				if (userId) builder.where({ id: userId });
 				if (email) builder.where({ email });
@@ -62,7 +48,7 @@ module.exports = class ClientController {
 
 
 	async getClientLogin({ email, password }) {
-		const user = await this.db('users').where({ email, password }).first();
+		const user = await this.db('clients').where({ email, password }).first();
 		return user;
 	}
 };

@@ -1,4 +1,4 @@
-module.exports = class User {
+module.exports = class Client {
 	constructor(user, db) {
 		this._data = user;
 		this.db = db;

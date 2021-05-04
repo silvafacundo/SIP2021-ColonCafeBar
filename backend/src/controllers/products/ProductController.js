@@ -1,7 +1,15 @@
 
 module.exports = class ProductController {
-	constructor(db) {
-		this.db = db;
+	constructor(server) {
+		this.server = server;
+	}
+
+	get db() {
+		return this.server.db;
+	}
+
+	get utils() {
+		return this.server.utils;
 	}
 
 

@@ -1,9 +1,16 @@
 const UserController = require("../users/UserController");
 
 module.exports = class AddressController {
-	constructor(db) {
-		this.db = db;
-		this.users = new UserController(this.db);
+	constructor(server) {
+		this.server = server;
+	}
+
+	get db() {
+		return this.server.db;
+	}
+
+	get utils() {
+		return this.server.utils;
 	}
 
 	async createAddress({ userId, street, number, floor, postalCode }) {

@@ -13,6 +13,8 @@ const CategoryController = require('./controllers/categories/CategoryController'
 const RoleController = require('./controllers/roles/RoleController');
 const ProductController = require('./controllers/products/ProductController');
 const DeliveryController = require('./controllers/deliveries/DeliveryController');
+const ClientController = require('./controllers/clients/ClientsController');
+const AuthController = require('./controllers/auth/AuthController');
 
 module.exports = class Server {
 	constructor() {
@@ -27,8 +29,8 @@ module.exports = class Server {
 
 	async initialize() {
 		await this.initializeDatabase();
-		await this.initializeWebServer();
 		await this.initializeControllers();
+		await this.initializeWebServer();
 	}
 
 	/**
@@ -83,12 +85,14 @@ module.exports = class Server {
 
 	async initializeControllers() {
 		this.utils = {
-			users: new UserController(this.db),
-			addresses: new AddressController(this.db),
-			roles: new RoleController(this.db),
-			categories : new CategoryController(this.db),
-			products : new ProductController(this.db),
-			deliveries : new DeliveryController(this.db)
+			auth: new AuthController(this),
+			users: new UserController(this),
+			addresses: new AddressController(this),
+			roles: new RoleController(this),
+			categories: new CategoryController(this),
+			products: new ProductController(this),
+			deliveries: new DeliveryController(this),
+			clients: new ClientController(this)
 		}
 	}
 };

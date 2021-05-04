@@ -5,67 +5,55 @@ const JWT = require('jsonwebtoken');
 const RoleController = require('../roles/RoleController');
 
 module.exports = class UserController {
-	constructor(db) {
-		this.db = db;
-		this.roles = new RoleController(db);
+	constructor(server) {
+		this.server = server;
 	}
 
-	async encryptPassword(password) {
-		const hashPassword = await bcrypt.hash(password, 10);
-		return hashPassword;
+	get db() {
+		return this.server.db;
 	}
 
-	async compareHash(text, hashedText) {
-		const result = await bcrypt.compare(text, hashedText);
-		return result;
+	get utils() {
+		return this.server.utils;
 	}
 
-	async generateJWT(user) {
-		const jwt = JWT.sign({
-			sub: user.id,
-			iat: Date.now()
-		}, process.env.JWT_SECRET, { expiresIn: '30d' });
-
-		return jwt;
-	}
-
-	async createUser({ email, password, firstName, lastName, phoneNumber }) {
-		if (!email) throw Error('email is required!');
+	async createUser({ username, password, isAdmin = false }) {
+		if (!username) throw Error('username is required!');
 		if (!password) throw Error('password is required!');
-		if (!firstName) throw Error('email is required!');
 
-		if (lastName && typeof lastName !== 'string') throw Error('lastName must be a string!');
-		if (phoneNumber && typeof phoneNumber !== 'string') throw Error('phoneNumber must be a string!');
+		if (username && typeof username !== 'string') throw Error('username must be a string!');
+		if (password && typeof password !== 'string') throw Error('password must be a string!');
 
-		const exists = await this.db('users').where({ email }).first();
-		if (exists) throw Error('Email already registered');
+		const exists = await this.db('users').where({ username }).first();
+		if (exists) throw Error('username already registered');
 
-		const hash = await this.encryptPassword(password);
+		const hash = await this.utils.auth.encryptPassword(password);
+
 		await this.db('users').insert({
-			email,
+			username,
 			password: hash,
-			firstName,
-			lastName,
-			phoneNumber
+			isAdmin
 		});
 	}
 
-	async getUser({ userId, email, onlyPublic = false }) {
+	async getUser({ userId, username, onlyPublic = false }) {
+		if (!userId && !username) throw Error('userId or username is required!');
+
 		const userSelect = [];
-		if (onlyPublic) {
-			userSelect.push('users.email', 'users.firstName', 'users.lastName', 'users.phoneNumber');
-		} else userSelect.push('users.*');
+
+		if (onlyPublic) userSelect.push('users.username', 'users.isAdmin', 'users.isAdmin');
+		else userSelect.push('users.*');
 
 		const user = await this.db('users')
 			.select(userSelect)
 			.where(builder => {
 				if (userId) builder.where({ id: userId });
-				if (email) builder.where({ email });
+				if (username) builder.where({ username });
 			})
 			.first();
+
 		return user;
 	}
-
 
 	async getUserLogin({ email, password }) {
 		const user = await this.db('users').where({ email, password }).first();

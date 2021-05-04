@@ -13,10 +13,12 @@ module.exports = class RegisterPOST extends Route {
 		if (!email) return res.status(400).json({ message: 'email is required!' });
 		if (!password) return res.status(400).json({ message: 'password is required!' });
 
-
 		try {
 			// TODO: enviar email de confirmacion
-			await this.utils.users.createUser({ email, firstName, lastName, phoneNumber, password });
+			const exists = await this.utils.clients.getClient({ email });
+			if (exists) return res.status(400).json({ message: 'Client with this email already exists' });
+
+			await this.utils.clients.createClient({ email, password, firstName, lastName, phoneNumber });
 
 			return res.json({ message: 'User successfully registered!' });
 		} catch (error) {
