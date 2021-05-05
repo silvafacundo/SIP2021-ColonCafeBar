@@ -2,10 +2,10 @@ const Route = require('../../models/Route');
 
 module.exports = class CategoryPOST extends Route {
 	constructor() {
-		super('/category/new', 'post');
+		super('/category/new', 'post', { isPublic: false });
 	}
 
-	async run(req, res) {
+	async run(req, res, user) {
 		const { name } = req.body;
 		// Check if body parameters are valid
 		if (!name) return res.status(400).json({ message: 'name is required!' });

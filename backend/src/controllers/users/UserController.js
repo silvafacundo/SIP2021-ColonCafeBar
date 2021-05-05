@@ -1,9 +1,3 @@
-const bcrypt = require('bcrypt');
-const JWT = require('jsonwebtoken');
-
-// Controllers
-const RoleController = require('../roles/RoleController');
-
 module.exports = class UserController {
 	constructor(server) {
 		this.server = server;
@@ -76,5 +70,20 @@ module.exports = class UserController {
 			userId,
 			roleId,
 		});
+	}
+
+	async getAllUsers({ onlyPublic = false, withRoles = true }) {
+		const selectValues = [];
+
+		if (onlyPublic) selectValues.push('users.username', 'users.isAdmin', 'users.isAdmin');
+		else selectValues.push('users.*');
+
+		const users = await this.db('users').select(selectValues);
+
+		if (withRoles) {
+			// TODO: Agregar roles y permisos
+		}
+
+		return users;
 	}
 };

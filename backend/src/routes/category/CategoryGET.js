@@ -2,10 +2,10 @@ const Route = require('../../models/Route');
 
 module.exports = class CategoryGET extends Route {
 	constructor() {
-		super('/category/get', 'get');
+		super('/category/get', 'get', { isPublic: false });
 	}
 
-	async run(req, res) {
+	async run(req, res, user) {
 		const { id } = req.query;
 		// Check if body parameters are valid
 		if (!id) return res.status(400).json({ message: 'id is required!' });

@@ -1,6 +1,4 @@
 const Route = require('../../models/Route');
-const bcrypt = require('bcrypt');
-
 
 module.exports = class RegisterPOST extends Route {
 	constructor() {

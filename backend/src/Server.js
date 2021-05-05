@@ -80,7 +80,7 @@ module.exports = class Server {
 		const knex = require('knex')(config);
 
 		this.db = knex;
-		const test = await this.db('users').first();
+		await this.db('users').first();
 	}
 
 	async initializeControllers() {

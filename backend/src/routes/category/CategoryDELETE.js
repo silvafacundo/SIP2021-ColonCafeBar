@@ -2,10 +2,10 @@ const Route = require('../../models/Route');
 
 module.exports = class CategoryDELETE extends Route {
 	constructor() {
-		super('/category/delete', 'delete');
+		super('/category/delete', 'delete', { isPublic: false });
 	}
 
-	async run(req, res) {
+	async run(req, res, user) {
 		const { id } = req.query;
 		// Check if body parameters are valid
 		if (!id) return res.status(400).json({ message: 'id is required to delete a category!' });

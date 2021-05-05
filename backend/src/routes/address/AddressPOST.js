@@ -2,10 +2,10 @@ const Route = require('../../models/Route');
 
 module.exports = class AddressPOST extends Route {
 	constructor() {
-		super('/address', 'post');
+		super('/address', 'post', { isPublic: false });
 	}
 
-	async run(req, res) {
+	async run(req, res, user) {
 		const { userId, street, number, floor, postalCode } = req.body;
 		// Check if body parameters are valid
 		if (!userId) return res.status(400).json({ message: 'userId is required!' });
