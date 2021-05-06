@@ -23,8 +23,9 @@ module.exports = class UserController {
 	}
 
 	async getRole(roleId) {
-		const role = await this.db('roles').where('id', roleId).first();
+		if (!roleId) throw Error('roleId is required!');
 
+		const role = await this.db('roles').where('id', roleId).first();
 		const permissions = await this.getRolePermissions(role.id);
 
 		return { ...role, permissions };
@@ -36,9 +37,26 @@ module.exports = class UserController {
 		const permissions = await this.db('permissionsRoles')
 			.select('permissions.*')
 			.innerJoin('permissions', 'permissionsRoles.permissionId', 'permissions.id')
-			.where('permissionsRole.roleId', roleId);
+			.where('permissionsRoles.roleId', roleId);
 
 		return permissions;
+	}
+
+	async getRoles() {
+		const roles = await this.db('roles');
+		const rolePermissions = await this.db('permissionsRoles')
+			.innerJoin('permissions', 'permissionsRoles.permissionId', 'permissions.id');
+
+		roles.forEach(role => {
+			const permissions = rolePermissions.filter(rp => rp.roleId = role.id);
+			role.permission = permissions.map(permission => ({
+				...permission,
+				roleId: undefined,
+				permissionId: undefined
+			}))
+		})
+
+		return roles;
 	}
 
 	async getPermission({ permissionId, permissionKey }) {
@@ -93,13 +111,32 @@ module.exports = class UserController {
 		if (!userId) throw Error('userId is required!');
 		if (!roleId) throw Error('roleId is required!');
 
-		await this.db('userRoles').insert({ userId, roleId });
+		await this.db('usersRoles').insert({ userId, roleId });
 	}
 
 	async removeRoleFromUser(userId, roleId) {
 		if (!userId) throw Error('userId is required!');
 		if (!roleId) throw Error('roleId is required!');
 
-		await this.db('userRoles').where({ userId, roleId }).del();
+		await this.db('usersRoles').where({ userId, roleId }).del();
+	}
+
+	async getUserRoles(userId, withPermissions = true) {
+		if (!userId) throw Error('userId is required!');
+
+		const user = await this.utils.users.getUser({ userId });
+		if (!user) throw Error('user not found!');
+
+		const roles = await this.db('usersRoles')
+			.innerJoin('roles', 'usersRoles.roleId', 'roles.id')
+			.where('usersRoles.userId', userId);
+
+		if (withPermissions) {
+			for (const role of roles) {
+				role.permissions = await this.getRolePermissions(role.id);
+			}
+		}
+
+		return roles;
 	}
 }
