@@ -4,22 +4,30 @@
 			<h3>Bienvenido</h3>
 			<form @submit.prevent="login">
 				<img src="../assets/images/logo.png" alt="logo">
-				<input type="email" name="email" v-model="email" placeholder="Email" title="Ingrese email">
+				<input v-model="username"
+					type="username"
+					name="username"
+					placeholder="Username"
+					title="Ingrese username">
 				<br>
-				<input type="password" name="password" v-model="password" placeholder="Contraseña" title="Ingrese contraseña">
+				<input v-model="password"
+					type="password"
+					name="password"
+					placeholder="Contraseña"
+					title="Ingrese contraseña">
 				<br>
 				<button>Ingresar</button>
 			</form>
 			<router-link to="/register" title="Crear una cuenta">¿No tenes cuenta? ¡Regístrese haciendo click aquí!</router-link>
 		</div>
-		<p class="error">{{error && 'Error: ' + error}}</p>
+		<p class="error">{{ error && 'Error: ' + error }}</p>
 	</div>
 </template>
 
 <script>
 export default {
 	data: () => ({
-		email: '',
+		username: '',
 		password: '',
 		error: ''
 	}),
@@ -28,7 +36,7 @@ export default {
 	methods: {
 		async login() {
 			try {
-				await this.$store.dispatch('User/login', { email: this.email, password: this.password });
+				await this.$store.dispatch('User/login', { username: this.username, password: this.password });
 				await this.$router.push({ name: 'me' });
 			} catch (err) {
 				console.error('Failed to log in', err);

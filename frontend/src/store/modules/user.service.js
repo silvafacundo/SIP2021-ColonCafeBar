@@ -34,8 +34,8 @@ const actions = {
 			}
 		}
 	},
-	async login({ dispatch, commit }, { email, password }) {
-		const response = await Vue.axios.post('/auth/login', { email, password });
+	async login({ dispatch, commit }, { username, password }) {
+		const response = await Vue.axios.post('/auth/admin/login', { username, password });
 		const token = response.data.payload;
 		commit('setToken', token);
 		await dispatch('checkToken');
