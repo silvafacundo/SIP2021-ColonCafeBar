@@ -17,7 +17,8 @@ exports.seed = async knex => {
 		.insert([
 			{ name: 'Gestion de usuarios', key: 'users', isActive: true },
 			{ name: 'Gestion de ordenes', key: 'orders', isActive: true },
-			{ name: 'Gestion del menu', key: 'menu', isActive: true }
+			{ name: 'Gestion del menu', key: 'menu', isActive: true },
+			{ name: 'Gestion del clientes', key: 'clients', isActive: true }
 		])
 		.returning('*');
 
@@ -33,6 +34,7 @@ exports.seed = async knex => {
 		.insert([
 			{ roleId: role[0].id, permissionId: permissions[0].id },
 			{ roleId: role[0].id, permissionId: permissions[1].id },
-			{ roleId: role[0].id, permissionId: permissions[2].id }
+			{ roleId: role[0].id, permissionId: permissions[2].id },
+			{ roleId: role[0].id, permissionId: permissions[3].id },
 		])
 };
