@@ -10,13 +10,14 @@ const getters = {
 };
 const mutations = {
 	setUsers(state, payload) {
-		state.user = [...payload];
+		state.users = [...payload];
 	},
 };
 const actions = {
 	async fetchUsers({ commit }) {
 		try {
 			const response = await Vue.axios.get('/admin/users');
+			console.log(response)
 			if (response.data.users)
 				commit('setUsers', response.data.users);
 		} catch (err) {
