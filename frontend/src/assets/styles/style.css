@@ -1,0 +1,15 @@
+html{
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	background-color: rgb(30,30,30);
+    --fondo: rgb(30,30,30);
+    --blanco: #fafafa; 
+    --sombras:#222f3e; 
+    --letra:rgb(188,133,66);
+    --rojo:#ea2a3d;
+    --rojo-transparente:rgb(234,42,61, 0.7); 
+}
+#app{
+	margin-top: 5em;
+}

@@ -4,16 +4,22 @@
 			<h3>Bienvenido</h3>
 			<form @submit.prevent="register">
 				<img src="../assets/images/logo.png" alt="logo">
-				<input type="email" placeholder="Email" v-model="email">
+				<input v-model="email"
+					type="email"
+					placeholder="Email">
 				<br>
-				<input type="text" placeholder="Nombre" v-model="firstName">
+				<input v-model="firstName"
+					type="text"
+					placeholder="Nombre">
 				<br>
-				<input type="password" placeholder="Contraseña" v-model="password">
+				<input v-model="password"
+					type="password"
+					placeholder="Contraseña">
 				<br>
 				<button>Crear cuenta</button>
 			</form>
-		<p class="error">{{error && 'Error: ' + error}}</p>
-		<router-link to="/login">Ingresar</router-link>
+			<p class="error">{{ error && 'Error: ' + error }}</p>
+			<router-link to="/login">Ingresar</router-link>
 		</div>
 	</div>
 </template>
@@ -30,7 +36,7 @@ export default {
 		async register() {
 			this.error = '';
 			try {
-				await this.$store.dispatch('User/register', { email: this.email, firstName: this.firstName, password: this.password });
+				await this.$store.dispatch('Auth/register', { email: this.email, firstName: this.firstName, password: this.password });
 				this.$router.push({ name: 'login' });
 			} catch (err) {
 				console.error('Failed to register', err);

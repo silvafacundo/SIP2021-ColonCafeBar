@@ -36,7 +36,7 @@ export default {
 	methods: {
 		async login() {
 			try {
-				await this.$store.dispatch('User/login', { username: this.username, password: this.password });
+				await this.$store.dispatch('Auth/login', { username: this.username, password: this.password });
 				await this.$router.push({ name: 'me' });
 			} catch (err) {
 				console.error('Failed to log in', err);
@@ -48,17 +48,7 @@ export default {
 }
 </script>
 
-<style>
-
-html{
-	font-family: Avenir, Helvetica, Arial, sans-serif;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	background-color: rgb(30,30,30);
-}
-#app{
-	margin-top: 5em;
-}
+<style scoped>
 h3{
 	text-transform: uppercase;
 }

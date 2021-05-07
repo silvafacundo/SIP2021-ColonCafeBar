@@ -10,7 +10,7 @@ export default {
 	name: 'App',
 	components: { },
 	mounted() {
-		this.$store.dispatch('User/checkToken');
+		this.$store.dispatch('Auth/checkToken');
 	}
 }
 </script>

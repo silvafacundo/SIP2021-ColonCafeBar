@@ -10,12 +10,12 @@
 export default {
 	computed: {
 		user() {
-			return this.$store.getters['User/user'];
+			return this.$store.getters['Auth/user'];
 		}
 	},
 	methods: {
 		async logOut() {
-			await this.$store.dispatch('User/logOut');
+			await this.$store.dispatch('Auth/logOut');
 		}
 	}
 }
