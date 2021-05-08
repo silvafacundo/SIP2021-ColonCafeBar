@@ -36,7 +36,7 @@ export default {
 	methods: {
 		async login() {
 			try {
-				await this.$store.dispatch('Auth/login', { username: this.username, password: this.password });
+				await this.$store.dispatch('Auth/adminLogin', { username: this.username, password: this.password });
 				await this.$router.push({ name: 'adminDashboard' });
 			} catch (err) {
 				console.error('Failed to log in', err);
