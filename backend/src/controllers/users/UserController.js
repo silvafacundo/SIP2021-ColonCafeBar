@@ -11,7 +11,7 @@ module.exports = class UserController {
 		return this.server.utils;
 	}
 
-	async createUser({ username, password, isAdmin = false }) {
+	async createUser({ username, password, name, isAdmin = false }) {
 		if (!username) throw Error('username is required!');
 		if (!password) throw Error('password is required!');
 
@@ -26,6 +26,7 @@ module.exports = class UserController {
 		const newData = {
 			username,
 			password: hash,
+			name,
 			isAdmin
 		}
 
@@ -43,8 +44,10 @@ module.exports = class UserController {
 				...newData,
 				isActive: true
 			})
+			.returning('*');
 
-		return updateUser;
+
+		return updateUser[0];
 
 	}
 
@@ -114,7 +117,9 @@ module.exports = class UserController {
 		});
 	}
 
-	async getAllUsers({ onlyPublic = false, withRoles = true }) {
+	async getAllUsers(config = { onlyPublic: false, withRoles: true }) {
+		const { onlyPublic = false, withRoles = true } = config;
+
 		const selectValues = [];
 
 		if (onlyPublic) selectValues.push('users.id', 'users.username', 'users.isAdmin');

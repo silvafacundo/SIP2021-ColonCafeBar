@@ -6,7 +6,7 @@ exports.seed = async knex => {
 
 	await knex('users').insert({
 		username: 'admin',
-		name: 'Admin super facha',
+		name: 'Admin Supremo',
 		password: hash,
 		isAdmin: true,
 		isActive: true

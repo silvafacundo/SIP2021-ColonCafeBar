@@ -7,7 +7,7 @@ module.exports = class UsersGET extends Route {
 
 	async run (req, res, user) {
 		try {
-			const users = await this.utils.users.getAllUsers();
+			const users = await this.utils.users.getAllUsers({ onlyPublic: true });
 
 			return res.json({
 				message: 'Successfully retrieved user public info',
@@ -16,6 +16,5 @@ module.exports = class UsersGET extends Route {
 		} catch (error) {
 			return super.error(res, error);
 		}
-
 	}
 }
