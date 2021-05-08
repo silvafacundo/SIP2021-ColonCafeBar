@@ -117,9 +117,7 @@ module.exports = class UserController {
 		});
 	}
 
-	async getAllUsers(config = { onlyPublic: false, withRoles: true }) {
-		const { onlyPublic = false, withRoles = true } = config;
-
+	async getAllUsers({ onlyPublic = false, withRoles = true } = {}) {
 		const selectValues = [];
 
 		if (onlyPublic) selectValues.push('users.id', 'users.username', 'users.isAdmin');

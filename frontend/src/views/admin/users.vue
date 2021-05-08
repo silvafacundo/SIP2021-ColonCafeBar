@@ -3,7 +3,7 @@
 		<h3>Usuarios</h3>
 		<ul>
 			<li v-for="(user, index) of users" :key="index">
-
+				{{user}}
 			</li>
 		</ul>
 	</div>
@@ -13,7 +13,7 @@
 export default {
 	computed: {
 		users() {
-			return this.$store.getters('Users/users');
+			return this.$store.getters['User/users'];
 		}
 	},
 	mounted() {
@@ -23,8 +23,9 @@ export default {
 		async fetchUsers() {
 			this.isLoading = true;
 			try {
-				await this.$store.dispatch('Users/fetchUsers');
+				await this.$store.dispatch('User/fetchUsers');
 			} catch (err) {
+				console.error('toda la mala', err)
 				// TODO: Mostrar que falló
 			}
 			this.isLoading = false;

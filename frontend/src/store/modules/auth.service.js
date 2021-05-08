@@ -26,10 +26,9 @@ const actions = {
 		const token = getters.token || localStorage.getItem('auth-token');
 		if (token) {
 			commit('setToken', token);
-			const response = await Vue.axios.get('/me');
-			if (response.data.user) {
-				commit('setUser', response.data.user)
-			} else {
+			try {
+				const response = await Vue.axios.get('/auth/admin/me');
+			} catch (err) {
 				return await dispatch('logOut');
 			}
 		}
@@ -42,7 +41,7 @@ const actions = {
 
 	},
 	async register(_, payload) {
-		const response = await Vue.axios.post('/auth/register', { ...payload })
+		const response = await Vue.axios.post('/auth/admin/register', { ...payload })
 		return response.data;
 	},
 	logOut({ commit }) {

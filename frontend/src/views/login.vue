@@ -37,7 +37,7 @@ export default {
 		async login() {
 			try {
 				await this.$store.dispatch('Auth/login', { username: this.username, password: this.password });
-				await this.$router.push({ name: 'me' });
+				await this.$router.push({ name: 'adminDashboard' });
 			} catch (err) {
 				console.error('Failed to log in', err);
 				if (err && err.response && err.response.data) this.error = err.response.data.message
