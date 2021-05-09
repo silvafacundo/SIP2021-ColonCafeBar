@@ -55,7 +55,7 @@ module.exports = class UserController {
 
 		roles.forEach(role => {
 			const permissions = rolePermissions.filter(rp => rp.roleId === role.id);
-			role.permission = permissions.map(permission => ({
+			role.permissions = permissions.map(permission => ({
 				...permission,
 				roleId: undefined,
 				permissionId: undefined
@@ -123,7 +123,7 @@ module.exports = class UserController {
 		const exists = await this.db('permissions').where({ key }).first();
 		if (exists && exists.isActive) throw Error('Permission already exists');
 
-		const newData = { name, key };
+		const newData = { name, key, isActive: true };
 
 		if (!exists) {
 			const newPermission = await this.db('permissions')
@@ -146,7 +146,6 @@ module.exports = class UserController {
 
 	async deletePermission(permissionId) {
 		if (typeof permissionId === 'undefined' || permissionId == null) throw new Error('permission doesn\'t exists');
-		
 		await this.db('permissions')
 			.where('id', permissionId)
 			.update({ isActive: false });

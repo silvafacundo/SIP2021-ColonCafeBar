@@ -48,7 +48,7 @@ const actions = {
 		if (token) {
 			commit('setAdminToken', token);
 			try {
-				const response = await Vue.axios.get('/auth/admin/me');
+				const response = await Vue.axios.get('/admin/auth/me');
 				commit('setAdminAuth', true);
 				return true;
 			} catch (err) {

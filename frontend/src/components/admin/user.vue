@@ -1,12 +1,18 @@
 <template>
 	<div class="user-container">
-		<label>{{ user.name }}</label>
-		<ul class="roles">
-			<li v-for="(role, index) of user.roles" :key="index">
-				<p class="role-name">{{ role }}</p>
-			</li>
-		</ul>
-		<button class="add-role">+</button>
+		<label>{{ user.username }}</label>
+		<b-taginput
+			v-model="user.roles"
+			:data="filteredRoles"
+			autocomplete
+			:allow-new="false"
+			:allow-duplicates="false"
+			open-on-focus
+			field="name"
+			placeholder="Agregar Rol"
+			@add="addRole"
+			@remove="removeRole"
+			@typing="getFilteredRoles" />
 	</div>
 </template>
 
@@ -21,10 +27,44 @@ export default {
 		user: {
 			type: Object,
 			required: true,
+		},
+	},
+	data: () => ({
+		filteredRoles: []
+	}),
+	computed: {
+		roles() {
+			return this.$store.getters['User/roles'];
 		}
 	},
-	data() {
-	},
+	methods: {
+		getFilteredRoles(value) {
+			this.filteredRoles = this.roles.filter(role =>
+				role.name.toLowerCase()
+					.indexOf(value.toLowerCase()) >= 0
+			)
+		},
+		async addRole(role) {
+			try {
+				const roleId = role.id;
+				const userId = this.user.id;
+				await this.$store.dispatch('User/addRoleToUser', { roleId, userId })
+			} catch (err) {
+				//TODO: Cambiar esto
+				alert('Mal ahí salió mal');
+			}
+		},
+		async removeRole(role) {
+			try {
+				const roleId = role.id;
+				const userId = this.user.id;
+				await this.$store.dispatch('User/removeRoleFromUser', { roleId, userId })
+			} catch (err) {
+				//TODO: Cambiar esto
+				alert('Mal ahí salió mal');
+			}
+		}
+	}
 }
 
 </script>
@@ -34,9 +74,9 @@ export default {
 		display: flex;
 		background-color: var(--blanco);
 
-        label {
-            font-size:1.2em;
-        }
+		label {
+			font-size:1.2em;
+		}
 		ul {
 			display: flex;
 			flex-direction: row;

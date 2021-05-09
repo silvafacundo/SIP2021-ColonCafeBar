@@ -8,6 +8,11 @@ Vue.config.productionTip = false
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 
+import Buefy from 'buefy';
+import 'buefy/dist/buefy.css'
+
+Vue.use(Buefy);
+
 require('./assets/styles/reset.css');
 require('./assets/styles/style.css');
 require('./assets/fonts/font.css');

@@ -11,6 +11,8 @@ import EmptyRoute from '../components/EmptyRoute.vue';
 //
 import Dashboard from '../views/admin/dashboard';
 import Users from '../views/admin/users' ;
+import Permissions from '../views/admin/Permissions';
+import Roles from '../views/admin/Roles';
 //
 
 Vue.use(VueRouter)
@@ -30,7 +32,9 @@ const routes = [
 	{ path: '/admin/login', name: 'adminLogin', component: Login },
 	{ path: '/admin', component: EmptyRoute, children: [
 		{ path: '/', name: 'adminDashboard', component: Dashboard },
-		{ path: '/users', name: 'adminUsers', component: Users }
+		{ path: '/users', name: 'adminUsers', component: Users },
+		{ path: '/roles', name: 'adminRoles', component: Roles },
+		{ path: '/permissions', name: 'adminPermissions', component: Permissions },
 	] }
 ]
 
