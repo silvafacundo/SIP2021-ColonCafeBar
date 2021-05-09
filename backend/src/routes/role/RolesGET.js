@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class RolesGET extends Route {
 	constructor() {
-		super('/roles', 'get', { isPublic: false });
+		super('/admin/roles', 'get');
 	}
 
 	async run (req, res, user) {
@@ -11,7 +11,7 @@ module.exports = class RolesGET extends Route {
 
 			return res.json({
 				message: 'Roles successfully retrieved!',
-				payload: roles
+				roles
 			});
 		} catch (error) {
 			return super.error(res, error);

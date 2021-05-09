@@ -24,10 +24,11 @@ module.exports = class AuthController {
 		return result;
 	}
 
-	async generateJWT(client) {
+	async generateJWT(client, isAdmin = false) {
 		const jwt = JWT.sign({
 			sub: client.id,
-			iat: Date.now()
+			iat: Date.now(),
+			isAdmin
 		}, process.env.JWT_SECRET, { expiresIn: '30d' });
 
 		return jwt;

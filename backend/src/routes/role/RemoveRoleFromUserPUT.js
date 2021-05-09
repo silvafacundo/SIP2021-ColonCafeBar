@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class RemoveRoleFromUserPUT extends Route {
 	constructor() {
-		super('/role/user', 'delete', { isPublic: false });
+		super('/admin/role/user', 'delete');
 	}
 
 	async run (req, res, user) {

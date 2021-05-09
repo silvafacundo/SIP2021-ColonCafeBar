@@ -4,9 +4,16 @@ class Route {
 	constructor(path, method, config) {
 		this.path = path;
 		this._method = method;
+
+		const isAdmin = !!path.match(/^\/admin/);
+
+		// Force to be a private route
+		if (config && typeof config === 'object' && isAdmin) config.isPublic = false;
+
 		this.config = {
 			isPublic: true,
-			...config
+			...config,
+			isAdminRoute: isAdmin,
 		};
 	}
 
@@ -34,7 +41,16 @@ class Route {
 			const id = decoded ? decoded.sub : '';
 			const iat = decoded ? decoded.iat : '';
 
-			const user = await this.utils.users.getUser({ userId: id });
+			const isAdmin = decoded && decoded.isAdmin;
+
+			if ((!isAdmin && this.config.isAdminRoute) || (isAdmin && !this.config.isAdminRoute))
+				return res.status(401).json({ message: 'Invalid authorization token' });
+
+			let user = null;
+			if (this.config.isAdminRoute)
+				user = await this.utils.users.getUser({ userId: id });
+			else
+				user = await this.utils.client.getClient({ userId: id });
 			if (!user) return res.status(401).json({ message: 'Invalid authorization token' });
 
 			// TODO: Validate iat

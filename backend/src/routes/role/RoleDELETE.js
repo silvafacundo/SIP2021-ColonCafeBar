@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class RoleDELETE extends Route {
 	constructor() {
-		super('/role', 'delete', { isPublic: false });
+		super('/admin/role', 'delete');
 	}
 
 	async run (req, res, user) {

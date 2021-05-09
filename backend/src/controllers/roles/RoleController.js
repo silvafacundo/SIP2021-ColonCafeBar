@@ -133,7 +133,7 @@ module.exports = class UserController {
 			return newPermission[0];
 		}
 
-		const updatePermission = await this.db('permission')
+		const updatePermission = await this.db('permissions')
 			.where({ id: exists.id })
 			.update({
 				...newData,
@@ -142,6 +142,14 @@ module.exports = class UserController {
 			.returning('*');
 
 		return updatePermission[0];
+	}
+
+	async deletePermission(permissionId) {
+		if (typeof permissionId === 'undefined' || permissionId == null) throw new Error('permission doesn\'t exists');
+		
+		await this.db('permissions')
+			.where('id', permissionId)
+			.update({ isActive: false });
 	}
 
 	async assignRoleIntoUser(userId, roleId) {

@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class RemovePermissionFromRoleDELETE extends Route {
 	constructor() {
-		super('/permission/role', 'delete', { isPublic: false });
+		super('/admin/permission/role', 'delete');
 	}
 
 	async run (req, res, user) {

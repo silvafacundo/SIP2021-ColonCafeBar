@@ -17,7 +17,7 @@ module.exports = class UserLoginPOST extends Route {
 			const samePassword = await this.utils.auth.compareHash(password, user.password);
 			if (!samePassword) return res.status(401).json({ message: 'Invalid password' });
 
-			const jwt = await this.utils.auth.generateJWT(user);
+			const jwt = await this.utils.auth.generateJWT(user, true);
 
 			return res.json({ message: 'Successfully logged in', payload: jwt });
 		} catch (error) {
