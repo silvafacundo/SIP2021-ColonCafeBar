@@ -67,7 +67,7 @@ const actions = {
 	// 	const response = await Vue.axios.post('/auth/admin/register', { ...payload })
 	// 	return response.data;
 	// },
-	logOut({ commit }, { admin = true, client = true }) {
+	logOut({ commit }, { admin = true, client = true } = {}) {
 		if (admin) {
 			commit('setAdminToken', '');
 			commit('setAdminAuth', false);
