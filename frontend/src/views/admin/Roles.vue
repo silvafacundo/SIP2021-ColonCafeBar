@@ -14,16 +14,16 @@
 			</div>
 		</b-modal>
 		<b-table :data="roles">
-			<b-table-column v-slot="props" label="Id">
+			<b-table-column v-slot="props" label="#">
 				{{ props.row.id }}
 			</b-table-column>
 			<b-table-column v-slot="props" label="Nombre">
 				{{ props.row.name }}
 			</b-table-column>
-			<b-table-column v-slot="props" label="Description">
+			<b-table-column v-slot="props" label="Descripción">
 				{{ props.row.description }}
 			</b-table-column>
-			<b-table-column v-slot="props">
+			<b-table-column v-slot="props" label="Acciones">
 				<b-button @click="() => selectedRole = props.row"> Editar permisos</b-button>
 			</b-table-column>
 			<b-table-column v-slot="props">
@@ -31,13 +31,13 @@
 			</b-table-column>
 		</b-table>
 		<form @submit.prevent="createRole">
-			<label for="roleName">name:</label>
+			<label for="roleName">Nombre:</label>
 			<input id="roleName"
 				v-model="newRoleName"
 				type="text"
 				name="roleName"
 				required>
-			<label for="roleDescription">descriotion: </label>
+			<label for="roleDescription">Descripción: </label>
 			<input id="roleDescription"
 				v-model="newRoleDescription"
 				name="roleDescription"

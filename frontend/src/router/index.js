@@ -30,11 +30,10 @@ const routes = [
 	{ path: '/register', name: 'register', component: Register },
 	{ path: '/me', name: 'me', component: Profile },
 	{ path: '/admin/login', name: 'adminLogin', component: Login },
-	{ path: '/admin', component: EmptyRoute, children: [
-		{ path: '/', name: 'adminDashboard', component: Dashboard },
-		{ path: '/users', name: 'adminUsers', component: Users },
-		{ path: '/roles', name: 'adminRoles', component: Roles },
-		{ path: '/permissions', name: 'adminPermissions', component: Permissions },
+	{ path: '/admin', name: 'adminDashboard', component: Dashboard, children: [
+		{ path: 'users', name: 'adminUsers', component: Users },
+		{ path: 'roles', name: 'adminRoles', component: Roles },
+		{ path: 'permissions', name: 'adminPermissions', component: Permissions }
 	] }
 ]
 
