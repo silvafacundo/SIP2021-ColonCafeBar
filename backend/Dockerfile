@@ -1,0 +1,17 @@
+FROM node:12
+WORKDIR /usr
+
+COPY package.json ./
+
+RUN npm install --production
+
+COPY . .
+
+ENV DATABASE_HOST=localhost
+ENV DATABASE_PORT=5433
+ENV DATABASE_USER=bar
+ENV DATABASE_PASSWORD=123456789
+ENV DATABASE_DB=coloncafebarr
+ENV PORT=3000
+ENV JWT_SECRET=SECRETO
+CMD ["node", "index.js"]

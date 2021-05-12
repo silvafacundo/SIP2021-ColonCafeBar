@@ -1,0 +1,24 @@
+services:
+    postgres:
+        image: 'postgres'
+        container_name: db_postgres
+        restart: 'always'
+        ports:
+            - '6543:5432'
+        environment:
+            POSTGRES_PASSWORD: 'admin'
+            POSTGRES_DB: 'coloncafebar'
+    backend:
+        image: 'silvafacundo/sip2021-coloncafebar'
+        restart: 'always'
+        ports:
+            - '3000:3000'
+        depends_on:
+            - 'postgres'
+        environment:
+            DATABASE_HOST: postgres
+            DATABASE_PORT: 5432
+            DATABASE_DB: coloncafebar
+            DATABASE_USER: postgres
+            DATABASE_PASSWORD: admin
+            NODE_ENV: production
