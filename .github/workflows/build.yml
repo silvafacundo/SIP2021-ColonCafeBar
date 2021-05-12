@@ -15,8 +15,10 @@ jobs:
       - uses: actions/checkout@master
       - uses: actions/setup-node@master
       - name: Installing project dependencies
+        working-directory: ./frontend
         run: npm install
       - name: Building the project
+        working-directory: ./frontend
         run: npm run build
     
       # Builds docker image
