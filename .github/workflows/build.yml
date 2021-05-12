@@ -12,15 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@master
       - uses: actions/setup-node@master
-
-      # Runs a single command using the runners shell
-      - name: build frontend
-        working-directory: ./frontend
-        run: |
-          npm install --production
-          npm run build
+      - name: Installing project dependencies
+      - run: npm install
+      - name: Building the project
+      - run: npm run build
     
       # Builds docker image
       - name: Login to docker
