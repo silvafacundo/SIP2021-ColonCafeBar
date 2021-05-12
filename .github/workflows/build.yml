@@ -22,12 +22,13 @@ jobs:
           npm install --production
           npm build
           cd ..
+        working-directory: ./backend
     
       # Builds docker image
       - name: Build docker image 
-        working-directory: ./backend
-      - uses: docker/build-push-action@v1
+        uses: docker/build-push-action@v1
         with:
+          dockerfile: './backend/Dockerfile'
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: silvafacundo/sip2021-coloncafebar
