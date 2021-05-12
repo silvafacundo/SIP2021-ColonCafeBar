@@ -44,5 +44,11 @@ export default {
 </script>
 
 <style scoped>
+.navbar-item img{
+	max-height: 3.75rem;
+}
 
+.navbar-item:hover{
+	color:var(--rojo);
+}
 </style>

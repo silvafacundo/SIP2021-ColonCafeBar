@@ -11,6 +11,12 @@ html{
 	--rojo:#ea2a3d;
 	--rojo-transparente:rgb(234,42,61, 0.7); 
 }
-#app{
-	margin-top: 5em;
+
+a{
+	color: var(--negro);
+	user-select: none;
+}
+
+a:hover{
+	color: var(--rojo);
 }
