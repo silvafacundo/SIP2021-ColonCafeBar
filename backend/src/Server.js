@@ -43,7 +43,7 @@ module.exports = class Server {
 		this.webserver.use(cors());
 
 		// Serve Static files
-		this.webserver.use('/static', express.static('public'));
+		this.webserver.use('/', express.static('public'));
 
 		// Api Routes
 		jetpack.find(`${__dirname}/routes`, { matching: '*.js' }).forEach(routeFile => {
@@ -80,7 +80,32 @@ module.exports = class Server {
 		const knex = require('knex')(config);
 
 		this.db = knex;
-		await this.db('users').first();
+		// RUN MIGRATIONS
+		const migrationMode = process.env.DATABASE_MIGRATE || 'false';
+		const runMigration = process.env.NODE_ENV === 'production' || migrationMode !== 'false';
+
+		if (runMigration) {
+			console.log(`[DB] Running Migrations (${migrationMode})...`);
+			if (process.env.NODE_ENV === 'development' && migrationMode === 'wipe-latest') {
+				console.log('[DB] Rollingback...');
+				await this.db.migrate.rollback();
+				console.log('[DB] Rollback done.');
+			}
+
+			console.log('[DB] Migrating...');
+			await this.db.migrate.latest();
+			console.log('[DB] Migrations done.');
+
+			try {
+				// TODO: Maybe delete this
+				console.log('[DB] Trying seeds...');
+				await this.db.seed.run();
+				console.log('[DB] Seeds done.');
+			} catch (err) {
+				console.warn('[DB] Seeds failed');
+			}
+		}
+		// await this.db('users').first();
 	}
 
 	async initializeControllers() {
@@ -94,5 +119,6 @@ module.exports = class Server {
 			deliveries: new DeliveryController(this),
 			clients: new ClientController(this)
 		}
+		const admins = await this.db('users').where({ isAdmin: true }).first();
 	}
 };
