@@ -17,15 +17,14 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: build frontend
+        working-directory: ./frontend
         run: |
-          cd frontend
           npm install --production
           npm build
-          cd ..
-        working-directory: ./backend
     
       # Builds docker image
       - name: Build docker image 
+        working-directory: ./backend
         uses: docker/build-push-action@v1
         with:
           dockerfile: './backend/Dockerfile'
