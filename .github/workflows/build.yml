@@ -15,9 +15,9 @@ jobs:
       - uses: actions/checkout@master
       - uses: actions/setup-node@master
       - name: Installing project dependencies
-      - run: npm install
+        run: npm install
       - name: Building the project
-      - run: npm run build
+        run: npm run build
     
       # Builds docker image
       - name: Login to docker
