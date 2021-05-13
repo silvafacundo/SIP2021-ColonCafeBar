@@ -2,23 +2,17 @@
 	<div>
 		<b-navbar>
 			<template #brand>
-				<b-navbar-item tag="router-link" :to="{ path: '/' }">
+				<b-navbar-item tag="router-link" :to="{ path: '/admin' }">
 					<img
 						src="@/assets/images/logo.png"
 						alt="Logo Colón Café Bar"
 					>
 				</b-navbar-item>
 			</template>
-			<template #start>
-				<b-navbar-item>
-					<router-link :to="{ name: 'adminUsers' }">Usuarios</router-link>
-				</b-navbar-item>
-				<b-navbar-item>
-					<router-link :to="{ name: 'adminRoles' }">Roles</router-link>
-				</b-navbar-item>
-				<b-navbar-item>
-					<router-link :to="{ name: 'adminPermissions' }">Permisos</router-link>
-				</b-navbar-item>
+			<template #start class="nav-container">
+				<router-link class="b-navbar-item" :to="{ name: 'adminUsers' }">Usuarios</router-link>
+				<router-link class="b-navbar-item" :to="{ name: 'adminRoles' }">Roles</router-link>
+				<router-link class="b-navbar-item" :to="{ name: 'adminPermissions' }">Permisos</router-link>
 			</template>
 
 			<template #end>
@@ -50,5 +44,19 @@ export default {
 
 .navbar-item:hover{
 	color:var(--rojo);
+}
+/*.nav-container {
+	display: flex;
+	gap: 3rem;
+}*/
+.b-navbar-item {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 0 1rem;
+
+}
+.b-navbar-item:hover {
+	background-color: var(--gris);
 }
 </style>

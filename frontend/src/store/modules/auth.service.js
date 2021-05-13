@@ -63,10 +63,10 @@ const actions = {
 		commit('setAdminToken', token);
 		await dispatch('checkAdminToken');
 	},
-	// async register(_, payload) {
-	// 	const response = await Vue.axios.post('/auth/admin/register', { ...payload })
-	// 	return response.data;
-	// },
+	async register(_, { username, password, name }) {
+		const response = await Vue.axios.post('/admin/auth/register', { username, password, name });
+		return response.data;
+	},
 	logOut({ commit }, { admin = true, client = true } = {}) {
 		if (admin) {
 			commit('setAdminToken', '');

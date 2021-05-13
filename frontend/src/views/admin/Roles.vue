@@ -1,7 +1,7 @@
 <template>
-	<div>
+	<div class="container">
 		<h3>Roles</h3>
-		<b-modal :active="selectedRole" @close="() => selectedRole = null">
+		<b-modal :active="!!selectedRole" @close="() => selectedRole = null">
 			<div class="modal-card" style="margin: auto">
 				<header class="modal-card-head">
 					<p class="modal-card-title">Permisos del rol</p>
@@ -125,6 +125,5 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped lang="scss">
 </style>
