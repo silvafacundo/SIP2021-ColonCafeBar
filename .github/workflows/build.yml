@@ -36,4 +36,4 @@ jobs:
           push: true
           context: ./backend
           file: ./backend/Dockerfile
-          tags: silvafacundo/sip2021-coloncafebar:latest, silvafacundo/sip2021-coloncafebar:$GITHUB_SHA
+          tags: silvafacundo/sip2021-coloncafebar:latest, silvafacundo/sip2021-coloncafebar:${{ github.sha }}
