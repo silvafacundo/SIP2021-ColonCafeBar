@@ -23,7 +23,11 @@ jobs:
         env:
           VUE_APP_HOST_API: ${{ secrets.VUE_APP_HOST_API }}
           VUE_APP_BASE_URL: ${{ secrets.VUE_APP_BASE_URL }}
-    
+
+  publish_docker:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
       # Builds docker image
       - name: Login to docker
         uses: docker/login-action@v1
