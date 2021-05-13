@@ -25,7 +25,7 @@ jobs:
           VUE_APP_BASE_URL: ${{ secrets.VUE_APP_BASE_URL }}
 
   publish_docker:
-    needs: setup
+    needs: build
     runs-on: ubuntu-latest
     steps:
       # Builds docker image
