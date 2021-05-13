@@ -6,7 +6,7 @@
 				{{ props.row.id }}
 			</b-table-column>
 			<b-table-column v-slot="props" label="key">
-				{{ props.row.key}}
+				{{ props.row.key }}
 			</b-table-column>
 			<b-table-column v-slot="props" label="name">
 				{{ props.row.name }}

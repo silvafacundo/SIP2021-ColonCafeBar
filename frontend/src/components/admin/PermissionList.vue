@@ -1,7 +1,9 @@
 <template>
 	<b-table :data="permissions">
 		<b-table-column v-slot="props">
-			<b-checkbox :disabled="disabled" @input="val => change(props.row.id, val)" :value="selected[props.row.id]" />
+			<b-checkbox :disabled="disabled"
+				:value="selected[props.row.id]"
+				@input="val => change(props.row.id, val)" />
 		</b-table-column>
 		<b-table-column v-slot="props" label="id">
 			{{ props.row.id }}

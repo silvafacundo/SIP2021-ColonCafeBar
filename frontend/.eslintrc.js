@@ -12,7 +12,7 @@ module.exports = {
 		'plugin:vue-scoped-css/recommended'
 	],
 	rules: {
-		'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+		'no-console': 0,
 		'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
 		'indent': [2, 'tab', { 'SwitchCase': 1 }],
 		'no-unused-vars': 1,

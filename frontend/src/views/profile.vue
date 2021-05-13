@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<h3>Profile</h3>
-		<p v-for="(value, key) in user" :key="key">{{key}}: {{value}}</p>
+		<p v-for="(value, key) in user" :key="key">{{ key }}: {{ value }}</p>
 		<button @click="logOut">Log Out</button>
 	</div>
 </template>
