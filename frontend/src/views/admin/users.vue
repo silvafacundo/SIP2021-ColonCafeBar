@@ -8,8 +8,8 @@
 		</ul>
 		<b-button
 			label="Crear usuario"
-			type="is-danger"
-			size="is-small"
+			type="is-success"
+			size="default"
 			class="register-button"
 			@click="registerModalActive = true" />
 		<b-modal :active="registerModalActive" @close="() => registerModalActive = false">
@@ -22,15 +22,12 @@
 						<input v-model="username"
 							type="text"
 							placeholder="Username">
-						<br>
 						<input v-model="name"
 							type="text"
 							placeholder="Nombre">
-						<br>
 						<input v-model="password"
 							type="password"
 							placeholder="Contraseña">
-						<br>
 						<button>Crear usuario</button>
 					</form>
 					<p class="error">{{ error && 'Error: ' + error }}</p>
@@ -95,7 +92,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
 .register-button {
 	display: flex;
 	margin-left: auto;
@@ -103,6 +99,9 @@ export default {
 }
 .error{
 	color:#ea2a3d;
+}
+.modal-card{
+	border-radius:5px;
 }
 
 .modal-card-body form {
@@ -113,15 +112,15 @@ export default {
 .modal-card-body > form > input{
 	border:none;
 	border-bottom: 1px solid #ea2a3d;
-	background-color: #fafafa;
+	background-color: var(--blanco);
 	user-select: none;
 }
 .modal-card-body > form > button{
 	background-color: #ea2a3d;
 	text-transform: uppercase;
-	color:#fafafa;
-	margin-bottom: 1em;
-	border-radius: 3em;
+	color:var(--blanco);
+	margin-top: 1em;
+	border-radius: 8px;
 }
 
 .modal-card-body > form > button:hover{
@@ -135,4 +134,5 @@ export default {
 	display:block;
 	padding:1em;
 }
+
 </style>
