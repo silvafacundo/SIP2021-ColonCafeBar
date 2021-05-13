@@ -19,9 +19,12 @@ jobs:
       - name: Installing project dependencies
         working-directory: ./frontend
         run: npm install
-      - name: Building the project
+      - name: Building the project        
         working-directory: ./frontend
         run: npm run build
+        env:
+          VUE_APP_HOST_API: ${{ VUE_APP_HOST_API }}
+          VUE_APP_BASE_URL: ${{ VUE_APP_BASE_URL }}
     
       # Builds docker image
       - name: Login to docker
