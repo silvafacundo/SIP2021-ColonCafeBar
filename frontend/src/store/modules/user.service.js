@@ -89,7 +89,9 @@ const actions = {
 	},
 	async removePermissionFromRole({ dispatch }, { roleId, permissionId }) {
 		try {
-			await Vue.axios.delete('/admin/permission/role', { roleId, permissionId });
+			await Vue.axios.delete('/admin/permission/role', {
+				params: { roleId, permissionId }
+			});
 			await dispatch('fetchRoles');
 		} catch (err) {
 			console.error('Failed to add permission to role:', err);

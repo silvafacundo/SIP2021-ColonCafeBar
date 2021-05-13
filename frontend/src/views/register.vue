@@ -49,6 +49,61 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+h3{
+	text-transform: uppercase;
+}
 
+.error{
+	color:#ea2a3d;
+}
+
+.form-div{
+	width: 55vw;
+	min-height: 55vh;
+	margin:auto;
+	padding:3em;
+	border: 1px solid black;
+	border-radius: 3em;
+	background-color: #fafafa;
+	text-align: center;
+}
+
+.form-div > form > input, form > button{
+	display:block;
+	width:40vw;
+	margin:auto;
+	padding:1em;
+}
+.form-div > form > img{
+	margin-bottom: 2em;
+	width:8em;
+}
+
+.form-div > form > input{
+	border:none;
+	border-bottom: 1px solid #ea2a3d;
+	background-color: #fafafa;
+	user-select: none;
+}
+.form-div > form > button{
+	background-color: #ea2a3d;
+	text-transform: uppercase;
+	color:#fafafa;
+	margin-bottom: 1em;
+	border-radius: 3em;
+}
+
+.form-div > form > button:hover{
+	cursor:pointer;
+	background-color: #c0392b;
+}
+
+.form-div > a{
+	color: #3498db;
+}
+
+.form-div > a:hover{
+	color:#ea2a3d;
+}
 </style>

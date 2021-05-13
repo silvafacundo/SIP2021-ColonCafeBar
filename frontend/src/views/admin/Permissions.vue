@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="container">
 		<h3>Permisos</h3>
 		<b-table :data="permissions">
 			<b-table-column v-slot="props" label="id">

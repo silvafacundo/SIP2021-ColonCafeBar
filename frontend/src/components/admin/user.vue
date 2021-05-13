@@ -10,6 +10,8 @@
 			open-on-focus
 			field="name"
 			placeholder="Agregar Rol"
+			type="is-danger"
+			size="is-small"
 			@add="addRole"
 			@remove="removeRole"
 			@typing="getFilteredRoles" />
@@ -58,7 +60,7 @@ export default {
 			try {
 				const roleId = role.id;
 				const userId = this.user.id;
-				await this.$store.dispatch('User/removeRoleFromUser', { roleId, userId })
+				await this.$store.dispatch('User/deleteRoleFromUser', { roleId, userId })
 			} catch (err) {
 				//TODO: Cambiar esto
 				alert('Mal ahí salió mal');
@@ -73,9 +75,13 @@ export default {
 	div.user-container {
 		display: flex;
 		background-color: var(--blanco);
+		padding: .5rem .5rem;
 
 		label {
 			font-size:1.2em;
+			display: flex;
+			align-items: center;
+			margin-right: 0.5rem;
 		}
 		ul {
 			display: flex;
