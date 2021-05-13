@@ -30,21 +30,24 @@
 				<b-button type="is-danger" @click="() => deleteRole(props.row.id)"> Eliminar </b-button>
 			</b-table-column>
 		</b-table>
-		<form @submit.prevent="createRole">
-			<label for="roleName">Nombre:</label>
-			<input id="roleName"
-				v-model="newRoleName"
-				type="text"
-				name="roleName"
-				required>
-			<label for="roleDescription">Descripción: </label>
-			<input id="roleDescription"
-				v-model="newRoleDescription"
-				name="roleDescription"
-				type="text"
-				required>
-			<input type="submit" value="Crear">
-		</form>
+		<div class="newRole">
+			<h3>Crear nuevo rol</h3>
+			<form @submit.prevent="createRole">
+				<label for="roleName">Nombre:</label>
+				<input id="roleName"
+					v-model="newRoleName"
+					type="text"
+					name="roleName"
+					required>
+				<label for="roleDescription">Descripción: </label>
+				<input id="roleDescription"
+					v-model="newRoleDescription"
+					name="roleDescription"
+					type="text"
+					required>
+				<input type="submit" value="Crear">
+			</form>
+		</div>
 	</div>
 </template>
 
@@ -126,4 +129,31 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.newRole{
+	margin-top: 2em;
+}
+
+form{
+	display: block;
+	padding: 1em;
+	background-color: var(--blanco);
+	border-top: 2px solid var(--negro);
+	border-radius: 5px;
+
+	input[type=text] ,label{
+		margin-left:1em;
+	}
+	input[type=submit]{
+		margin-left: 2em;
+		padding:.2em 1.5em;
+		background-color: var(--verde-ok);
+		border-radius:5px;
+		color:var(--blanco);
+		font-size: 1em;
+	}
+	input[type=submit]:hover{
+		background-color:var(--verde-oscuro);
+		cursor:pointer;
+	}
+}
 </style>

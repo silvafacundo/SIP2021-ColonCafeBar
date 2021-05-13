@@ -2,32 +2,35 @@
 	<div class="container">
 		<h3>Permisos</h3>
 		<b-table :data="permissions">
-			<b-table-column v-slot="props" label="id">
+			<b-table-column v-slot="props" label="#">
 				{{ props.row.id }}
 			</b-table-column>
-			<b-table-column v-slot="props" label="key">
+			<b-table-column v-slot="props" label="Permiso">
 				{{ props.row.key }}
 			</b-table-column>
-			<b-table-column v-slot="props" label="name">
+			<b-table-column v-slot="props" label="Descripción">
 				{{ props.row.name }}
 			</b-table-column>
 			<b-table-column v-slot="props">
 				<b-button type="is-danger" @click="() => deletePermission(props.row.id)"> Eliminar </b-button>
 			</b-table-column>
 		</b-table>
-		<form @submit.prevent="createPermission">
-			<label for="permissionKey">Key:</label>
-			<input id="permissionKey"
-				v-model="newPermissionKey"
-				type="text"
-				name="permissionKey">
-			<label for="permissionName"> NAME: </label>
-			<input id="permissionName"
-				v-model="newPermissionName"
-				name="permissionName"
-				type="text">
-			<input type="submit" value="Crear">
-		</form>
+			<div class="newPermission">
+				<h3>Agregar nuevo permiso</h3>
+				<form @submit.prevent="createPermission">
+					<label for="permissionKey"> Permiso: </label>
+					<input id="permissionKey"
+						v-model="newPermissionKey"
+						type="text"
+						name="permissionKey">
+					<label for="permissionName"> Descripción: </label>
+					<input id="permissionName"
+						v-model="newPermissionName"
+						name="permissionName"
+						type="text">
+					<input type="submit" value="Crear">
+				</form>
+			</div>
 	</div>
 </template>
 
@@ -83,6 +86,33 @@ export default {
 }
 </script>
 
-<style>
+<style scoped lang="scss">
+	.newPermission{
+		margin-top:2em;
+	}
 
+	form{
+		padding: 1em;
+		background-color: var(--blanco);
+		border-top: 2px solid var(--negro);
+		border-radius: 5px;
+		gap:3em;
+			input[type=text] ,label{
+				margin-left: 1em;
+			}
+
+			input[type=submit]{
+				margin-left: 2em;
+				padding:.2em 1.5em;
+				background-color: var(--verde-ok);
+				border-radius:5px;
+				color:var(--blanco);
+				font-size: 1em;
+			}
+
+			input[type=submit]:hover{
+				background-color:var(--verde-oscuro);
+				cursor:pointer;
+			}
+		}
 </style>
