@@ -19,7 +19,7 @@ jobs:
       - name: Installing project dependencies
         working-directory: ./frontend
         run: npm install
-      - name: Building the project        
+      - name: Building the project
         working-directory: ./frontend
         run: npm run build
         env:
@@ -38,4 +38,4 @@ jobs:
           push: true
           context: ./backend
           file: ./backend/Dockerfile
-          tags: silvafacundo/sip2021-coloncafebar:latest
+          tags: silvafacundo/sip2021-coloncafebar:latest, silvafacundo/sip2021-coloncafebar:${{ github.GITHUB_SHA }}
