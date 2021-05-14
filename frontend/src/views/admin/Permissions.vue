@@ -15,22 +15,22 @@
 				<b-button type="is-danger" @click="() => deletePermission(props.row.id)"> Eliminar </b-button>
 			</b-table-column>
 		</b-table>
-			<div class="newPermission">
-				<h3>Agregar nuevo permiso</h3>
-				<form @submit.prevent="createPermission">
-					<label for="permissionKey"> Permiso: </label>
-					<input id="permissionKey"
-						v-model="newPermissionKey"
-						type="text"
-						name="permissionKey">
-					<label for="permissionName"> Descripción: </label>
-					<input id="permissionName"
-						v-model="newPermissionName"
-						name="permissionName"
-						type="text">
-					<input type="submit" value="Crear">
-				</form>
-			</div>
+		<div class="newPermission">
+			<h3>Agregar nuevo permiso</h3>
+			<form @submit.prevent="createPermission">
+				<label for="permissionKey"> Permiso: </label>
+				<input id="permissionKey"
+					v-model="newPermissionKey"
+					type="text"
+					name="permissionKey">
+				<label for="permissionName"> Descripción: </label>
+				<input id="permissionName"
+					v-model="newPermissionName"
+					name="permissionName"
+					type="text">
+				<input type="submit" value="Crear">
+			</form>
+		</div>
 	</div>
 </template>
 
@@ -56,7 +56,7 @@ export default {
 			try {
 				await this.$store.dispatch('User/fetchPermissions');
 			} catch (err) {
-				// TODO: hacer que diga que salió mal algo
+				this.$showToast('Error al intentar obtener los permisos', true);
 			}
 			this.isLoading = false;
 		},
@@ -64,8 +64,7 @@ export default {
 			try {
 				await this.$store.dispatch('User/deletePermission', { permissionId })
 			} catch (err) {
-				alert('Salió mal');
-				// TODO: Mostrar que salió algo mal
+				this.$showToast('Error al eliminar el permiso', true);
 			}
 		},
 		async createPermission() {
@@ -77,8 +76,7 @@ export default {
 			try {
 				await this.$store.dispatch('User/createPermission', { key, name })
 			} catch (err) {
-				// TODO: Mostrar el error piola
-				alert('Algo salió mal');
+				this.$showToast('Error al crear el permiso', true);
 			}
 			this.isLoading = false;
 		}

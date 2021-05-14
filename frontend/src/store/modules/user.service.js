@@ -34,6 +34,18 @@ const actions = {
 			throw err;
 		}
 	},
+	async updateUser({ dispatch }, { userId, isActive, name }) {
+		try {
+			const response = await Vue.axios.post(`/admin/user/${userId}`, {
+				isActive,
+				name
+			});
+			await dispatch('fetchUsers');
+		} catch (err) {
+			console.error('Failed to change update user', err);
+			throw err;
+		}
+	},
 	async addRoleToUser({ dispatch }, { userId, roleId }) {
 		try {
 			const reponse = await Vue.axios.put('/admin/role/user', { roleId, userId });

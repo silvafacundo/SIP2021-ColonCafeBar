@@ -1,21 +1,18 @@
 <template>
-	<div class="user-container">
-		<label>{{ user.username }}</label>
-		<b-taginput
-			v-model="user.roles"
-			:data="filteredRoles"
-			autocomplete
-			:allow-new="false"
-			:allow-duplicates="false"
-			open-on-focus
-			field="name"
-			placeholder="Agregar Rol"
-			type="is-danger"
-			size="is-small"
-			@add="addRole"
-			@remove="removeRole"
-			@typing="getFilteredRoles" />
-	</div>
+	<b-taginput
+		:value="value"
+		:data="filteredRoles"
+		autocomplete
+		:allow-new="false"
+		:allow-duplicates="false"
+		open-on-focus
+		field="name"
+		placeholder="Agregar Rol"
+		type="is-danger"
+		size="is-small"
+		@add="addRole"
+		@remove="removeRole"
+		@typing="getFilteredRoles" />
 </template>
 
 
@@ -26,8 +23,8 @@ export default {
 
 	},
 	props: {
-		user: {
-			type: Object,
+		value: {
+			type: Array,
 			required: true,
 		},
 	},
@@ -44,27 +41,19 @@ export default {
 			this.filteredRoles = this.roles.filter(role =>
 				role.name.toLowerCase()
 					.indexOf(value.toLowerCase()) >= 0
+				&& !this.hasRole(role.name)
 			)
 		},
+		hasRole(name) {
+			return !!this.value.find(role => role.name === name);
+		},
 		async addRole(role) {
-			try {
-				const roleId = role.id;
-				const userId = this.user.id;
-				await this.$store.dispatch('User/addRoleToUser', { roleId, userId })
-			} catch (err) {
-				//TODO: Cambiar esto
-				alert('Mal ahí salió mal');
-			}
+			this.filteredRoles = [];
+			this.$emit('add', role);
 		},
 		async removeRole(role) {
-			try {
-				const roleId = role.id;
-				const userId = this.user.id;
-				await this.$store.dispatch('User/deleteRoleFromUser', { roleId, userId })
-			} catch (err) {
-				//TODO: Cambiar esto
-				alert('Mal ahí salió mal');
-			}
+			this.filteredRoles = [];
+			this.$emit('remove', role);
 		}
 	}
 }

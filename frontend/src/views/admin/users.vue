@@ -1,36 +1,62 @@
 <template>
 	<div class="container">
 		<h3>Usuarios</h3>
-		<ul>
-			<li v-for="(user, index) of users" :key="index">
-				<User :user="user" />
-			</li>
-		</ul>
+		<b-table :data="users">
+			<b-table-column v-slot="props" label="#">
+				{{ props.row.id }}
+			</b-table-column>
+			<b-table-column v-slot="props" label="Usuario">
+				{{ props.row.username }}
+			</b-table-column>
+			<b-table-column v-slot="props" label="Nombre">
+				{{ props.row.name }}
+			</b-table-column>
+			<b-table-column v-slot="props" label="Roles">
+				<UserRoles :value="props.row.roles"
+					:roles="roles"
+					@add="role => addRole(props.row.id, role)"
+					@remove="role => removeRole(props.row.id, role)" />
+			</b-table-column>
+			<b-table-column v-slot="props" label="Root">
+				<b-checkbox :value="props.row.isAdmin" disabled />
+			</b-table-column>
+			<b-table-column v-slot="props" label="Habilitado">
+				<b-checkbox :value="props.row.isActive || props.row.isAdmin"
+					:disabled="props.row.isAdmin"
+					@input="value => changeActive(props.row.id, value)" />
+			</b-table-column>
+		</b-table>
 		<b-button
 			label="Crear usuario"
 			type="is-success"
 			size="default"
 			class="register-button"
-			@click="registerModalActive = true" />
-		<b-modal :active="registerModalActive" @close="() => registerModalActive = false">
+			@click="() => registerModalActive = true" />
+		<b-modal v-model="registerModalActive" has-modal-card>
 			<div class="modal-card" style="margin: auto">
 				<header class="modal-card-head">
 					<p class="modal-card-title">Registrar Usuario</p>
 				</header>
 				<section class="modal-card-body">
 					<form @submit.prevent="register">
-						<input v-model="username"
-							type="text"
-							placeholder="Username">
-						<input v-model="name"
-							type="text"
-							placeholder="Nombre">
-						<input v-model="password"
-							type="password"
-							placeholder="Contraseña">
+						<b-field label="Username">
+							<b-input v-model="username"
+								type="text"
+								placeholder="Username" />
+						</b-field>
+						<b-field label="Nombre">
+							<b-input v-model="name"
+								type="text"
+								placeholder="Nombre" />
+						</b-field>
+						<b-field label="Contraseña">
+							<b-input v-model="password"
+								type="password"
+								placeholder="Contraseña" />
+						</b-field>
+						<p class="error my-1 has-text-centered">{{ error && 'Error: ' + error }}</p>
 						<button>Crear usuario</button>
 					</form>
-					<p class="error">{{ error && 'Error: ' + error }}</p>
 				</section>
 			</div>
 		</b-modal>
@@ -38,10 +64,10 @@
 </template>
 
 <script>
-import User from '../../components/admin/user';
+import UserRoles from '../../components/admin/UserRoles';
 export default {
 	components: {
-		User
+		UserRoles
 	},
 	data() {
 		return {
@@ -70,10 +96,32 @@ export default {
 				await this.$store.dispatch('User/fetchUsers');
 				await this.$store.dispatch('User/fetchRoles');
 			} catch (err) {
-				console.error('toda la mala', err)
-				// TODO: Mostrar que falló
+				this.$showToast('Error al cargar los usuarios', true);
 			}
 			this.isLoading = false;
+		},
+		async addRole(userId, role) {
+			try {
+				const roleId = role.id;
+				await this.$store.dispatch('User/addRoleToUser', { roleId, userId })
+			} catch (err) {
+				this.$showToast(`Error al agregar el rol ${role.name} al usuario.`, true);
+			}
+		},
+		async changeActive(userId, value) {
+			try {
+				await this.$store.dispatch('User/updateUser', { userId, isActive: value });
+			} catch (err) {
+				this.$showToast('Error al cambiar el estado del usuario', true);
+			}
+		},
+		async removeRole(userId, role) {
+			try {
+				const roleId = role.id;
+				await this.$store.dispatch('User/deleteRoleFromUser', { roleId, userId })
+			} catch (err) {
+				this.$showToast('Error al eliminar el rol del usuario', true);
+			}
 		},
 		async register() {
 			this.error = '';
@@ -81,6 +129,11 @@ export default {
 				await this.$store.dispatch('Auth/register', { username: this.username, name: this.name, password: this.password });
 				this.registerModalActive = false;
 				await this.fetchUsers();
+
+				// RESET FIELDS
+				this.username = '';
+				this.name = '';
+				this.password = '';
 			} catch (err) {
 				console.error('Failed to register', err);
 				if (err && err.response && err.response.data) this.error = err.response.data.message;

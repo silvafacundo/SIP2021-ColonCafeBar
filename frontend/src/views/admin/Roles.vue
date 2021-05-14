@@ -1,7 +1,9 @@
 <template>
 	<div class="container">
 		<h3>Roles</h3>
-		<b-modal :active="!!selectedRole" @close="() => selectedRole = null">
+		<b-modal :active="!!selectedRole"
+			has-modal-card
+			@close="() => selectedRole = null">
 			<div class="modal-card" style="margin: auto">
 				<header class="modal-card-head">
 					<p class="modal-card-title">Permisos del rol</p>
@@ -86,7 +88,7 @@ export default {
 				await this.$store.dispatch('User/fetchRoles');
 				await this.$store.dispatch('User/fetchPermissions');
 			} catch (err) {
-				//TODO: Mostrar que salió algo mas
+				this.$showToast('Error al obtener los roles', true);
 			}
 			this.isLoading = false;
 		},
@@ -94,7 +96,7 @@ export default {
 			try {
 				await this.$store.dispatch('User/deleteRole', { roleId });
 			} catch (err) {
-				// TODO: Mostrar que algo salió mal
+				this.$showToast('Error al eliminar el rol', true);
 			}
 		},
 		async createRole() {
@@ -106,8 +108,7 @@ export default {
 			try {
 				await this.$store.dispatch('User/createRole', { name, description })
 			} catch (err) {
-				// TODO: Mostrar el error piola
-				alert('Algo salió mal');
+				this.$showToast('Error al crear el rol', true)
 			}
 			this.isLoading = false;
 		},
@@ -120,8 +121,7 @@ export default {
 				else
 					await this.$store.dispatch('User/removePermissionFromRole', { permissionId, roleId })
 			} catch (err) {
-				//TODO: Mostrar q salio mal
-				alert('algo salió mal :c ');
+				this.$showToast('Error al cambiar los permisos del rol', true);
 			}
 		}
 	}
