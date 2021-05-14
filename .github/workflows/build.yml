@@ -38,6 +38,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
+          build-args: JOB_NUMBER=${{ github.job }}, SHA=${{ github.sha }}
           context: ./backend
           file: ./backend/Dockerfile
           tags: silvafacundo/sip2021-coloncafebar:latest, silvafacundo/sip2021-coloncafebar:${{ github.sha }}

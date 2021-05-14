@@ -28,6 +28,10 @@ module.exports = class Server {
 	}
 
 	async initialize() {
+		const jobNum = process.env.JOB_NUMBER || -1;
+		const sha = process.env.COMMIT_SHA || 'null';
+		console.log('Starting server...');
+		console.log(`COMMIT SHA: ${sha}\nJOB NUMBER: ${jobNum}`);
 		await this.initializeDatabase();
 		await this.initializeControllers();
 		await this.initializeWebServer();
