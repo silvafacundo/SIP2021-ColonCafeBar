@@ -21,9 +21,10 @@
 				<b-checkbox :value="props.row.isAdmin" disabled />
 			</b-table-column>
 			<b-table-column v-slot="props" label="Habilitado">
-				<b-checkbox :value="props.row.isActive || props.row.isAdmin"
+				<b-checkbox :native-value="props.row.isActive || props.row.isAdmin"
+					:value="props.row.isActive || props.row.isAdmin"
 					:disabled="props.row.isAdmin"
-					@input="value => changeActive(props.row.id, value)" />
+					@click.native.prevent="() => !props.row.isAdmin && changeActive(props.row.id, !props.row.isActive)" />
 			</b-table-column>
 		</b-table>
 		<b-button
@@ -109,6 +110,19 @@ export default {
 			}
 		},
 		async changeActive(userId, value) {
+			if (value) return this._changeActive(userId, value);
+			this.$buefy.dialog.confirm({
+				title: 'Deshabilitado un usuario',
+				message: '<b>¿Seguro que desea deshabilitar a este usuario?</b><br>Al deshabilitar el usuario este perderá acceso el acceso',
+				confirmText: 'Sí',
+				cancelText: 'Cancelar',
+				type: 'is-danger',
+				hasIcon: true,
+				onConfirm: () => this._changeActive(userId, value),
+				onCancel: () => this.fetchUsers()
+			});
+		},
+		async _changeActive(userId, value) {
 			try {
 				await this.$store.dispatch('User/updateUser', { userId, isActive: value });
 			} catch (err) {
@@ -126,7 +140,7 @@ export default {
 		async register() {
 			this.error = '';
 			try {
-				await this.$store.dispatch('Auth/register', { username: this.username, name: this.name, password: this.password });
+				await this.$store.dispatch('Auth/registerAdmin', { username: this.username, name: this.name, password: this.password });
 				this.registerModalActive = false;
 				await this.fetchUsers();
 

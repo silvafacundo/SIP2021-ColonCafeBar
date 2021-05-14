@@ -8,6 +8,7 @@ module.exports = class AdminMeGET extends Route {
 		try {
 			return res.json({
 				message: 'User auth',
+				user
 			});
 		} catch (error) {
 			return super.error(res, error);

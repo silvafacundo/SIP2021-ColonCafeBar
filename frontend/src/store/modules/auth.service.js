@@ -5,10 +5,12 @@ const state = () => ({
 	user: null,
 	client: {
 		token: null,
+		user: null,
 		isAuth: false
 	},
 	admin: {
 		token: null,
+		user: null,
 		isAuth: false
 	}
 });
@@ -17,10 +19,12 @@ const getters = {
 	client: state => state.client,
 	isClientAuth: state => state.client.isAuth,
 	clientToken: state => state.client.token || localStorage.getItem('client-auth-token'),
+	clientUser: state => state.client.user,
 
 	admin: state => state.admin,
 	isAdminAuth: state => state.admin.isAuth,
 	adminToken: state => state.admin.token || localStorage.getItem('admin-auth-token'),
+	adminUser: state => state.admin.user
 };
 const mutations = {
 	setAdminAuth(state, value) {
@@ -32,6 +36,9 @@ const mutations = {
 		state.admin.token = token;
 		setAuthorizationHeader(token);
 	},
+	setAdminUser(state, user) {
+		state.admin.user = user;
+	},
 	setClientAuth(state, value) {
 		state.client.isAuth = !!value;
 		if (value) state.admin.isAuth = false;
@@ -40,6 +47,9 @@ const mutations = {
 		persistToken(token, false);
 		state.client.token = token;
 		setAuthorizationHeader(token);
+	},
+	setClientUser(state, user) {
+		state.client.user = user;
 	}
 };
 const actions = {
@@ -50,6 +60,7 @@ const actions = {
 			try {
 				const response = await Vue.axios.get('/admin/auth/me');
 				commit('setAdminAuth', true);
+				commit('setAdminUser', response.data.user);
 				return true;
 			} catch (err) {
 				await dispatch('logOut', { admin: true, client: false });
@@ -63,7 +74,7 @@ const actions = {
 		commit('setAdminToken', token);
 		await dispatch('checkAdminToken');
 	},
-	async register(_, { username, password, name }) {
+	async registerAdmin(_, { username, password, name }) {
 		const response = await Vue.axios.post('/admin/auth/register', { username, password, name });
 		return response.data;
 	},
@@ -71,10 +82,12 @@ const actions = {
 		if (admin) {
 			commit('setAdminToken', '');
 			commit('setAdminAuth', false);
+			commit('setAdminUser', null);
 		}
 		if (client) {
 			commit('setClientToken', '');
 			commit('setClientAuth', false);
+			commit('setClientUser', null);
 		}
 		router.push({ name: 'login' });
 

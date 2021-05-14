@@ -61,6 +61,17 @@ export default {
 			this.isLoading = false;
 		},
 		async deletePermission(permissionId) {
+			this.$buefy.dialog.confirm({
+				title: 'Eliminar Permiso',
+				message: '<b>¿Seguro que desea eliminar este permiso?</b><br>Esta acción es irreversible',
+				confirmText: 'Sí',
+				cancelText: 'Cancelar',
+				type: 'is-danger',
+				hasIcon: true,
+				onConfirm: () => this._deletePermission(permissionId)
+			});
+		},
+		async _deletePermission(permissionId) {
 			try {
 				await this.$store.dispatch('User/deletePermission', { permissionId })
 			} catch (err) {
