@@ -9,7 +9,13 @@
 				{{ props.row.username }}
 			</b-table-column>
 			<b-table-column v-slot="props" label="Nombre">
-				{{ props.row.name }}
+				<EditableText
+					:value="props.row.name"
+					placeholder="Nombre"
+					tag="label"
+					type="text"
+					:can-edit="true"
+					@change="editName(props.row.id, $event)" />
 			</b-table-column>
 			<b-table-column v-slot="props" label="Roles">
 				<UserRoles :value="props.row.roles"
@@ -66,9 +72,11 @@
 
 <script>
 import UserRoles from '../../components/admin/UserRoles';
+import EditableText from '../../components/EditableText';
 export default {
 	components: {
-		UserRoles
+		UserRoles,
+		EditableText,
 	},
 	data() {
 		return {
@@ -127,6 +135,13 @@ export default {
 				await this.$store.dispatch('User/updateUser', { userId, isActive: value });
 			} catch (err) {
 				this.$showToast('Error al cambiar el estado del usuario', true);
+			}
+		},
+		async editName(userId, name) {
+			try {
+				await this.$store.dispatch('User/updateUser', { userId, name });
+			} catch (err) {
+				this.$showToast('Error al cambiar el nombre del usuario', true);
 			}
 		},
 		async removeRole(userId, role) {

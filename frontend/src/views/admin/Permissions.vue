@@ -9,7 +9,14 @@
 				{{ props.row.key }}
 			</b-table-column>
 			<b-table-column v-slot="props" label="Descripción">
-				{{ props.row.name }}
+				<EditableText
+					:value="props.row.name"
+					placeholder="Descripción"
+					tag="label"
+					type="text"
+					:can-edit="true"
+					@change="updatePermission({ id: props.row.id, name: $event })" />
+				<!--{{ props.row.name }}-->
 			</b-table-column>
 			<b-table-column v-slot="props">
 				<b-button type="is-danger" @click="() => deletePermission(props.row.id)"> Eliminar </b-button>
@@ -35,8 +42,12 @@
 </template>
 
 <script>
+import EditableText from '../../components/EditableText';
 export default {
 	name: 'Permissions',
+	components: {
+		EditableText,
+	},
 	data: () => ({
 		newPermissionKey: '',
 		newPermissionName: '',
@@ -90,6 +101,13 @@ export default {
 				this.$showToast('Error al crear el permiso', true);
 			}
 			this.isLoading = false;
+		},
+		async updatePermission({ id, name }) {
+			try {
+				await this.$store.dispatch('User/updatePermission', { permissionId: id, name })
+			} catch (err) {
+				this.$showToast('Error al editar el permiso', true);
+			}
 		}
 	}
 }

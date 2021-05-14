@@ -20,10 +20,22 @@
 				{{ props.row.id }}
 			</b-table-column>
 			<b-table-column v-slot="props" label="Nombre">
-				{{ props.row.name }}
+				<EditableText
+					:value="props.row.name"
+					placeholder="Nombre"
+					tag="label"
+					type="text"
+					:can-edit="true"
+					@change="updateRole({ id: props.row.id, name: $event })" />
 			</b-table-column>
 			<b-table-column v-slot="props" label="Descripción">
-				{{ props.row.description }}
+				<EditableText
+					:value="props.row.description"
+					placeholder="Descripción"
+					tag="label"
+					type="text"
+					:can-edit="true"
+					@change="updateRole({ id: props.row.id, description: $event })" />
 			</b-table-column>
 			<b-table-column v-slot="props" label="Acciones">
 				<b-button @click="() => selectedRole = props.row"> Editar permisos</b-button>
@@ -55,10 +67,12 @@
 
 <script>
 import PermissionList from '../../components/admin/PermissionList.vue';
+import EditableText from '../../components/EditableText';
 export default {
 	name: 'Roles',
 	components: {
-		PermissionList
+		PermissionList,
+		EditableText,
 	},
 	data: () => ({
 		newRoleName: '',
@@ -122,6 +136,13 @@ export default {
 				this.$showToast('Error al crear el rol', true)
 			}
 			this.isLoading = false;
+		},
+		async updateRole({ id, name, description }) {
+			try {
+				await this.$store.dispatch('User/updateRole', { roleId: id, name, description });
+			} catch (err) {
+				this.$showToast('Error al modificar el rol', true);
+			}
 		},
 		async changePermission({ permissionId, value }) {
 			if (!this.selectedRole) return;

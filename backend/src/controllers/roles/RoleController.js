@@ -189,12 +189,11 @@ module.exports = class UserController {
 		return updatePermission[0];
 	}
 
-	async updatePermission({ permissionId, name, isActive }) {
+	async updatePermission({ permissionId, name }) {
 		if (!permissionId) throw Error('id is required!');
 
 		const toUpdate = {};
 		if (typeof name === 'string') toUpdate.name = name;
-		if (typeof isActive === 'boolean' ) toUpdate.isActive = isActive;
 		if (Object.keys(toUpdate).length < 1) throw Error('at least one param is required!');
 
 		await this.db('permissions').where({ id: permissionId }).update(toUpdate);

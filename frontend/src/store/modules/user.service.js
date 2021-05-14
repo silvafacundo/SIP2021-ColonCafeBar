@@ -90,6 +90,15 @@ const actions = {
 			throw err;
 		}
 	},
+	async updateRole({ dispatch }, { roleId, name, description }) {
+		try {
+			await Vue.axios.put('/admin/role', { roleId, name, description });
+			await dispatch('fetchRoles')
+		} catch (err) {
+			console.error('Failed to update role: ', err);
+			throw err;
+		}
+	},
 	async addPermissionToRole({ dispatch }, { roleId, permissionId }) {
 		try {
 			await Vue.axios.put('/admin/permission/role', { roleId, permissionId });
@@ -142,6 +151,15 @@ const actions = {
 			return response.data.permission
 		} catch (err) {
 			console.error('Failed to create permission:', err);
+			throw err;
+		}
+	},
+	async updatePermission({ dispatch }, { permissionId, name }) {
+		try {
+			await Vue.axios.put('/admin/permissions/update', { permissionId, name });
+			await dispatch('fetchPermissions');
+		} catch (err) {
+			console.error('Failed to update permission:', err);
 			throw err;
 		}
 	},
