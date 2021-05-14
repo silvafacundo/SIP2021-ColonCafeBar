@@ -65,6 +65,34 @@ module.exports = class UserController {
 		return roles;
 	}
 
+	/**
+	 * Checks if a user has a specific permission
+	 *
+	 * @param { number | string } userId - User ID
+	 * @param { string } permission - Permission's key
+	 */
+	async checkUserPermission(userId, permission) {
+		if (!userId) throw Error('userId is required!');
+		if (!permission) throw Error('permission is required!');
+
+		const user = await this.utils.users.getUser({ userId });
+		if (!user) throw Error('user not found!');
+		if (user.isAdmin) return true;
+
+		const rolesIdSubQuery = this.db('usersRoles')
+			.select('roleId')
+			.where({ userId, isActive: true });
+
+		const permissions = await this.db('permissionsRoles')
+			.innerJoin('permissions', 'permissionsRoles.permissionId', 'permissions.id')
+			.where('permissionsRoles.roleId', 'in', rolesIdSubQuery)
+			.where('permissions.isActive', true)
+			.where('permissions.key', permission)
+			.first();
+
+		return !!permissions
+	}
+
 	async getRolePermissions(roleId) {
 		if (!roleId) throw Error('RoleId is required!');
 

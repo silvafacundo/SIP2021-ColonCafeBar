@@ -19,35 +19,20 @@ module.exports = class UserController {
 		if (password && typeof password !== 'string') throw Error('password must be a string!');
 
 		const exists = await this.db('users').where({ username }).first();
-		if (exists && exists.isActive) throw Error('username already registered');
+		if (exists) throw Error('user with that username already exists');
 
 		const hash = await this.utils.auth.encryptPassword(password);
 
-		const newData = {
-			username,
-			password: hash,
-			name,
-			isAdmin
-		}
-
-		if (!exists) {
-			const newUser = await this.db('users')
-				.insert(newData)
-				.returning('*');
-
-			return newUser[0];
-		}
-
-		const updateUser = await this.db('users')
-			.where({ id: exists.id })
-			.update({
-				...newData,
-				isActive: true
+		const newUser = await this.db('users')
+			.insert({
+				username,
+				password: hash,
+				name,
+				isAdmin
 			})
 			.returning('*');
 
-
-		return updateUser[0];
+		return newUser[0];
 
 	}
 
@@ -68,17 +53,6 @@ module.exports = class UserController {
 		if (Object.keys(toUpdate).length < 1) throw Error('At least one param is required!');
 
 		await this.db('users').where({ id: userId }).update(toUpdate);
-	}
-
-	async deleteUser(userId) {
-		if (!userId) throw Error('userId is required!');
-
-		const user = await this.getUser({ userId, ignoreInactive: true });
-		if (!user) throw Error('user doesn\'t exists');
-		if (user.isAdmin) throw Error('user is super admin');
-
-		await this.db('usersRoles').where({ userId }).del();
-		await this.db('users').where({ id: userId }).update({ isActive: false });
 	}
 
 	async getUser({ userId, username, onlyPublic = false, ignoreInactive = false }) {

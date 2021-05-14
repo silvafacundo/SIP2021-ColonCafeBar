@@ -17,6 +17,9 @@ module.exports = class UsersGET extends Route {
 				else if (typeof isActive !== 'boolean') isActive = new Boolean(isActive);
 			}
 
+			const hasPermission = await this.utils.roles.checkUserPermission(user.id, 'users');
+			if (!hasPermission) return res.status(403).json({ message: 'You dont hace access to this resource' });
+
 			await this.utils.users.updateUser({ userId: id, isActive, name });
 			return res.json({ message: 'User successfully updated' });
 

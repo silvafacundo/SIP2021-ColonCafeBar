@@ -5,18 +5,17 @@ module.exports = class UserRegisterPOST extends Route {
 		super('/admin/auth/register', 'post', { isPublic: false });
 	}
 
-	async run(req, res) {
+	async run(req, res, user) {
 		const { name, username, password } = req.body;
 		if (!name) return res.status(400).json({ message: 'name is required!' });
 		if (!username) return res.status(400).json({ message: 'username is required!' });
 		if (!password) return res.status(400).json({ message: 'password is required!' });
-
 		try {
 			const exists = await this.utils.users.getUser({ username });
 			if (exists) return res.status(400).json({ message: 'A user already exists with this username' });
 
-			// Solo lo puede crear el user que tenga el permiso 'users'
-			// TODO: Check permission
+			const hasPermission = await this.utils.roles.checkUserPermission(user.id, 'users');
+			if (!hasPermission) return res.status(403).json({ message: 'You dont hace access to this resource' });
 
 			await this.utils.users.createUser({ username, password, name });
 
