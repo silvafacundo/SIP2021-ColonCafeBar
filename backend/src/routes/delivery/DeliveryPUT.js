@@ -10,8 +10,8 @@ module.exports = class DeliveryPUT extends Route {
 		// Check if body parameters are valid
 		if (!id) return res.status(400).json({ message: 'id is required!' });
 		if (!name && typeof name !== 'string') return res.status(400).json({ message: 'name is required!' });
-        if (!lastName && typeof lastName !== 'string') return res.status(400).json({ message: 'lastName is required!' });
-        if (!phoneNumber && typeof phoneNumber !== 'string') return res.status(400).json({ message: 'phoneNumber is required!' });
+		if (!lastName && typeof lastName !== 'string') return res.status(400).json({ message: 'lastName is required!' });
+		if (!phoneNumber && typeof phoneNumber !== 'string') return res.status(400).json({ message: 'phoneNumber is required!' });
 
 		try {
 			const delivery = await this.utils.deliveries.getDelivery(id);
@@ -20,7 +20,7 @@ module.exports = class DeliveryPUT extends Route {
 				res.json('There are no delivery with that id!');
 			} else {
 				await this.utils.deliveries.updateDelivery({ id, name, lastName, phoneNumber });
-           		return res.json({ message: 'Delivery successfully updated!' });
+				return res.json({ message: 'Delivery successfully updated!' });
 			}
 		} catch (error) {
 			return super.error(res, error);

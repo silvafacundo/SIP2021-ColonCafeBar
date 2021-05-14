@@ -14,8 +14,8 @@ module.exports = class DeliveryController {
 	async createDelivery({ name, lastName, phoneNumber }){
 		//Check if parameters are valid
 		if (!name && typeof name !=='string') throw Error('name is required');
-        if (!lastName && typeof lastName !=='string') throw Error('last name is required');
-        if (!phoneNumber && typeof phoneNumber !=='string') throw Error('phone number is required');
+		if (!lastName && typeof lastName !=='string') throw Error('last name is required');
+		if (!phoneNumber && typeof phoneNumber !=='string') throw Error('phone number is required');
 		const Delivery = await this.db('deliveries').insert({ name, lastName, phoneNumber });
 		return Delivery;
 	}
@@ -49,8 +49,8 @@ module.exports = class DeliveryController {
 			.where({ id })
 			.update({
 				name,
-                lastName,
-                phoneNumber
+				lastName,
+				phoneNumber
 			});
 		return (true);
 	}

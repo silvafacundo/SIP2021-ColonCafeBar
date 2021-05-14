@@ -11,7 +11,7 @@ module.exports = class ProductGET extends Route {
 		if (!id) return res.status(400).json({ message: 'id is required!' });
 
 		try {
-			//get a product 
+			//get a product
 			const product = await this.utils.products.getProduct( id );
 			if (!product){
 				return res.json('There are no products with that id!');

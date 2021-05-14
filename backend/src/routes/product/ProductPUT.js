@@ -20,7 +20,7 @@ module.exports = class ProductPUT extends Route {
 				return res.json('There are no product with that id!');
 			} else {
 				//update product
-				product = await this.utils.products.updateProduct({ id , idCategory, name, description, price });
+				product = await this.utils.products.updateProduct({ id, idCategory, name, description, price });
 				return res.json(product);
 			}
 		} catch (error) {

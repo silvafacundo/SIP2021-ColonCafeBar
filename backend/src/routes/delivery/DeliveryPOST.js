@@ -9,8 +9,8 @@ module.exports = class DeliveryPOST extends Route {
 		const { name, lastName, phoneNumber } = req.body;
 		// Check if body parameters are valid
 		if (!name) return res.status(400).json({ message: 'name is required!' });
-        if (!lastName) return res.status(400).json({ message: 'lastName is required!' });
-        if (!phoneNumber) return res.status(400).json({ message: 'phoneNumber is required!' });
+		if (!lastName) return res.status(400).json({ message: 'lastName is required!' });
+		if (!phoneNumber) return res.status(400).json({ message: 'phoneNumber is required!' });
 
 		try {
 			// Insert into database

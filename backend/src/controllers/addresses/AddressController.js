@@ -1,4 +1,4 @@
-const UserController = require("../users/UserController");
+const UserController = require('../users/UserController');
 
 module.exports = class AddressController {
 	constructor(server) {

@@ -15,7 +15,7 @@ module.exports = class ProductPOST extends Route {
 
 		try {
 			// Insert into database
-			await this.utils.products.createProduct({ idCategory,name, description, price });
+			await this.utils.products.createProduct({ idCategory, name, description, price });
 			return res.json({ message: 'Product successfully created!' });
 		} catch (error) {
 			return super.error(res, error);
