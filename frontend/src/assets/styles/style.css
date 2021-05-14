@@ -15,13 +15,15 @@ html{
 	--verde-ok:#2ecc71;
 	--verde-oscuro:#27ae60;
 }
-
-a{
+b {
+	font-weight: bold;
+}
+a {
 	color: var(--negro);
 	user-select: none;
 }
 
-a:hover{
+a:hover {
 	color: var(--rojo);
 }
 

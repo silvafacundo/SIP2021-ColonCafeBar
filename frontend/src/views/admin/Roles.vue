@@ -93,6 +93,17 @@ export default {
 			this.isLoading = false;
 		},
 		async deleteRole(roleId) {
+			this.$buefy.dialog.confirm({
+				title: 'Eliminar rol',
+				message: '<b>¿Seguro que desea eliminar este rol?</b><br>Esta acción es irreversible',
+				confirmText: 'Sí',
+				cancelText: 'Cancelar',
+				type: 'is-danger',
+				hasIcon: true,
+				onConfirm: () => this._deleteRole(roleId)
+			});
+		},
+		async _deleteRole(roleId) {
 			try {
 				await this.$store.dispatch('User/deleteRole', { roleId });
 			} catch (err) {
