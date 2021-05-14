@@ -11,7 +11,7 @@ class Route {
 		if (config && typeof config === 'object' && isAdmin) config.isPublic = false;
 
 		this.config = {
-			isPublic: true,
+			isPublic: !isAdmin,
 			...config,
 			isAdminRoute: isAdmin,
 		};
@@ -34,7 +34,6 @@ class Route {
 		if (this.config.isPublic) return await this.run(req, res);
 		const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 		if (!token) return res.status(401).json({ message: 'No authorization header provided' });
-
 		try {
 			const decoded = JWT.verify(token, process.env.JWT_SECRET);
 

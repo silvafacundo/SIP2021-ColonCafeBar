@@ -51,16 +51,20 @@ module.exports = class UserController {
 
 	}
 
-	async updateUser({ userId, username, password, isActive }) {
+	async updateUser({ userId, username, name, password, isActive }) {
 		if (!userId) throw Error('userId is required!');
 
-		const user = await this.getUser({ userId });
+		const user = await this.getUser({ userId, ignoreInactive: true });
 		if (!user) throw Error('user not found!');
 
 		const toUpdate = {};
+		if (name) toUpdate.name  = name;
 		if (username) toUpdate.username = username;
 		if (password) toUpdate.password = await this.utils.auth.encryptPassword(password);
 		if (typeof isActive === 'boolean') toUpdate.isActive = isActive;
+
+		if (user.isAdmin && isActive) delete toUpdate.isActive;
+
 		if (Object.keys(toUpdate).length < 1) throw Error('At least one param is required!');
 
 		await this.db('users').where({ id: userId }).update(toUpdate);
@@ -69,22 +73,26 @@ module.exports = class UserController {
 	async deleteUser(userId) {
 		if (!userId) throw Error('userId is required!');
 
+		const user = await this.getUser({ userId, ignoreInactive: true });
+		if (!user) throw Error('user doesn\'t exists');
+		if (user.isAdmin) throw Error('user is super admin');
+
 		await this.db('usersRoles').where({ userId }).del();
 		await this.db('users').where({ id: userId }).update({ isActive: false });
 	}
 
-	async getUser({ userId, username, onlyPublic = false }) {
+	async getUser({ userId, username, onlyPublic = false, ignoreInactive = false }) {
 		if (!userId && !username) throw Error('userId or username is required!');
 
 		const userSelect = [];
 
-		if (onlyPublic) userSelect.push('users.id', 'users.username', 'users.isAdmin');
+		if (onlyPublic) userSelect.push('users.id', 'users.username', 'users.name', 'users.isAdmin');
 		else userSelect.push('users.*');
 
 		const user = await this.db('users')
 			.select(userSelect)
 			.where(builder => {
-				builder.where({ isActive: true });
+				if (!ignoreInactive) builder.where({ isActive: true });
 
 				if (userId) builder.where({ id: userId });
 				if (username) builder.where({ username });
@@ -100,7 +108,7 @@ module.exports = class UserController {
 	}
 
 	async assignUserRole({ userId, roleId }) {
-		const user = await this.getUser({ userId });
+		const user = await this.getUser({ userId, ignoreInactive: true });
 		if (!user) throw Error('user does not exists!');
 		const role = await this.roles.getRole(roleId);
 		if (!role) throw Error('role does not exists!');
@@ -117,13 +125,8 @@ module.exports = class UserController {
 		});
 	}
 
-	async getAllUsers({ onlyPublic = false, withRoles = true } = {}) {
-		const selectValues = [];
-
-		if (onlyPublic) selectValues.push('users.id', 'users.username', 'users.isAdmin');
-		else selectValues.push('users.*');
-
-		const users = await this.db('users').select(selectValues);
+	async getAllUsers({ withRoles = true } = {}) {
+		const users = await this.db('users').orderBy('users.id');
 
 		if (withRoles) {
 			for (const user of users) {

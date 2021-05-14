@@ -168,7 +168,7 @@ module.exports = class UserController {
 	async getUserRoles(userId, withPermissions = true) {
 		if (!userId) throw Error('userId is required!');
 
-		const user = await this.utils.users.getUser({ userId });
+		const user = await this.utils.users.getUser({ userId, ignoreInactive: true });
 		if (!user) throw Error('user not found!');
 
 		const roles = await this.db('usersRoles')
