@@ -126,7 +126,7 @@ export default {
 		async register() {
 			this.error = '';
 			try {
-				await this.$store.dispatch('Auth/register', { username: this.username, name: this.name, password: this.password });
+				await this.$store.dispatch('Auth/registerAdmin', { username: this.username, name: this.name, password: this.password });
 				this.registerModalActive = false;
 				await this.fetchUsers();
 

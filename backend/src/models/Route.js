@@ -51,6 +51,7 @@ class Route {
 			else
 				user = await this.utils.client.getClient({ userId: id });
 			if (!user) return res.status(401).json({ message: 'Invalid authorization token' });
+			delete user.password;
 
 			// TODO: Validate iat
 

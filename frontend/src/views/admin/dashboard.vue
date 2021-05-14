@@ -19,11 +19,13 @@
 			</template>
 
 			<template #end>
-				<b-navbar-item tag="div">
-					<div class="buttons">
-						<b-button type="is-danger" @click="logout">Cerrar sesion</b-button>
-					</div>
-				</b-navbar-item>
+				<b-navbar-dropdown right
+					boxed
+					:label="username">
+					<b-navbar-item @click="logout">
+						Cerrar sesión
+					</b-navbar-item>
+				</b-navbar-dropdown>
 			</template>
 		</b-navbar>
 		<router-view />
@@ -32,6 +34,13 @@
 
 <script>
 export default {
+	computed: {
+		username() {
+			const user = this.$store.getters['Auth/adminUser'];
+			if (!user) return '';
+			return user.username;
+		}
+	},
 	methods: {
 		logout(){
 			this.$store.dispatch('Auth/logOut', { admin: true });
