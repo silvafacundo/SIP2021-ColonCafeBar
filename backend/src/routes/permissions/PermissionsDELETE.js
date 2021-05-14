@@ -17,7 +17,7 @@ module.exports = class PermissionsGet extends Route {
 				message: 'Permissions successuflly deleted',
 			});
 		} catch (err) {
-			console.error('Failed to get permissions: ', err);
+			console.error('Failed to delete permissions: ', err);
 			return res.status(400).json({ message: 'Failed to delete permission' });
 		}
 	}

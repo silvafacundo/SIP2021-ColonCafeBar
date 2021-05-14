@@ -35,7 +35,24 @@ module.exports = class UserController {
 
 	async deleteRole({ roleId }) {
 		if (!roleId) throw Error('roleId is required!');
-		await this.db('roles').where({ id: roleId }).update({ isActive: false });
+
+		const deleteTransaction = await this.db.transaction();
+
+		try {
+			await this.db('roles')
+				.where({ id: roleId })
+				.update({ isActive: false })
+				.transacting(deleteTransaction);
+			await this.db('usersRoles')
+				.where({ roleId })
+				.del()
+				.transacting(deleteTransaction);
+
+			await deleteTransaction.commit();
+		} catch (error) {
+			deleteTransaction.rollback();
+			throw error;
+		}
 	}
 
 	async getRole(roleId) {
@@ -157,9 +174,24 @@ module.exports = class UserController {
 
 	async deletePermission(permissionId) {
 		if (typeof permissionId === 'undefined' || permissionId == null) throw new Error('permission doesn\'t exists');
-		await this.db('permissions')
-			.where('id', permissionId)
-			.update({ isActive: false });
+
+		const deleteTransaction = await this.db.transaction();
+
+		try {
+			await this.db('permissions')
+				.where('id', permissionId)
+				.update({ isActive: false })
+				.transacting(deleteTransaction);
+			await this.db('permissionsRoles')
+				.where({ permissionId })
+				.del()
+				.transacting(deleteTransaction);
+
+			await deleteTransaction.commit();
+		} catch (error) {
+			deleteTransaction.rollback();
+			throw error;
+		}
 	}
 
 	async assignRoleIntoUser(userId, roleId) {
