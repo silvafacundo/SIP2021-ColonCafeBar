@@ -53,6 +53,18 @@ const mutations = {
 	}
 };
 const actions = {
+	async resetPassword(_, { password, token }) {
+		try {
+			const response = await Vue.axios.post('/auth/reset', {
+				password,
+				token
+			});
+			return response.data;
+		} catch (err) {
+			console.error('Failed to reset password', err);
+			throw err;
+		}
+	},
 	async checkAdminToken({ getters, commit, dispatch }) {
 		const token = getters.adminToken;
 		if (token) {

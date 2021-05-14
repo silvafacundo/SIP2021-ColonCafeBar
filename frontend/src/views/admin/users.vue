@@ -32,6 +32,13 @@
 					:disabled="props.row.isAdmin"
 					@click.native.prevent="() => !props.row.isAdmin && changeActive(props.row.id, !props.row.isActive)" />
 			</b-table-column>
+			<b-table-column v-slot="props">
+				<b-button type="is-success"
+					size="is-small"
+					@click="() => resetPassword(props.row.id)">
+					Cambiar Contraseña
+				</b-button>
+			</b-table-column>
 		</b-table>
 		<b-button
 			label="Crear usuario"
@@ -67,6 +74,33 @@
 				</section>
 			</div>
 		</b-modal>
+		<b-modal :active="resetPasswordLink"
+			has-modal-card
+			@close="() => resetPasswordLink = null">
+			<div class="modal-card" style="width: auto">
+				<header class="modal-card-head">
+					<p class="modal-card-title">Restablecer Contraseña</p>
+				</header>
+				<section class="modal-card-body">
+					<b-field>
+						<b-input ref="resetPasswordLink"
+							:value="resetPasswordLink"
+							expanded
+							readonly
+							type="text" />
+						<p class="control">
+							<b-button icon-left="clipboard" @click="copyLinkToClipboard" />
+						</p>
+					</b-field>
+				</section>
+				<footer class="modal-card-foot">
+					<b-button
+						label="Confirmar"
+						type="is-success"
+						@click="() => resetPasswordLink = null" />
+				</footer>
+			</div>
+		</b-modal>
 	</div>
 </template>
 
@@ -85,6 +119,7 @@ export default {
 			name: '',
 			password: '',
 			error: '',
+			resetPasswordLink: null
 		}
 	},
 	computed: {
@@ -168,6 +203,27 @@ export default {
 				if (err && err.response && err.response.data) this.error = err.response.data.message;
 				else this.error = 'Ocurrió un error';
 			}
+		},
+		async resetPassword(userId) {
+			try {
+				const { token } = await this.$store.dispatch('User/generateResetPasswordToken', { userId });
+				const url = `${process.env.VUE_APP_BASE_URL}/resetpassword/${token}`;
+				this.resetPasswordLink = url;
+			} catch (err) {
+				this.$showToast('No se pudo crear el token', true);
+			}
+		},
+		copyLinkToClipboard() {
+			if (!this.$refs.resetPasswordLink) return;
+			const input = this.$refs.resetPasswordLink.$el.querySelector('input');
+			if (!input) return;
+			input.select();
+			input.setSelectionRange(0, input.value.length); /* For mobile devices */
+
+			/* Copy the text inside the text field */
+			document.execCommand('copy');
+
+			this.$showToast('Enlace copiado al portapapeles');
 		}
 	}
 }

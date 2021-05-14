@@ -1,7 +1,10 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '../store';
+
 import Login from '../views/login';
+import ResetPassword from '../views/ResetPassword';
+
 import Home from '../views/home';
 import Register from '../views/register';
 import Profile from '../views/profile';
@@ -21,12 +24,14 @@ const publicRoutes = [
 	'home',
 	'login',
 	'adminLogin',
-	'register'
+	'register',
+	'resetPassword'
 ]
 
 const routes = [
 	{ path: '/', name: 'home', component: Home },
 	{ path: '/login', name: 'login', component: Login },
+	{ path: '/resetpassword/:token', props: true, name: 'resetPassword', component: ResetPassword },
 	{ path: '/register', name: 'register', component: Register },
 	{ path: '/me', name: 'me', component: Profile },
 	{ path: '/admin/login', name: 'adminLogin', component: Login },

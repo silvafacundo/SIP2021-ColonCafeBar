@@ -46,6 +46,15 @@ const actions = {
 			throw err;
 		}
 	},
+	async generateResetPasswordToken(_, { userId }) {
+		try {
+			const response = await Vue.axios.get('/admin/user/reset', { params: { userId } });
+			return response.data;
+		} catch (err) {
+			console.error('Failed to generate token', err);
+			throw err;
+		}
+	},
 	async addRoleToUser({ dispatch }, { userId, roleId }) {
 		try {
 			const reponse = await Vue.axios.put('/admin/role/user', { roleId, userId });

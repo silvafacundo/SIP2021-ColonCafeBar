@@ -54,6 +54,9 @@ class Route {
 			delete user.password;
 
 			// TODO: Validate iat
+			if (user.sessionValidDate && new Date(user.sessionValidDate) > iat) {
+				return res.status(401).json({ message: 'Token expired' });
+			}
 
 			return await this.run(req, res, user);
 		} catch (err) {
