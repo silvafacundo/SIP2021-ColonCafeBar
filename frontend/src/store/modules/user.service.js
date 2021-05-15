@@ -1,11 +1,15 @@
 import Vue from 'vue';
 import router from '../../router';
 
-const state = () => ({
+
+
+const initialState = () => ({
 	users: [],
 	roles: [],
 	permissions: [],
 });
+
+const state = initialState();
 
 const getters = {
 	users: state => state.users,
@@ -13,6 +17,12 @@ const getters = {
 	permissions: state => state.permissions
 };
 const mutations = {
+	RESET(state, payload) {
+		const defaultValues = initialState();
+		for (const key in state) {
+			state[key] = defaultValues[key];
+		}
+	},
 	setUsers(state, payload) {
 		state.users = [...payload];
 	},
@@ -24,6 +34,9 @@ const mutations = {
 	}
 };
 const actions = {
+	RESET({ commit }) {
+		commit('RESET');
+	},
 	async fetchUsers({ commit }) {
 		try {
 			const response = await Vue.axios.get('/admin/users');
