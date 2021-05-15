@@ -33,8 +33,13 @@ module.exports = class UserController {
 		await this.db('roles').where({ id: roleId }).update(toUpdate);
 	}
 
-	async deleteRole({ roleId }) {
+	async deleteRole({ roleId, forced = false }) {
 		if (!roleId) throw Error('roleId is required!');
+
+		if (!forced) {
+			const usersWithRole = await this.db('usersRoles').where( { roleId });
+			if (usersWithRole.length > 0) throw new Error('The role cannot be deleted due one or more user has this role')
+		}
 
 		const deleteTransaction = await this.db.transaction();
 
