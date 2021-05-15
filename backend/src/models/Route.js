@@ -54,7 +54,9 @@ class Route {
 			delete user.password;
 
 			// TODO: Validate iat
-			if (user.sessionValidDate && new Date(user.sessionValidDate) > iat) {
+
+			let isExpired = isAdmin && (Date.now() - iat) > (30 * 24 * 60 * 60 * 1000) // 30 días
+			if ((user.sessionValidDate && new Date(user.sessionValidDate) > iat) || isExpired){
 				return res.status(401).json({ message: 'Token expired' });
 			}
 
