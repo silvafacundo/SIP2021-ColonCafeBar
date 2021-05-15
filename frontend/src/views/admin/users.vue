@@ -207,7 +207,7 @@ export default {
 		async resetPassword(userId) {
 			try {
 				const { token } = await this.$store.dispatch('User/generateResetPasswordToken', { userId });
-				const url = `${process.env.VUE_APP_BASE_URL}/resetpassword/${token}`;
+				const url = `${process.env.VUE_APP_BASE_URL || 'http://localhost:8080/'}resetpassword/${token}`;
 				this.resetPasswordLink = url;
 			} catch (err) {
 				this.$showToast('No se pudo crear el token', true);
