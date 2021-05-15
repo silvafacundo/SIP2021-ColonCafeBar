@@ -11,8 +11,9 @@
 		type="is-danger"
 		size="is-small"
 		@add="addRole"
+		@focus="getFilteredRoles"
 		@remove="removeRole"
-		@typing="getFilteredRoles" />
+		@typing="typing" />
 </template>
 
 
@@ -29,20 +30,35 @@ export default {
 		},
 	},
 	data: () => ({
-		filteredRoles: []
+		filteredRoles: [],
+		filterText: '',
 	}),
 	computed: {
 		roles() {
 			return this.$store.getters['User/roles'];
 		}
 	},
+	watch: {
+		filterText(newValue) {
+			this.getFilteredRoles();
+		},
+		roles() {
+			this.getFilteredRoles();
+		},
+		value(newValue) {
+			this.getFilteredRoles();
+		}
+	},
 	methods: {
-		getFilteredRoles(value) {
+		getFilteredRoles() {
 			this.filteredRoles = this.roles.filter(role =>
 				role.name.toLowerCase()
-					.indexOf(value.toLowerCase()) >= 0
+					.indexOf(this.filterText.toLowerCase()) >= 0
 				&& !this.hasRole(role.name)
 			)
+		},
+		typing(value) {
+			this.filterText = value;
 		},
 		hasRole(name) {
 			return !!this.value.find(role => role.name === name);
@@ -50,6 +66,7 @@ export default {
 		async addRole(role) {
 			this.filteredRoles = [];
 			this.$emit('add', role);
+			this.getFilteredRoles();
 		},
 		async removeRole(role) {
 			this.filteredRoles = [];
@@ -61,34 +78,5 @@ export default {
 </script>
 
 <style scoped lang="scss">
-	div.user-container {
-		display: flex;
-		background-color: var(--blanco);
-		padding: .5rem .5rem;
-
-		label {
-			font-size:1.2em;
-			display: flex;
-			align-items: center;
-			margin-right: 0.5rem;
-		}
-		ul {
-			display: flex;
-			flex-direction: row;
-			flex-wrap: wrap;
-
-			.roles {
-				border: 2px solid var(--rojo);
-				padding: 0.6rem 2rem;
-				border-radius: 5px;
-			}
-		}
-		.add-role{
-			padding: 1em;
-			background-color: var(--rojo);
-			border-radius:5px;
-		}
-	}
-
 </style>
 
