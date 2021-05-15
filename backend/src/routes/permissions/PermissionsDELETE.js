@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class PermissionsGet extends Route {
 	constructor() {
-		super('/admin/permissions', 'delete');
+		super('/admin/permissions', 'delete', { permissions: 'permissions' });
 	}
 
 	async run (req, res, user) {
@@ -11,7 +11,6 @@ module.exports = class PermissionsGet extends Route {
 			return res.status(400).json({ message: 'permissionId is required' });
 
 		try {
-			// TODO: Revisar permisos
 			await this.utils.roles.deletePermission(permissionId);
 			return res.json({
 				message: 'Permissions successuflly deleted',

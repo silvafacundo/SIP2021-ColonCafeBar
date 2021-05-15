@@ -2,15 +2,13 @@ const Route = require('../../models/Route');
 
 module.exports = class RemoveRoleFromUserPUT extends Route {
 	constructor() {
-		super('/admin/role/user', 'delete');
+		super('/admin/role/user', 'delete', { permissions: 'users roles' });
 	}
 
 	async run (req, res, user) {
 		const { roleId, userId } = req.query;
 		if (!roleId) return res.status(400).json({ message: 'roleId is required!' });
 		if (!userId) return res.status(400).json({ message: 'userId is required!' });
-
-		// TODO: check permission
 
 		try {
 			const user = await this.utils.users.getUser({ userId });

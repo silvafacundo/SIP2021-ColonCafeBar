@@ -2,14 +2,12 @@ const Route = require('../../models/Route');
 
 module.exports = class RoleDELETE extends Route {
 	constructor() {
-		super('/admin/role', 'delete');
+		super('/admin/role', 'delete', { permissions: 'roles' });
 	}
 
 	async run (req, res, user) {
 		const { roleId } = req.query;
 		if (!roleId) return res.status(400).json({ message: 'roleId is required!' });
-
-		// TODO: check permission
 
 		try {
 			await this.utils.roles.deleteRole({ roleId });

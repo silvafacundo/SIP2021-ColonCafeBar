@@ -2,15 +2,13 @@ const Route = require('../../models/Route');
 
 module.exports = class AddPermissionIntoRolePUT extends Route {
 	constructor() {
-		super('/admin/permission/role', 'put');
+		super('/admin/permission/role', 'put', { permissions: 'roles permissions' });
 	}
 
 	async run (req, res, user) {
 		const { permissionId, roleId } = req.body;
 		if (!permissionId) return res.status(400).json({ message: 'permissionId is required!' });
 		if (!roleId) return res.status(400).json({ message: 'roleId is required!' });
-
-		// TODO: check permission
 
 		try {
 			const role = await this.utils.roles.getRole(roleId);

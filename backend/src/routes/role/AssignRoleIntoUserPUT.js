@@ -2,15 +2,13 @@ const Route = require('../../models/Route');
 
 module.exports = class AssignRoleIntoUserPUT extends Route {
 	constructor() {
-		super('/admin/role/user', 'put');
+		super('/admin/role/user', 'put', { permissions: 'users roles' });
 	}
 
 	async run (req, res, user) {
 		const { roleId, userId } = req.body;
 		if (!roleId) return res.status(400).json({ message: 'roleId is required!' });
 		if (!userId) return res.status(400).json({ message: 'userId is required!' });
-
-		// TODO: check permission
 
 		try {
 			const user = await this.utils.users.getUser({ userId });

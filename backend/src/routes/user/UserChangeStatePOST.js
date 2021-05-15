@@ -3,7 +3,7 @@ const Route = require('../../models/Route');
 
 module.exports = class UsersGET extends Route {
 	constructor() {
-		super('/admin/user/:id', 'post', { isPublic: false });
+		super('/admin/user/:id', 'post', { permissions: 'users', isPublic: false });
 	}
 
 	async run (req, res, user) {
@@ -16,9 +16,6 @@ module.exports = class UsersGET extends Route {
 				if (typeof isActive === 'string') isActive = isActive === 'true';
 				else if (typeof isActive !== 'boolean') isActive = new Boolean(isActive);
 			}
-
-			const hasPermission = await this.utils.roles.checkUserPermission(user.id, 'users');
-			if (!hasPermission) return res.status(403).json({ message: 'You dont hace access to this resource' });
 
 			await this.utils.users.updateUser({ userId: id, isActive, name });
 			return res.json({ message: 'User successfully updated' });
