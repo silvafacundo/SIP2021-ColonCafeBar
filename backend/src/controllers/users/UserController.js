@@ -14,6 +14,8 @@ module.exports = class UserController {
 	async createUser({ username, password, name, isAdmin = false }) {
 		if (!username) throw Error('username is required!');
 		if (!password) throw Error('password is required!');
+		const { status, message } = this.utils.auth.isSafePassword(password);
+		if (!status) throw new Error(message);
 
 		if (username && typeof username !== 'string') throw Error('username must be a string!');
 		if (password && typeof password !== 'string') throw Error('password must be a string!');
@@ -41,6 +43,10 @@ module.exports = class UserController {
 
 		const user = await this.getUser({ userId, ignoreInactive: true });
 		if (!user) throw Error('user not found!');
+		if (password) {
+			const { status, message } = this.utils.auth.isSafePassword(password);
+			if (!status) throw new Error(message);
+		}
 
 		const toUpdate = {};
 		if (name) toUpdate.name  = name;

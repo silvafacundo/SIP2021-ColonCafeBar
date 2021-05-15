@@ -18,7 +18,7 @@ module.exports = class UserRegisterPOST extends Route {
 
 			return res.json({ message: 'User successfully registered' });
 		} catch (error) {
-			return super.error(res, error);
+			return res.status(400).json({ message: error.message });
 		}
 	}
 };
