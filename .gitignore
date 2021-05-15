@@ -3,3 +3,5 @@ node_modules
 yarn.lock
 package-lock.json
 backend/public
+*.log
+backend/src/logs/log-api.log
