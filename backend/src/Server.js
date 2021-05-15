@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('./utils/logger');
 const jetpack = require('fs-jetpack');
 const path = require('path');
 
@@ -121,8 +122,10 @@ module.exports = class Server {
 			categories: new CategoryController(this),
 			products: new ProductController(this),
 			deliveries: new DeliveryController(this),
-			clients: new ClientController(this)
+			clients: new ClientController(this),
+			logger: logger
 		}
+		logger.info('Server running');
 		const admins = await this.db('users').where({ isAdmin: true }).first();
 	}
 };
