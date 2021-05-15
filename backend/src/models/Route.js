@@ -58,6 +58,12 @@ class Route {
 				return res.status(401).json({ message: 'Token expired' });
 			}
 
+			// Checks permission
+			if (typeof this.config.permissions === 'string') {
+				const permissions = this.config.permissions.split(' ');
+				const hasPermission = await this.utils.roles.checkUserPermission(user.id, permissions);
+				if (!hasPermission) return res.status(403).json({ message: 'You dont hace access to this resource' });
+			}
 			return await this.run(req, res, user);
 		} catch (err) {
 			console.error('Failed to run endpoint', err);

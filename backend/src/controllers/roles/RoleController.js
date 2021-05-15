@@ -86,11 +86,12 @@ module.exports = class UserController {
 	 * Checks if a user has a specific permission
 	 *
 	 * @param { number | string } userId - User ID
-	 * @param { string } permission - Permission's key
+	 * @param { string[] } permissions - Permission's key
 	 */
-	async checkUserPermission(userId, permission) {
+	async checkUserPermission(userId, permissions) {
 		if (!userId) throw Error('userId is required!');
-		if (!permission) throw Error('permission is required!');
+		if (!permissions) throw Error('permission is required!');
+		if (typeof permissions === 'string') permissions = [permissions];
 
 		const user = await this.utils.users.getUser({ userId });
 		if (!user) throw Error('user not found!');
@@ -100,14 +101,13 @@ module.exports = class UserController {
 			.select('roleId')
 			.where({ userId, isActive: true });
 
-		const permissions = await this.db('permissionsRoles')
+		const hasPermission = await this.db('permissionsRoles')
 			.innerJoin('permissions', 'permissionsRoles.permissionId', 'permissions.id')
 			.where('permissionsRoles.roleId', 'in', rolesIdSubQuery)
 			.where('permissions.isActive', true)
-			.where('permissions.key', permission)
-			.first();
+			.where('permissions.key', 'in', permissions);
 
-		return !!permissions
+		return hasPermission.length === permissions.length;
 	}
 
 	async getRolePermissions(roleId) {
