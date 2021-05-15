@@ -1,13 +1,33 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the action will run. 
 on:
+  push:
+    paths:
+    - '**.js'
+    - '**.vue'
+    - '**.json'
   workflow_dispatch:
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@master
+        with:
+          node-version: '12'
+      - name: Run frontend lint tests
+        run: |
+          cd ./frontend
+          npm run lint
+          cd ..
+      - name: Run backend lint tests
+        run: |
+          cd ./backend
+          npm run lint
+          cd ..
   build:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master

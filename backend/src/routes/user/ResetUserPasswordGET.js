@@ -10,6 +10,7 @@ module.exports = class ResetUserPasswordGET extends Route {
 			if (typeof userId === 'undefined' || userId === null) return res.status(400).json({ message: 'userId is requried' });
 			const { token } = await this.utils.auth.generateResetPasswordToken(userId, true);
 			return res.json({
+
 				message: 'Token successfully generated',
 				token
 			});

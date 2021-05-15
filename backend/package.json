@@ -7,7 +7,9 @@
 		"dev": "nodemon ./index.js",
 		"migrate": "knex migrate:latest --debug",
 		"rollback": "knex migrate:rollback",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"lint": "eslint --quiet --ignore-path ../.gitignore .",
+		"lint:fix": "eslint --quiet --fix --ignore-path ../.gitignore ."
 	},
 	"keywords": [],
 	"author": "",
