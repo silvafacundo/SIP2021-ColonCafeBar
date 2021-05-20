@@ -12,12 +12,12 @@ exports.up = async function(knex) {
 		table.timestamp('createdAt').defaultTo(knex.fn.now());
 	});
 	/*
-		estados 
+		estados
 			pendiente (de aprobacion, si se acepta sigue, sino cancelado)
-			en espera
+			en espera de preparacion
 			en preparacion
-				en base al withDel
-			despachado / entregado
+			en espera de retiro (take away)
+			despachado
 			entregado
 			cancelado
 	*/

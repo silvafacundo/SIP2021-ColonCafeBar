@@ -33,8 +33,8 @@ module.exports = class OrderController {
 				.insert({
 					clientId,
 					paymentMethod,
-					withDelivery, 
-                    addressId,
+					withDelivery,
+					addressId,
 				})
 				.returning('*')
 				.transacting(trx);
