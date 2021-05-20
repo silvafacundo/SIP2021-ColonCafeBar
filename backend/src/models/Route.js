@@ -36,6 +36,7 @@ class Route {
 		const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 		if (!token) return res.status(401).json({ message: 'No authorization header provided' });
 		try {
+			console.log('hola', token);
 			const decoded = JWT.verify(token, process.env.JWT_SECRET);
 
 			const id = decoded ? decoded.sub : '';

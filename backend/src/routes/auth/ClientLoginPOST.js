@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class LoginPOST extends Route {
 	constructor() {
-		super('/auth/login', 'post');
+		super('/auth/login', 'post', { isPublic: true });
 	}
 
 	async run(req, res) {

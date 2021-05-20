@@ -43,8 +43,13 @@ module.exports = class AddressController {
 		return address;
 	}
 
-	async getUserAddresses(userId) {
-		const addresses = await this.db('addresses').where({ userId });
+	async getUserAddresses(clientId) {
+		const addresses = await this.db('addresses').where({ clientId });
 		return addresses;
+	}
+
+	async isAddressFromClient(addressId, clientId) {
+		const exists = await this.db('addresses').where({ addressId, clientId }).first();
+		return !!exists;
 	}
 }

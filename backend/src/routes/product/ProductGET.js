@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class ProductGET extends Route {
 	constructor() {
-		super('/product/get', 'get');
+		super('/product', 'get');
 	}
 
 	async run(req, res) {

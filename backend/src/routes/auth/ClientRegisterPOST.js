@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class RegisterPOST extends Route {
 	constructor() {
-		super('/auth/register', 'post');
+		super('/auth/register', 'post', { isPublic: true });
 	}
 
 	async run(req, res) {
