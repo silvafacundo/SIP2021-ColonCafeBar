@@ -35,7 +35,6 @@ module.exports = class UserController {
 			.returning('*');
 
 		return newUser[0];
-
 	}
 
 	async updateUser({ userId, username, name, password, isActive }) {

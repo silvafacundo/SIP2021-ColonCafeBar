@@ -1,10 +1,10 @@
 const Route = require('../models/Route');
 module.exports = class Test extends Route {
 	constructor() {
-		super('/test', 'get', { isPublic: false });
+		super('/test', 'get', { isPublic: true });
 	}
 
 	async run(req, res) {
-		return res.send('Heasdasdllo world');
+		return res.json({ message: 'Hello world' });
 	}
 };

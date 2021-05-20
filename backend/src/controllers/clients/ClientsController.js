@@ -16,6 +16,9 @@ module.exports = class ClientController {
 		if (!password) throw Error('password is required!');
 		if (!firstName) throw Error('email is required!');
 
+		const { status, message } = this.utils.auth.isSafePassword(password);
+		if (!status) throw new Error(message);
+
 		if (lastName && typeof lastName !== 'string') throw Error('lastName must be a string!');
 		if (phoneNumber && typeof phoneNumber !== 'string') throw Error('phoneNumber must be a string!');
 
@@ -45,7 +48,6 @@ module.exports = class ClientController {
 			.first();
 		return user;
 	}
-
 
 	async getClientLogin({ email, password }) {
 		const user = await this.db('clients').where({ email, password }).first();

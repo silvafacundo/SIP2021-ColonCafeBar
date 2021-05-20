@@ -10,8 +10,9 @@ class Route {
 		// Force to be a private route
 		if (config && typeof config === 'object' && isAdmin) config.isPublic = false;
 
+
 		this.config = {
-			isPublic: !isAdmin,
+			isPublic: false,
 			...config,
 			isAdminRoute: isAdmin,
 		};
@@ -49,7 +50,7 @@ class Route {
 			if (this.config.isAdminRoute)
 				user = await this.utils.users.getUser({ userId: id });
 			else
-				user = await this.utils.client.getClient({ userId: id });
+				user = await this.utils.clients.getClient({ userId: id });
 			if (!user) return res.status(401).json({ message: 'Invalid authorization token' });
 			delete user.password;
 
