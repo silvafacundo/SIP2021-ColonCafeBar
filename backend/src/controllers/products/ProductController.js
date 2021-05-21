@@ -1,4 +1,5 @@
-
+const Product = require('../../models/products/Product');
+const Category = require('../../models/products/Category');
 module.exports = class ProductController {
 	constructor(server) {
 		this.server = server;
@@ -12,6 +13,27 @@ module.exports = class ProductController {
 		return this.server.utils;
 	}
 
+	async _productQuery(where) {
+		if (typeof where === 'undefined' || where === null) where = () => {};
+		const priceSubQuery = this.db('productPrices')
+			.select(this.db.raw(`MAX("createdAt") as productPriceDate`), 'productPrices.productId')
+			.where(where)
+			.groupBy('productId')
+			.as('priceSubQuery');
+
+		const priceQuery = this.db('productPrices')
+			.select('productPrices.*')
+			.innerJoin(priceSubQuery, function(){
+				this.on('priceSubQuery.productId', 'productPrices.productId')
+					.on('priceSubQuery.productpricedate', 'productPrices.createdAt');
+			})
+			.as('productPrice');
+
+		return await await this.db('products')
+			.select('products.*', 'categories.name as categoryName', 'productPrice.price')
+			.innerJoin(priceQuery, 'products.id', 'productPrice.productId')
+			.innerJoin('categories', 'products.idCategory', 'categories.id');
+	}
 
 	async createProduct({ idCategory, name, description, price }) {
 		//Check if parameters are valid
@@ -34,53 +56,39 @@ module.exports = class ProductController {
 			await this.updateProductPrice(product[0].id, price, trx);
 
 			await trx.commit();
+			this.utils.logger.info('Product '+name+' created');
+			return await this.getProduct(product[0].id);
 		} catch (error) {
 			await trx.rollback();
 			throw error;
 		}
-
-		this.utils.logger.info('Product '+name+' created');
 	}
 
 	//Get specific product
 	async getProduct(id) {
-		const priceSubQuery = this.db('productPrices')
-			.select(this.db.raw(`MAX("createdAt") as productPriceDate`), 'productPrices.productId')
-			.where('productId', id)
-			.groupBy('productId')
-			.as('priceSubQuery');
+		const product = (await this._productQuery({ 'productId': id }))[0];
 
-		const prices = this.db('productPrices')
-			.select('productPrices.*')
-			.innerJoin(priceSubQuery, function(){
-				this.on('priceSubQuery.productId', 'productPrices.productId')
-					.on('priceSubQuery.productpricedate', 'productPrices.createdAt');
-			})
-			.as('productPrice');
+		return new Product(this.server, product, new Category(this.server, { id: product.idCategory, name: product.categoryName }), product.price);
+	}
 
-		const product = await this.db('products')
-			.select('products.*', 'productPrice.price')
-			.innerJoin(prices, 'products.id', 'productPrice.productId')
-			.first();
+	// Get products by given an array of products id
+	async getProducts(productsId) {
+		if (!productsId || !Array.isArray(productsId) || productsId.length < 1) throw Error('products must be an array of products id');
 
-		return product;
+		const products = await this._productQuery(query => query.whereIn('productId', productsId));
+
+		return products.map(product => {
+			return new Product(this.server, product, new Category(this.server, { id: product.idCategory, name: product.categoryName }), product.price);
+		});
 	}
 
 	//Get all products loaded
 	async getAllProducts() {
-		// const prices = this.db('productPrices').select(this.db.raw(`MAX("createdAt")`), 'price', 'productId')
-		// 	.groupBy('productId')
-		// 	.as('prices');
-		const products = await this.db('products').where({ isActive: true });
+		const products = await this._productQuery();
 
-		for (const product of products) {
-			const productPrice = await this.db('productPrices').select(this.db.raw(`MAX("createdAt")`), 'price')
-				.where('productId', product.id).groupBy('price').first();
-
-			product.price = productPrice ? productPrice.price : 0;
-		}
-
-		return products;
+		return products.map(product => {
+			return new Product(this.server, product, new Category(this.server, { id: product.idCategory, name: product.categoryName }), product.price);
+		});
 	}
 
 	//Delete specific product
