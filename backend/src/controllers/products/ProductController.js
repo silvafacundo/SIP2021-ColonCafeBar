@@ -34,14 +34,23 @@ module.exports = class ProductController {
 
 	//Get specific product
 	async getProduct(id) {
+		const priceSubQuery = this.db('productPrices')
+			.select(this.db.raw(`MAX("createdAt") as productPriceDate`), 'productPrices.productId')
+			.where('productId', id)
+			.groupBy('productId')
+			.as('priceSubQuery');
+
 		const prices = this.db('productPrices')
-			.select(this.db.raw(`MAX("createdAt") as productPriceDate`), 'price', 'productId')
-			.where({ productId: id })
+			.select('productPrices.*')
+			.innerJoin(priceSubQuery, function(){
+				this.on('priceSubQuery.productId', 'productPrices.productId')
+					.on('priceSubQuery.productpricedate', 'productPrices.createdAt');
+			})
 			.as('productPrice');
 
 		const product = await this.db('products')
-			.where({ id })
-			.leftJoin(prices, 'products.id', 'productPrice.productId')
+			.select('products.*', 'productPrice.price')
+			.innerJoin(prices, 'products.id', 'productPrice.productId')
 			.first();
 
 		return product;
