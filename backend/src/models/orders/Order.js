@@ -26,6 +26,9 @@ module.exports = class Order extends BaseModel{
 	get products() {
 		return this._products;
 	}
+	get total() {
+		return this.products.reduce((prevValue, product) => prevValue + (product.price * product.amount), 0)
+	}
 	get isPaid() {
 		return this._orderData.isPaid;
 	}
