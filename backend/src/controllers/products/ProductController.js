@@ -1,4 +1,3 @@
-
 module.exports = class ProductController {
 	constructor(server) {
 		this.server = server;
@@ -42,10 +41,34 @@ module.exports = class ProductController {
 
 		const product = await this.db('products')
 			.where({ id })
-			.leftJoin(prices, 'product.id', 'productPrice.productId')
+			.leftJoin(prices, 'products.id', 'productPrice.productId')
 			.first();
 
 		return product;
+	}
+
+	// Get products by given an array of products id
+	async getProducts(productsId) {
+		if (!productsId || !Array.isArray(productsId) || productsId.length < 1) throw Error('products must be an array of products id');
+
+		const priceSubQuery = this.db('productPrices')
+			.select(this.db.raw(`MAX("createdAt") as productPriceDate`), 'productPrices.productId')
+			.whereIn('productId', productsId)
+			.groupBy('productId')
+			.as('priceSubQuery');
+
+		const prices = this.db('productPrices')
+			.select('productPrices.*')
+			.innerJoin(priceSubQuery, function(){
+				this.on('priceSubQuery.productId', 'productPrices.productId')
+					.on('priceSubQuery.productpricedate', 'productPrices.createdAt');
+			})
+			.as('productPrice');
+
+		const products = await this.db('products')
+			.innerJoin(prices, 'products.id', 'productPrice.productId');
+
+		return products;
 	}
 
 	//Get all products loaded

@@ -7,7 +7,6 @@ module.exports = class orderCreatePOST extends Route {
 
 	async run(req, res, user) {
 		try {
-
 			const { withDelivery, paymentMethod, addressId, products } = req.body;
 
 			const clientId = user.id;
@@ -18,9 +17,9 @@ module.exports = class orderCreatePOST extends Route {
 				addressId,
 				products
 			});
-			return res.json({ message: 'order successfully created', order });
+			return res.json({ message: 'Order successfully created', order });
 		} catch (error) {
-			console.error('Failed to create', error)
+			console.error('Failed to create order', error)
 			return res.status(400).json({ message: error.message });
 		}
 	}
