@@ -1,3 +1,6 @@
+const Product = require('../../models/products/product');
+const OrderProduct = require('../../models/products/orderProduct');
+const Order = require('../../models/orders/Order');
 module.exports = class OrderController {
 	constructor(server) {
 		this.server = server;
@@ -47,19 +50,26 @@ module.exports = class OrderController {
 				.returning('*')
 				.transacting(trx);
 
+			let productsToInsert = [];
+
 			for (const product of products) {
-				const productData = productsData.find(p => p.productId == product.id);
-				product.productId = product.id;
-				product.price = productData.price;
-				product.orderId = order[0].id;
-				delete product.id;
+				const productData = productsData.find(p => String(p.id) === String(product.id));
+				if (!productData) continue;
+				productsToInsert.push({
+					productId: productData.id,
+					price: productData.price,
+					orderId: order[0].id,
+					amount: product.amount
+				})
 			}
 
-			await this.db('orderProducts').insert(products).transacting(trx);
+			if (productsToInsert.length > 0)
+				await this.db('orderProducts').insert(productsToInsert).transacting(trx);
 
 			await trx.commit();
+			return await this.getOrder(order[0].id);
 		} catch (error) {
-			console.error(error);
+			console.error('Failed to create order:', error);
 			await trx.rollback();
 			throw error;
 		}
@@ -73,20 +83,33 @@ module.exports = class OrderController {
 		return true;
 	}
 
+	/**
+	 * gets an order
+	 *
+	 * @param {string|number} orderId
+	 * @returns {Order} order
+	 */
 	async getOrder(orderId) {
 		const order = await this.db('orders')
 			.where('id', orderId)
 			.first();
 
-		const productsOrder = await this.db('orderProducts')
+		const client = await this.utils.clients.getClient({ userId: order.clientId });
+
+		let dbOrderProducts = await this.db('orderProducts')
 			.select('*')
-			.innerJoin('products', 'product.id', 'orderProduct.productId' )
+			.innerJoin('products', 'products.id', 'orderProducts.productId' )
 			.where({ orderId });
 
-		return {
-			order,
-			products: productsOrder
+		const  orderProducts = [];
+
+		for (const orderProduct of dbOrderProducts) {
+			const { amount, price, ...productData } = orderProduct;
+			const product = new Product(this.server, productData, null, parseInt(price));
+			orderProducts.push(new OrderProduct(this.server, product, parseInt(price), parseInt(amount)));
 		}
+
+		return new Order(this.server, order, orderProducts, client);
 	}
 
 	async getOrders() {

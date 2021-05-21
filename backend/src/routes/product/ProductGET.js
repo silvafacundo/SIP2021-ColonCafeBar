@@ -14,9 +14,9 @@ module.exports = class ProductGET extends Route {
 			//get a product
 			const product = await this.utils.products.getProduct( id );
 			if (!product){
-				return res.json('There are no products with that id!');
+				return res.json({ message: 'There are no products with that id!' });
 			} else {
-				return res.json(product);
+				return res.json({ product });
 			}
 		} catch (error) {
 			return super.error(res, error);

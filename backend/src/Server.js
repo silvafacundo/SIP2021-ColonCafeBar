@@ -17,6 +17,7 @@ const DeliveryController = require('./controllers/deliveries/DeliveryController'
 const ClientController = require('./controllers/clients/ClientsController');
 const AuthController = require('./controllers/auth/AuthController');
 const OrderController = require('./controllers/order/OrderController');
+const MercadoPagoController = require('./controllers/MercadoPago/MercadoPagoController');
 
 module.exports = class Server {
 	constructor() {
@@ -115,6 +116,22 @@ module.exports = class Server {
 	}
 
 	async initializeControllers() {
+		/**
+		* Server Utils
+		*
+		* @typedef {object} Utils
+		* @property {AuthController} Utils.auth
+		* @property {UserController} Utils.users
+		* @property {AddressController} Utils.addresses
+		* @property {RoleController} Utils.roles
+		* @property {CategoryController} Utils.categories
+		* @property {ProductController} Utils.products
+		* @property {DeliveryController} Utils.deliveries
+		* @property {OrderController} Utils.orders
+		* @property {MercadoPagoController} Utils.mercadopago
+		*/
+
+		/** @type {Utils} Server Utils */
 		this.utils = {
 			auth: new AuthController(this),
 			users: new UserController(this),
@@ -125,7 +142,8 @@ module.exports = class Server {
 			deliveries: new DeliveryController(this),
 			clients: new ClientController(this),
 			orders: new OrderController(this),
-			logger: logger
+			logger: logger,
+			mercadopago: new MercadoPagoController(this)
 		}
 		logger.info('Server running');
 		const admins = await this.db('users').where({ isAdmin: true }).first();

@@ -1,7 +1,9 @@
-module.exports = class Client {
-	constructor(user, db) {
+const BaseModel = require('../BaseModel');
+
+module.exports = class Client extends BaseModel{
+	constructor(server, user) {
+		super(server);
 		this._data = user;
-		this.db = db;
 	}
 	get id() {
 		return this._data.id;

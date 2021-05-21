@@ -1,3 +1,5 @@
+const Client = require('../../models/clients/Client');
+
 module.exports = class ClientController {
 	constructor(server) {
 		this.server = server;
@@ -46,7 +48,7 @@ module.exports = class ClientController {
 				if (email) builder.where({ email });
 			})
 			.first();
-		return user;
+		return new Client(this.server, user);
 	}
 
 	async getClientLogin({ email, password }) {
