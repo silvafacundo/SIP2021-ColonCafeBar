@@ -16,6 +16,7 @@ const ProductController = require('./controllers/products/ProductController');
 const DeliveryController = require('./controllers/deliveries/DeliveryController');
 const ClientController = require('./controllers/clients/ClientsController');
 const AuthController = require('./controllers/auth/AuthController');
+const OrderController = require('./controllers/order/OrderController');
 
 module.exports = class Server {
 	constructor() {
@@ -123,6 +124,7 @@ module.exports = class Server {
 			products: new ProductController(this),
 			deliveries: new DeliveryController(this),
 			clients: new ClientController(this),
+			orders: new OrderController(this),
 			logger: logger
 		}
 		logger.info('Server running');

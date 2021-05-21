@@ -76,6 +76,9 @@ module.exports = class ProductController {
 
 	//Update specific product
 	async updateProduct( { id, idCategory, name, description, price }){
+		const exists = await this.db('products').where({ id }).first();
+		if (!exists) throw new Error('Product doesn\'t exists');
+
 		await this.db('products')
 			.where({ id })
 			.update({
@@ -83,7 +86,9 @@ module.exports = class ProductController {
 				name: name,
 				description: description,
 			});
+
 		if (typeof price !== 'undefined' && price !== null) {
+			console.log('Ojo que actualizo');
 			await this.updateProductPrice(id, price);
 		}
 		this.utils.logger.info('Product '+name+' uploaded');

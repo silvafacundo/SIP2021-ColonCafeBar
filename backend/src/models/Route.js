@@ -36,7 +36,6 @@ class Route {
 		const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 		if (!token) return res.status(401).json({ message: 'No authorization header provided' });
 		try {
-			console.log('hola', token);
 			const decoded = JWT.verify(token, process.env.JWT_SECRET);
 
 			const id = decoded ? decoded.sub : '';
@@ -54,8 +53,6 @@ class Route {
 				user = await this.utils.clients.getClient({ userId: id });
 			if (!user) return res.status(401).json({ message: 'Invalid authorization token' });
 			delete user.password;
-
-			// TODO: Validate iat
 
 			let isExpired = isAdmin && (Date.now() - iat) > (30 * 24 * 60 * 60 * 1000) // 30 días
 			if ((user.sessionValidDate && new Date(user.sessionValidDate) > iat) || isExpired){

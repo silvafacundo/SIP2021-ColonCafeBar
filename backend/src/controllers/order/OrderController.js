@@ -16,14 +16,17 @@ module.exports = class OrderController {
 		if (!paymentMethod && typeof paymentMethod !== 'string' ) throw Error('paymentMethod is required');
 		if (!products || !Array.isArray(products) || products.length < 1) throw Error('products is required');
 
-		const client = await this.utils.client.getClient({ clientId });
+		const client = await this.utils.clients.getClient({ clientId });
 		if (!client) throw Error('Client does not exist with that clientId');
 
-		const address = await this.utils.address.getAddress(addressId);
-		if (!address) throw Error('Address not found!');
+		let address;
+		if (addressId) {
+			address = await this.utils.addresses.getAddress(addressId);
+			if (!address) throw Error('Address not found!');
+			const isAddressFromClient = await this.utils.addresses.isAddressFromClient(addressId, clientId);
+			if (!isAddressFromClient) throw Error('The provided address is not from the given client');
+		}
 
-		const isAddressFromClient = await this.utils.address.isAddressFromClient(addressId, clientId);
-		if (!isAddressFromClient) throw Error('The provided address is not from the given client');
 
 		const allProducts = await this.utils.products.getAllProducts();
 
@@ -51,6 +54,7 @@ module.exports = class OrderController {
 
 			await trx.commit();
 		} catch (error) {
+			console.error(error);
 			await trx.rollback();
 			throw error;
 		}

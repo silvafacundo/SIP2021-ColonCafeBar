@@ -20,7 +20,7 @@ module.exports = class ProductPUT extends Route {
 			await this.utils.products.updateProduct({ id, idCategory, name, description, price });
 			return res.json({ message: 'Product updated successfully' });
 		} catch (error) {
-			return super.error(res, error);
+			return res.status(400).json({ message: error.message });
 		}
 	}
 }
