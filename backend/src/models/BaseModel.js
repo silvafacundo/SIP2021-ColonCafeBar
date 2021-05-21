@@ -9,9 +9,11 @@ module.exports = class BaseModel {
 			.map(([key]) => key)
 		return getters;
 	}
+
 	toJSON() {
 		let toReturn = {};
 		for (const property of this.publicProperties) {
+			if (property === 'publicProperties') continue;
 			toReturn[property] = this[property];
 		}
 		return toReturn;
