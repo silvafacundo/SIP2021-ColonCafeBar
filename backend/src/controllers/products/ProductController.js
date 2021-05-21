@@ -42,43 +42,60 @@ module.exports = class ProductController {
 		this.utils.logger.info('Product '+name+' created');
 	}
 
-	//Get specific product
-	async getProduct(id) {
-		const priceSubQuery = this.db('productPrices')
+	_priceSubQuery() {
+		return this.db('productPrices')
 			.select(this.db.raw(`MAX("createdAt") as productPriceDate`), 'productPrices.productId')
-			.where('productId', id)
 			.groupBy('productId')
 			.as('priceSubQuery');
+	}
 
-		const prices = this.db('productPrices')
+	_priceQuery(priceSubQuery) {
+		return this.db('productPrices')
 			.select('productPrices.*')
 			.innerJoin(priceSubQuery, function(){
 				this.on('priceSubQuery.productId', 'productPrices.productId')
 					.on('priceSubQuery.productpricedate', 'productPrices.createdAt');
 			})
 			.as('productPrice');
+	}
 
-		const product = await this.db('products')
+	async _productQuery(priceQuery){
+		return await this.db('products')
 			.select('products.*', 'productPrice.price')
-			.innerJoin(prices, 'products.id', 'productPrice.productId')
-			.first();
+			.innerJoin(priceQuery, 'products.id', 'productPrice.productId');
+	}
+
+	async _productPricesQuery(priceSubQuery) {
+		const priceQuery = this._priceQuery(priceSubQuery);
+
+		return await this._productQuery(priceQuery);
+	}
+
+	//Get specific product
+	async getProduct(id) {
+		const priceSubQuery = this._priceSubQuery().where('productId', id);
+
+		const prices = this._priceQuery(priceSubQuery);
+
+		const product = await this._productQuery(prices).first();
 
 		return product;
 	}
 
+	// Get products by given an array of products id
+	async getProducts(productsId) {
+		if (!productsId || !Array.isArray(productsId) || productsId.length < 1) throw Error('products must be an array of products id');
+
+		const priceSubQuery = this._priceSubQuery().whereIn('productId', productsId);
+		const products = await this._productPricesQuery(priceSubQuery);
+
+		return products;
+	}
+
 	//Get all products loaded
 	async getAllProducts() {
-		// const prices = this.db('productPrices').select(this.db.raw(`MAX("createdAt")`), 'price', 'productId')
-		// 	.groupBy('productId')
-		// 	.as('prices');
-		const products = await this.db('products').where({ isActive: true });
-
-		for (const product of products) {
-			const productPrice = await this.db('productPrices').select(this.db.raw(`MAX("createdAt")`), 'price')
-				.where('productId', product.id).groupBy('price').first();
-
-			product.price = productPrice ? productPrice.price : 0;
-		}
+		const priceSubQuery = this._priceSubQuery();
+		const products = await this._productPricesQuery(priceSubQuery);
 
 		return products;
 	}
