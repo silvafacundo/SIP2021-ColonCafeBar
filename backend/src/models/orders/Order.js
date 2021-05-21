@@ -1,6 +1,6 @@
 const BaseModel = require('../BaseModel');
 const Client = require('../clients/Client');
-const OrderProduct = require('../products/orderProduct');
+const OrderProduct = require('../products/OrderProduct');
 module.exports = class Order extends BaseModel{
 	constructor(server, orderData, products, client) {
 		super(server);

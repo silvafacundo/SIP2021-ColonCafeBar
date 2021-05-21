@@ -9,7 +9,11 @@ module.exports = class ProductAllGET extends Route {
 		try {
 			//get all products
 			const products = await this.utils.products.getAllProducts();
-			return res.json(products);
+
+			return res.json({
+				message: 'Products successfully retrieved!',
+				payload: products
+			});
 		} catch (error) {
 			return super.error(res, error);
 		}

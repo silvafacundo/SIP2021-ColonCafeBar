@@ -1,5 +1,5 @@
 const BaseModel = require('../BaseModel');
-const Product = require('./product');
+const Product = require('./Product');
 
 module.exports = class OrderProduct extends BaseModel {
 	constructor(server, product, price, amount){

@@ -1,5 +1,5 @@
-const Product = require('../../models/products/product');
-const OrderProduct = require('../../models/products/orderProduct');
+const Product = require('../../models/products/Product');
+const OrderProduct = require('../../models/products/OrderProduct');
 const Order = require('../../models/orders/Order');
 module.exports = class OrderController {
 	constructor(server) {

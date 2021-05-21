@@ -2,10 +2,10 @@ const Route = require('../../models/Route');
 
 module.exports = class ProductPOST extends Route {
 	constructor() {
-		super('/admin/product', 'post');
+		super('/admin/product', 'post', { permissions: 'menu' });
 	}
 
-	async run(req, res) {
+	async run(req, res, user) {
 		const { idCategory, name, description, price } = req.body;
 		// Check if body parameters are valid
 		if (!idCategory) return res.status(400).json({ message: 'idCategory is required!' });

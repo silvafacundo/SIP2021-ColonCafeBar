@@ -2,22 +2,24 @@ const Route = require('../../models/Route');
 
 module.exports = class ProductGET extends Route {
 	constructor() {
-		super('/product', 'get');
+		super('/product', 'get', { permissions: 'menu' });
 	}
 
-	async run(req, res) {
-		const { id } = req.query;
+	async run(req, res, user) {
+		const { productId } = req.query;
 		// Check if body parameters are valid
-		if (!id) return res.status(400).json({ message: 'id is required!' });
+		if (!productId) return res.status(400).json({ message: 'productId is required!' });
 
 		try {
 			//get a product
-			const product = await this.utils.products.getProduct( id );
-			if (!product){
-				return res.json({ message: 'There are no products with that id!' });
-			} else {
-				return res.json({ product });
-			}
+			const product = await this.utils.products.getProduct(productId);
+
+			if (!product) return res.json('There are no products with that id!');
+
+			return res.json({
+				message: 'Product successfully retrieved!',
+				payload: product
+			});
 		} catch (error) {
 			return super.error(res, error);
 		}

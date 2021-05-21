@@ -5,6 +5,7 @@ exports.up = async function(knex) {
 		table.bigInteger('idCategory').unsigned().references('categories.id').index();
 		table.string('name');
 		table.string('description');
+		table.boolean('isActive').defaultTo(true);
 		table.timestamp('createdAt').defaultTo(knex.fn.now());
 	});
 
