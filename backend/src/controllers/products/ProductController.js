@@ -66,6 +66,7 @@ module.exports = class ProductController {
 			.as('productPrice');
 
 		const products = await this.db('products')
+			.select('products.*', 'productPrice.price')
 			.innerJoin(prices, 'products.id', 'productPrice.productId');
 
 		return products;

@@ -48,7 +48,7 @@ module.exports = class OrderController {
 				.transacting(trx);
 
 			for (const product of products) {
-				const productData = productsData.find(p => p.productId == product.id);
+				const productData = productsData.find(p => p.id == product.id);
 				product.productId = product.id;
 				product.price = productData.price;
 				product.orderId = order[0].id;
