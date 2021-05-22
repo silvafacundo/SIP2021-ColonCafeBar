@@ -15,7 +15,8 @@ module.exports = class UserLoginPOST extends Route {
 			const user = await this.utils.users.getUser({ username });
 			if (!user) return res.status(400).json({ message: 'Invalid user or password' });
 
-			const samePassword = await this.utils.auth.compareHash(password, user.password);
+			const userPassword = await this.utils.users.getUserHashPassword(user.id);
+			const samePassword = await this.utils.auth.compareHash(password, userPassword);
 			if (!samePassword) return res.status(401).json({ message: 'Invalid user or password' });
 
 			const jwt = await this.utils.auth.generateJWT(user, true);

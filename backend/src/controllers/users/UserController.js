@@ -37,6 +37,11 @@ module.exports = class UserController {
 		return newUser[0];
 	}
 
+	async getUserHashPassword(userId) {
+		const users = await this.db('users').where('id', userId).first();
+		return users.password;
+	}
+
 	async updateUser({ userId, username, name, password, isActive }) {
 		if (!userId) throw Error('userId is required!');
 

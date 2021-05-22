@@ -13,8 +13,9 @@ module.exports = class LoginPOST extends Route {
 		try {
 			const client = await this.utils.clients.getClient({ email });
 			if (!client) return res.status(400).json({ message: 'Invalid user or password' });
+			const clientPassword = await this.utils.clients.getClientHashPassword(client.id);
 
-			const samePassword = await this.utils.auth.compareHash(password, client.password);
+			const samePassword = await this.utils.auth.compareHash(password, clientPassword);
 			if (!samePassword) return res.status(401).json({ message: 'Invalid user or password' });
 
 			const jwt = await this.utils.auth.generateJWT(client);

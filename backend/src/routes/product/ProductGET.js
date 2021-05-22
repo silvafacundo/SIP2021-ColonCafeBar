@@ -18,7 +18,7 @@ module.exports = class ProductGET extends Route {
 
 			return res.json({
 				message: 'Product successfully retrieved!',
-				payload: product
+				product
 			});
 		} catch (error) {
 			return super.error(res, error);

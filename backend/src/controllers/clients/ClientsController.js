@@ -48,7 +48,13 @@ module.exports = class ClientController {
 				if (email) builder.where({ email });
 			})
 			.first();
+
 		return new Client(this.server, user);
+	}
+
+	async getClientHashPassword(userId) {
+		const client = await this.db('clients').where('id', userId).first();
+		return client.password;
 	}
 
 	async getClientLogin({ email, password }) {

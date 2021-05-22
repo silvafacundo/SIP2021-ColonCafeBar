@@ -12,7 +12,7 @@ module.exports = class CategoryAllGET extends Route {
 
 			return res.json({
 				message: 'Categories successfully retrieved!',
-				payload: categories
+				categories
 			});
 		} catch (error) {
 			return super.error(res, error);

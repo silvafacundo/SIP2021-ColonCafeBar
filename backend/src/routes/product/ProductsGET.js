@@ -12,7 +12,7 @@ module.exports = class ProductAllGET extends Route {
 
 			return res.json({
 				message: 'Products successfully retrieved!',
-				payload: products
+				products
 			});
 		} catch (error) {
 			return super.error(res, error);
