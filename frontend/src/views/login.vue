@@ -68,6 +68,7 @@ h3{
 	border-radius: 3em;
 	background-color: #fafafa;
 	text-align: center;
+	color: black;
 }
 
 .form-div > form > input, form > button{

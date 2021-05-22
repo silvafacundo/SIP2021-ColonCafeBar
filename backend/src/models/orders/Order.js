@@ -38,6 +38,9 @@ module.exports = class Order extends BaseModel{
 	get address() {
 		return this._orderData.address;
 	}
+	get paymentMethod() {
+		return this._orderData.paymentMethod;
+	}
 	get paymentLink() {
 		return this._orderData.mpLink;
 	}
