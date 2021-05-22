@@ -1,4 +1,5 @@
 const JWT = require('jsonwebtoken');
+const Server = require('../Server');
 
 class Route {
 	constructor(path, method, config) {
@@ -26,6 +27,13 @@ class Route {
 		return this.server.utils;
 	}
 
+	/**
+	 *
+	 *
+	 * @param {*} db
+	 * @param {Server} server
+	 * @memberof Route
+	 */
 	initialize(db, server) {
 		this.db = db;
 		this.server = server;

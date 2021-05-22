@@ -1,4 +1,5 @@
 const Server = require('../../Server');
+const moment = require('moment');
 module.exports = class MercadoPagoController {
 	/**
 	 * Creates an instance of MercadoPagoController.
@@ -16,29 +17,68 @@ module.exports = class MercadoPagoController {
 		return this.server.db;
 	}
 
+	parseDate(date) {
+		return moment(date).format('YYYY-MM-DD[T]HH:mm:ss.SSSZ');
+	}
 
 	async createOrderPayment(orderId) {
 		const order = await this.utils.orders.getOrder(orderId);
-		const expirationDate = new Date(Date.now() + 1 * 60 * 60 * 1000);
+		const expirationDate = this.parseDate(Date.now() + 2 * 60 * 60 * 1000);
 
-		const result = await this.mercadopago.preferences.create({
+		const payer = {
+			email: order.client.email
+		}
+
+		const items = [
+			{
+				id: orderId,
+				title: `CafeBar - Orden nro #${orderId}`,
+				quantity: 1,
+				unit_price: order.total
+			}
+		];
+		const { body: preferences }= await this.mercadopago.preferences.create({
 			expires: true,
-			// expiration_date_to: expirationDate.toString(),
-			// date_of_expiration: expirationDate.toString(),
-			items: [
-				{
-					id: orderId,
-					title: `CafeBar - Orden nro #${orderId}`,
-					quantity: 1,
-					unit_price: order.price || 100, // TODO: Cambiar esto
-				}
-			],
-			payer: {
-				email: order.client.email
+			expiration_date_to: expirationDate,
+			payment_methods: {
+				installments: 1,
+				excluded_payment_types: [
+					{ id: 'ticket' },
+					{ id: 'atm' }
+				]
 			},
+			// notification_url: 'https://af71bf84e70e.ngrok.io/api/webhook/mercadopago',
+			external_reference: order.id,
+			items,
+			payer,
 			statement_descriptor: 'CafeBar'
 		});
-		return result;
+
+		await this.db('orderMercadopago').insert({ orderId: order.id, mpId: preferences.id })
+
+
+		return preferences;
+	}
+
+	async endMpOrder(orderId) {
+		const expirationDate = this.parseDate(Date.now() - 1 * 60 * 60 * 1000);
+		const { mpId } = await this.db('orderMercadopago').where({ orderId }).first();
+		await this.mercadopago.preferences.update({
+			id: mpId,
+			expiration_date_to: expirationDate,
+		});
+	}
+
+	async getPaymentLink(orderId) {
+		const { mpId } = await this.db('orderMercadopago').where({ orderId }).first() || {};
+		if (!mpId) return null;
+		const { body: preference } = await this.mercadopago.preferences.findById(mpId);
+		return preference.init_point;
+	}
+
+	async getPayment(id) {
+		const data = await this.mercadopago.payment.get(id);
+		return data.body;
 	}
 
 

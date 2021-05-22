@@ -17,6 +17,7 @@ module.exports = class orderCreatePOST extends Route {
 				addressId,
 				products
 			});
+
 			return res.json({ message: 'Order successfully created', order });
 		} catch (error) {
 			console.error('Failed to create order', error)

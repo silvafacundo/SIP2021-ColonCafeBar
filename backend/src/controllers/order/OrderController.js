@@ -1,7 +1,12 @@
 const Product = require('../../models/products/Product');
 const OrderProduct = require('../../models/products/OrderProduct');
 const Order = require('../../models/orders/Order');
+const Server = require('../../Server');
 module.exports = class OrderController {
+	/**
+	 *Creates an instance of OrderController.
+	 * @param {Server} server
+	 */
 	constructor(server) {
 		this.server = server;
 	}
@@ -67,6 +72,7 @@ module.exports = class OrderController {
 				await this.db('orderProducts').insert(productsToInsert).transacting(trx);
 
 			await trx.commit();
+			await this.utils.mercadopago.createOrderPayment(order[0].id)
 			return await this.getOrder(order[0].id);
 		} catch (error) {
 			console.error('Failed to create order:', error);
@@ -102,6 +108,11 @@ module.exports = class OrderController {
 			.innerJoin('products', 'products.id', 'orderProducts.productId' )
 			.where({ orderId });
 
+		let mpLink = null;
+		if (order.paymentMethod === 'online') {
+			mpLink = await this.utils.mercadopago.getPaymentLink(orderId);
+		}
+
 		const  orderProducts = [];
 
 		for (const orderProduct of dbOrderProducts) {
@@ -110,7 +121,7 @@ module.exports = class OrderController {
 			orderProducts.push(new OrderProduct(this.server, product, parseInt(price), parseInt(amount)));
 		}
 
-		return new Order(this.server, order, orderProducts, client);
+		return new Order(this.server, { ...order, mpLink }, orderProducts, client);
 	}
 
 	async getOrders() {
