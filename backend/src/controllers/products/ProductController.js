@@ -1,4 +1,4 @@
-const Product = require('../../models/products/Product');
+const Product = require('../../models/products/product');
 const Category = require('../../models/products/Category');
 module.exports = class ProductController {
 	constructor(server) {
