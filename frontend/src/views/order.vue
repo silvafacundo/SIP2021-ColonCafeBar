@@ -1,6 +1,17 @@
 <template>
 	<div v-if="order" class="order">
 		<h3>Orden #{{ order.id }}</h3>
+		<b-table :data="order.products">
+			<b-table-column v-slot="props" label="Item">
+				{{ props.row.product.name }}
+			</b-table-column>
+			<b-table-column v-slot="props" label="Precio">
+				{{ props.row.price }}
+			</b-table-column>
+			<b-table-column v-slot="props" label="Cantidad">
+				{{ props.row.amount }}
+			</b-table-column>
+		</b-table>
 		<p>Total: ${{ order.total }}</p>
 		<p>Estado: {{ order.status }}</p>
 		<p>Método de pago: {{ order.paymentMethod }}</p>
@@ -48,8 +59,6 @@ export default {
 				this.$showToast('Error al cargar la orden', true);
 			}
 		},
-
-
 	}
 }
 </script>
@@ -63,9 +72,11 @@ export default {
 		border: 1px solid black;
 		border-radius: 3em;
 		background-color: #fafafa;
-		text-align: center;
+		text-align: left;
 		h3 {
 			color: black;
+			margin: 1rem 0;
+			text-align: center;
 		}
 		p {
 			margin: 1rem 0;

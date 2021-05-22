@@ -1,6 +1,6 @@
 module.exports = {
 	productionSourceMap: false,
-	outputDir: '../backend/public',
+	// outputDir: '../backend/public',
 	pluginOptions: {
 	},
 	devServer: {

@@ -1,18 +1,15 @@
 <template>
 	<div>
 		<h1>Colón Café Bar</h1>
-		{{ user }}
-		<hr>
+		<b-button @click="goToCart">Ir al Carrito ({{ cartLength }})</b-button>
 		<div class="container">
 			<div class="products-container">
 				<product v-for="(product, key) in products"
 					:key="key"
-					:name="product.name"
-					:price="product.price"
-					:description="product.description" />
+					:product="product" />
 			</div>
 		</div>
-		<!--<router-link to="/login">Login</router-link>-->
+		<router-link v-if="!user" to="/login">Login</router-link>
 	</div>
 </template>
 
@@ -33,6 +30,12 @@ export default {
 		},
 		user() {
 			return this.$store.getters['Auth/clientUser'];
+		},
+		cart() {
+			return this.$store.getters['Cart/cart'];
+		},
+		cartLength() {
+			return this.$store.getters['Cart/items'];
 		}
 	},
 	mounted() {
@@ -47,6 +50,9 @@ export default {
 			} catch (err) {
 				this.$showToast('Error al cargar los productos', true);
 			}
+		},
+		goToCart() {
+			this.$router.push({ name: 'cart' })
 		}
 	},
 

@@ -11,6 +11,7 @@ import Profile from '../views/profile';
 
 
 import Order from '../views/order';
+import Cart from '../views/cart';
 
 import EmptyRoute from '../components/EmptyRoute.vue';
 
@@ -38,6 +39,7 @@ const routes = [
 	{ path: '/resetpassword/:token', props: true, name: 'resetPassword', component: ResetPassword },
 	{ path: '/register', name: 'register', component: Register },
 	{ path: '/me', name: 'me', component: Profile },
+	{ path: '/cart', name: 'cart', component: Cart },
 	{ path: '/order/:orderId', props: true, name: 'order', component: Order },
 
 	// ADMIN:

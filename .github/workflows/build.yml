@@ -28,11 +28,10 @@ jobs:
           npm install
           npm run lint
           cd ..
-  build:
+  buildFront:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
       - uses: actions/setup-node@master
         with:
           node-version: '12'
@@ -45,6 +44,21 @@ jobs:
         env:
           VUE_APP_HOST_API: ${{ secrets.VUE_APP_HOST_API }}
           VUE_APP_BASE_URL: ${{ secrets.VUE_APP_BASE_URL }}
+      - name: 'Saving build'
+        uses: actions/upload-artifact@v2
+        with:
+          name: front
+          path: dist
+      
+  build:
+    needs: buildFront
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/download-artifact@v2
+        with:
+          name: front
+          path: ./backend/public
       # Builds docker image
       - name: Login to docker
         uses: docker/login-action@v1

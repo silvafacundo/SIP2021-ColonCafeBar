@@ -1,5 +1,3 @@
-
-
 import Vue from 'vue';
 import router from '../../router';
 
@@ -36,7 +34,7 @@ const actions = {
 			throw err;
 		}
 	},
-	async createOreder( context, { paymentMethod, withDelivery, addressId, products }) {
+	async createOrder( context, { paymentMethod, withDelivery, addressId, products }) {
 		try {
 			const response = await Vue.axios.post('/order', { paymentMethod, withDelivery, addressId, products })
 			return response.data.order;
