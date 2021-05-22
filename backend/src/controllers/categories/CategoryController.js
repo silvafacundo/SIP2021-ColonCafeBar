@@ -1,3 +1,4 @@
+const Category = require('../../models/products/Category');
 module.exports = class CategoriesController {
 	constructor(server) {
 		this.server = server;
@@ -14,8 +15,9 @@ module.exports = class CategoriesController {
 	async createCategory({ name }){
 		//Check if parameters are valid
 		if (!name && typeof name !=='string') throw Error('name is required');
-		const category = await this.db('categories').insert({ name });
-		return category;
+		const category = await this.db('categories').insert({ name }).returning('*');
+
+		return await this.getCategory(category[0].id);
 	}
 
 	//Get specific categories
@@ -23,14 +25,17 @@ module.exports = class CategoriesController {
 		const category = await this.db('categories')
 			.where({ id })
 			.first();
-		return category;
+		return new Category(this.server, { id: category.id, name: category.name });
 	}
 
 	//Get all categories loaded
 	async getAllCategories(){
 		const categories = await this.db('categories')
 			.select();
-		return categories;
+
+		return categories.map(category => {
+			return new Category(this.server, { id: category.id, name: category.name });
+		});
 	}
 
 	//Delete specific category
@@ -43,12 +48,12 @@ module.exports = class CategoriesController {
 
 	//Update specific Category
 	async updateCategory({ id, name }){
-		await this.db('categories')
+		const category = await this.db('categories')
 			.where({ id })
 			.update({
 				name
-			});
-		return (true);
+			}).returning('*');
+		return new Category(this.server, { id: category.id, name: category.name });;
 	}
 
 	async isEmpty(id){
