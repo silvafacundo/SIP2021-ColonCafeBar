@@ -37,6 +37,7 @@ module.exports = class MercadoPagoController {
 				unit_price: order.total
 			}
 		];
+		console.log('MP DATE: ', expirationDate);
 		const { body: preferences }= await this.mercadopago.preferences.create({
 			expires: true,
 			expiration_date_to: expirationDate,
