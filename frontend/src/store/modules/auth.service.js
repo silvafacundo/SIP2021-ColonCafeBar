@@ -90,6 +90,31 @@ const actions = {
 		const response = await Vue.axios.post('/admin/auth/register', { username, password, name });
 		return response.data;
 	},
+	async checkClientToken({ getters, commit, dispatch }) {
+		const token = getters.clientToken;
+		if (token) {
+			commit('setClientToken', token);
+			try {
+				const response = await Vue.axios.get('/auth/me');
+				commit('setClientAuth', true);
+				commit('setClientUser', response.data.user);
+				return true;
+			} catch (err) {
+				await dispatch('logOut', { admin: false, client: true });
+				return false;
+			}
+		}
+	},
+	async clientLogin({ dispatch, commit }, { email, password }) {
+		const response = await Vue.axios.post('/auth/login', { email, password });
+		const token = response.data.payload;
+		commit('setClientToken', token);
+		await dispatch('checkClientToken');
+	},
+	async registerClient(_, { email, password, firstName }) {
+		const response = await Vue.axios.post('/admin/auth/register', { email, password, firstName });
+		return response.data;
+	},
 	logOut({ commit, dispatch }, { admin = true, client = true } = {}) {
 		if (admin) {
 			commit('setAdminToken', '');

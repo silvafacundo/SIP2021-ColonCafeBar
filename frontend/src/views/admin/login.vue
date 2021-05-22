@@ -4,11 +4,11 @@
 			<h3>Bienvenido</h3>
 			<form @submit.prevent="login">
 				<img src="@/assets/images/logo.png" alt="logo">
-				<input v-model="email"
-					type="email"
-					name="email"
-					placeholder="email"
-					title="Ingrese su email">
+				<input v-model="username"
+					type="username"
+					name="username"
+					placeholder="Username"
+					title="Ingrese username">
 				<br>
 				<input v-model="password"
 					type="password"
@@ -27,7 +27,7 @@
 <script>
 export default {
 	data: () => ({
-		email: '',
+		username: '',
 		password: '',
 		error: ''
 	}),
@@ -38,8 +38,8 @@ export default {
 	methods: {
 		async login() {
 			try {
-				await this.$store.dispatch('Auth/clientLogin', { email: this.email, password: this.password });
-				this.$router.push({ name: 'home' });
+				await this.$store.dispatch('Auth/adminLogin', { username: this.username, password: this.password });
+				await this.$router.push({ name: 'adminDashboard' });
 			} catch (err) {
 				console.error('Failed to log in', err);
 				if (err && err.response && err.response.data) this.error = err.response.data.message

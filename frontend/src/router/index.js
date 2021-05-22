@@ -2,16 +2,20 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '../store';
 
-import Login from '../views/login';
 import ResetPassword from '../views/ResetPassword';
 
 import Home from '../views/home';
 import Register from '../views/register';
+import Login from '../views/login';
 import Profile from '../views/profile';
+
+
+import Order from '../views/order';
 
 import EmptyRoute from '../components/EmptyRoute.vue';
 
 //
+import AdminLogin from '../views/admin/login';
 import Dashboard from '../views/admin/dashboard';
 import Users from '../views/admin/users' ;
 import Permissions from '../views/admin/Permissions';
@@ -34,7 +38,10 @@ const routes = [
 	{ path: '/resetpassword/:token', props: true, name: 'resetPassword', component: ResetPassword },
 	{ path: '/register', name: 'register', component: Register },
 	{ path: '/me', name: 'me', component: Profile },
-	{ path: '/admin/login', name: 'adminLogin', component: Login },
+	{ path: '/order/:orderId', props: true, name: 'order', component: Order },
+
+	// ADMIN:
+	{ path: '/admin/login', name: 'adminLogin', component: AdminLogin },
 	{ path: '/admin', name: 'adminDashboard', component: Dashboard, children: [
 		{ path: 'users', name: 'adminUsers', component: Users },
 		{ path: 'roles', name: 'adminRoles', component: Roles },
