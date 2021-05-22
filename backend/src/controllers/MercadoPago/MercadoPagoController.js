@@ -18,7 +18,7 @@ module.exports = class MercadoPagoController {
 	}
 
 	parseDate(date) {
-		return moment(date).format('YYYY-MM-DD[T]HH:mm:ss.SSSZ');
+		return moment(date).utcOffset(-3).format('YYYY-MM-DD[T]HH:mm:ss.SSSZ');
 	}
 
 	async createOrderPayment(orderId) {
