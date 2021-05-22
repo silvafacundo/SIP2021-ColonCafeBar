@@ -53,7 +53,7 @@ module.exports = class CategoriesController {
 			.update({
 				name
 			}).returning('*');
-		return new Category(this.server, { id: category.id, name: category.name });;
+		return new Category(this.server, { id: category.id, name: category.name });
 	}
 
 	async isEmpty(id){
