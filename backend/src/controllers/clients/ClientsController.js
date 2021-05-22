@@ -48,7 +48,7 @@ module.exports = class ClientController {
 				if (email) builder.where({ email });
 			})
 			.first();
-
+		if (!user) return null;
 		return new Client(this.server, user);
 	}
 

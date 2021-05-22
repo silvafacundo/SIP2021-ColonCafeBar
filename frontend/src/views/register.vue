@@ -36,7 +36,7 @@ export default {
 		async register() {
 			this.error = '';
 			try {
-				await this.$store.dispatch('Auth/register', { email: this.email, firstName: this.firstName, password: this.password });
+				await this.$store.dispatch('Auth/registerClient', { email: this.email, firstName: this.firstName, password: this.password });
 				this.$router.push({ name: 'login' });
 			} catch (err) {
 				console.error('Failed to register', err);

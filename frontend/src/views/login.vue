@@ -18,7 +18,7 @@
 				<br>
 				<button>Ingresar</button>
 			</form>
-			<!-- <router-link to="/register" title="Crear una cuenta">¿No tenes cuenta? ¡Regístrese haciendo click aquí!</router-link> -->
+			<router-link to="/register" title="Crear una cuenta">¿No tenes cuenta? ¡Regístrese haciendo click aquí!</router-link>
 		</div>
 		<p class="error">{{ error && 'Error: ' + error }}</p>
 	</div>

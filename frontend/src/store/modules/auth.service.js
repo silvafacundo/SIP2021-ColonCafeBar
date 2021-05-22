@@ -112,7 +112,7 @@ const actions = {
 		await dispatch('checkClientToken');
 	},
 	async registerClient(_, { email, password, firstName }) {
-		const response = await Vue.axios.post('/admin/auth/register', { email, password, firstName });
+		const response = await Vue.axios.post('/auth/register', { email, password, firstName });
 		return response.data;
 	},
 	logOut({ commit, dispatch }, { admin = true, client = true } = {}) {
