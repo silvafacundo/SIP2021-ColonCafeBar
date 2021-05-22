@@ -2,13 +2,13 @@ const Route = require('../../models/Route');
 
 module.exports = class OrderPUT extends Route {
 	constructor() {
-		super('/order/update', 'put');
+		super('/admin/order', 'put');
 	}
 
 	async run(req, res) {
-		const { orderId, status } = req.body;
+		const { orderId, status, isPaid } = req.body;
 		if (!orderId) return res.status(400).json({ message: 'id is required!' });
-		if (!status && typeof status !== 'string') return res.status(400).json({ message: 'status is required!' });
+		if (typeof isPaid !== 'boolean' && (!status && typeof status !== 'string')) return res.status(400).json({ message: 'isPaid or status is required' });
 
 		try {
 			const order = await this.utils.orders.getOrder(orderId);
@@ -16,7 +16,7 @@ module.exports = class OrderPUT extends Route {
 			if (!order){
 				res.json('There are no order with that id!');
 			} else {
-				await this.utils.orders.updateOrder({ orderId, status });
+				await this.utils.orders.updateOrder({ orderId, status, isPaid });
 				return res.json({ message: 'Order successfully updated!' });
 			}
 		} catch (error) {

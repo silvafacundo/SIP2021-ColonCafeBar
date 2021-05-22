@@ -75,12 +75,13 @@ module.exports = class OrderController {
 		}
 	}
 
-	async updateOrderStatus({ orderId, state }) {
+	async updateOrder({ orderId, status, isPaid }) {
 		await this.db('orders')
 			.where('id', orderId)
-			.update({ 'status': state })
+			.update({ status, isPaid })
 			.returning('*');
-		return true;
+
+		return await this.getOrder(orderId);
 	}
 
 	/**
