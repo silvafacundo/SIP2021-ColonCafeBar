@@ -1,3 +1,4 @@
+const PublicError = require('../../errors/PublicError');
 module.exports = class UserController {
 	constructor(server) {
 		this.server = server;
@@ -17,11 +18,11 @@ module.exports = class UserController {
 		const { status, message } = this.utils.auth.isSafePassword(password);
 		if (!status) throw new Error(message);
 
-		if (username && typeof username !== 'string') throw Error('username must be a string!');
-		if (password && typeof password !== 'string') throw Error('password must be a string!');
+		if (username && typeof username !== 'string') throw new PublicError('username must be a string!');
+		if (password && typeof password !== 'string') throw new PublicError('password must be a string!');
 
 		const exists = await this.db('users').where({ username }).first();
-		if (exists) throw Error('user with that username already exists');
+		if (exists) throw new PublicError('An user with that username already exists');
 
 		const hash = await this.utils.auth.encryptPassword(password);
 
@@ -94,15 +95,15 @@ module.exports = class UserController {
 
 	async assignUserRole({ userId, roleId }) {
 		const user = await this.getUser({ userId, ignoreInactive: true });
-		if (!user) throw Error('user does not exists!');
+		if (!user) throw new PublicError('user does not exists!');
 		const role = await this.roles.getRole(roleId);
-		if (!role) throw Error('role does not exists!');
+		if (!role) throw new PublicError('role does not exists!');
 
 		const userRole = await this.db('usersRoles')
 			.where('userId', userId)
 			.where('roleId', roleId).first();
 
-		if (userRole) throw Error('this user already has this role!');
+		if (userRole) throw new PublicError('this user already has this role!');
 
 		await this.db('usersRoles').insert({
 			userId,

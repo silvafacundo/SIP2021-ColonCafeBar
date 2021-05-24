@@ -1,4 +1,5 @@
 const Client = require('../../models/clients/Client');
+const PublicError = require('../../errors/PublicError');
 
 module.exports = class ClientController {
 	constructor(server) {
@@ -14,15 +15,15 @@ module.exports = class ClientController {
 	}
 
 	async createClient({ email, password, firstName, lastName, phoneNumber }) {
-		if (!email) throw Error('email is required!');
-		if (!password) throw Error('password is required!');
-		if (!firstName) throw Error('email is required!');
+		if (!email) throw new PublicError('email is required!');
+		if (!password) throw new PublicError('password is required!');
+		if (!firstName) throw new PublicError('email is required!');
 
 		const { status, message } = this.utils.auth.isSafePassword(password);
-		if (!status) throw new Error(message);
+		if (!status) throw new new PublicError(message);
 
-		if (lastName && typeof lastName !== 'string') throw Error('lastName must be a string!');
-		if (phoneNumber && typeof phoneNumber !== 'string') throw Error('phoneNumber must be a string!');
+		if (lastName && typeof lastName !== 'string') throw new PublicError('lastName must be a string!');
+		if (phoneNumber && typeof phoneNumber !== 'string') throw new PublicError('phoneNumber must be a string!');
 
 		const hash = await this.utils.auth.encryptPassword(password);
 

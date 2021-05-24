@@ -1,4 +1,5 @@
 const Category = require('../../models/products/Category');
+const PublicError = require('../../errors/PublicError');
 module.exports = class CategoriesController {
 	constructor(server) {
 		this.server = server;
@@ -14,7 +15,7 @@ module.exports = class CategoriesController {
 
 	async createCategory({ name }){
 		//Check if parameters are valid
-		if (!name && typeof name !=='string') throw Error('name is required');
+		if (!name && typeof name !== 'string') throw new PublicError('name is required');
 		const category = await this.db('categories').insert({ name }).returning('*');
 
 		return await this.getCategory(category[0].id);

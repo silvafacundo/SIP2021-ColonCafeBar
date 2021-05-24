@@ -1,5 +1,6 @@
 const Product = require('../../models/products/Product');
 const Category = require('../../models/products/Category');
+const PublicError = require('../../errors/PublicError');
 module.exports = class ProductController {
 	constructor(server) {
 		this.server = server;
@@ -37,10 +38,10 @@ module.exports = class ProductController {
 
 	async createProduct({ idCategory, name, description, price }) {
 		//Check if parameters are valid
-		if (!idCategory && typeof idCategory !== 'bigint') throw Error('idcategory is required');
-		if (!name && typeof name !=='string') throw Error('name is required');
-		if (!description && typeof description !=='string') throw Error('description is required');
-		if (!price && typeof price !== 'number') throw Error('price is required');
+		if (!idCategory && typeof idCategory !== 'bigint') throw new PublicError('idcategory is required');
+		if (!name && typeof name !== 'string') throw new PublicError('name is required');
+		if (!description && typeof description !== 'string') throw new PublicError('description is required');
+		if (!price && typeof price !== 'number') throw new PublicError('price is required');
 
 		const trx = await this.db.transaction();
 		try {

@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const JWT = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
+const PublicError = require('../../errors/PublicError');
 module.exports = class AuthController {
 	constructor(server) {
 		this.server = server;
@@ -48,13 +49,13 @@ module.exports = class AuthController {
 
 	async resetPassword(password, token) {
 		const tokenData = await this.db('resetPassword').where({ token }).first();
-		if (!tokenData) throw new Error('Invalid token');
+		if (!tokenData) throw new PublicError('Invalid token');
 
-		if (tokenData.consumed) throw new Error('token already used');
+		if (tokenData.consumed) throw new PublicError('token already used');
 
 		const tokenCreation = new Date(tokenData.createdAt).getTime();
 		// Chequea si el token tiene mas de 24hs
-		if ((Date.now() - tokenCreation) > (24 * 60 * 60 * 1000)) throw new Error('Invalid token')
+		if ((Date.now() - tokenCreation) > (24 * 60 * 60 * 1000)) throw new PublicError('Invalid token')
 
 		const { accountId: userId, accountType } = tokenData;
 		if (accountType === 'users') {

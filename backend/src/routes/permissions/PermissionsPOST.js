@@ -17,8 +17,7 @@ module.exports = class PermissionsGet extends Route {
 				permission
 			});
 		} catch (err) {
-			console.error('Failed to create permission: ', err);
-			return res.status(400).json({ message: 'Failed to create permission' });
+			return super.error(res, err)
 		}
 	}
 }

@@ -1,3 +1,4 @@
+const PublicError = require('../../errors/PublicError');
 module.exports = class UserController {
 	constructor(server) {
 		this.server = server;
@@ -23,12 +24,12 @@ module.exports = class UserController {
 	}
 
 	async updateRole({ roleId, name, description }) {
-		if (!roleId) throw Error('roleId');
+		if (!roleId) throw Error('roleId is required');
 
 		const toUpdate = {};
 		if (typeof name === 'string') toUpdate.name = name;
 		if (typeof description === 'string') toUpdate.description = description;
-		if (Object.keys(toUpdate).length < 1) throw Error('at least one param is required!');
+		if (Object.keys(toUpdate).length < 1) throw new PublicError('At least one param is required!');
 
 		await this.db('roles').where({ id: roleId }).update(toUpdate);
 	}
@@ -38,7 +39,7 @@ module.exports = class UserController {
 
 		if (!forced) {
 			const usersWithRole = await this.db('usersRoles').where( { roleId });
-			if (usersWithRole.length > 0) throw new Error('The role cannot be deleted due one or more user has this role')
+			if (usersWithRole.length > 0) throw new new PublicError('The role cannot be deleted due one or more user has this role')
 		}
 
 		const deleteTransaction = await this.db.transaction();
@@ -244,7 +245,7 @@ module.exports = class UserController {
 		if (!userId) throw Error('userId is required!');
 
 		const user = await this.utils.users.getUser({ userId, ignoreInactive: true });
-		if (!user) throw Error('user not found!');
+		if (!user) throw new PublicError('user not found!');
 
 		const roles = await this.db('usersRoles')
 			.select(['roles.*'])

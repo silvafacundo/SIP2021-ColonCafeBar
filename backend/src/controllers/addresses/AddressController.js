@@ -1,5 +1,6 @@
 const UserController = require('../users/UserController');
 const Address = require('../../models/clients/Address');
+const PublicError = require('../../errors/PublicError');
 
 module.exports = class AddressController {
 	constructor(server) {
@@ -14,14 +15,16 @@ module.exports = class AddressController {
 		return this.server.utils;
 	}
 
-	async createAddress({ clientId, street, number, floor, postalCode }) {
+	async createAddress({ clientId, alias, city, neighborhood, corner, coordinates, street, number, floor, postalCode }) {
 		// Check if parameters are valid
-		if (!clientId) throw Error('clientId is required!');
-		if (!street || typeof street !== 'string') throw Error('street is required and must be a string!');
-		if (!number) throw Error('number is required!');
-		if (!postalCode) throw Error('postalCode is required!');
+		if (!isValid(clientId)) throw Error('clientId is required!');
+		if (!isValid(city)) throw new PublicError('City is required');
+		if (!isValid(neighborhood)) throw new PublicError('Neighborhood is required');
+		if (typeof street !== 'string') throw new PublicError('street is required and must be a string!');
+		if (!isValid(number)) throw new PublicError('number is required!');
+		if (!isValid(postalCode)) throw new PublicError('postalCode is required!');
 
-		if (floor && typeof floor !== 'string') throw Error('floor must be a string!');
+		if (floor && typeof floor !== 'string') throw new PublicError('floor must be a string!');
 
 		const client = await this.utils.clients.getClient({ userId: clientId });
 		// Check if user is valid
@@ -30,6 +33,11 @@ module.exports = class AddressController {
 		// Insert address on database
 		const address = await this.db('addresses').insert({
 			clientId,
+			alias,
+			city,
+			neighborhood,
+			corner,
+			coordinates,
 			street,
 			number,
 			floor,
@@ -58,4 +66,9 @@ module.exports = class AddressController {
 		const exists = await this.db('addresses').where({ addressId, clientId }).first();
 		return !!exists;
 	}
+}
+
+
+function isValid(value) {
+	return typeof value !== 'undefined' && value !== null;
 }

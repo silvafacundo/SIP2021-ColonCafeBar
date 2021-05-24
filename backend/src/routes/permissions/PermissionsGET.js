@@ -13,8 +13,7 @@ module.exports = class PermissionsGet extends Route {
 				permissions
 			});
 		} catch (err) {
-			console.error('Failed to get permissions: ', err);
-			return res.status(400).json({ message: 'Failed to retrieve permissions' });
+			return super.error(res, err)
 		}
 	}
 }

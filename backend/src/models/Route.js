@@ -40,10 +40,10 @@ class Route {
 	}
 
 	async auth(req, res) {
-		if (this.config.isPublic) return await this.run(req, res);
-		const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-		if (!token) return res.status(401).json({ message: 'No authorization header provided' });
 		try {
+			if (this.config.isPublic) return await this.run(req, res);
+			const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+			if (!token) return res.status(401).json({ message: 'No authorization header provided' });
 			const decoded = JWT.verify(token, process.env.JWT_SECRET);
 
 			const id = decoded ? decoded.sub : '';
@@ -75,14 +75,17 @@ class Route {
 			}
 			return await this.run(req, res, user);
 		} catch (err) {
-			console.error('Failed to run endpoint', err);
-			return res.status(500).json({ message: 'Unexpected error' });
+			this.error(res, err);
 		}
 	}
 
-	error(res, error) {
-		console.error(error);
-		return res.status(500).json({ message: 'Something went wrong' });
+	error(res, err) {
+		if (err.isPublic) {
+			return res.status(err.code).json({ message: err.message });
+		}
+
+		console.error('Failed to run endpoint', err);
+		return res.status(500).json({ message: 'Unexpected error' });
 	}
 
 	// eslint-disable-next-line no-unused-vars

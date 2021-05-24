@@ -20,8 +20,7 @@ module.exports = class orderCreatePOST extends Route {
 
 			return res.json({ message: 'Order successfully created', order });
 		} catch (error) {
-			console.error('Failed to create order', error)
-			return res.status(400).json({ message: error.message });
+			return super.error(res, error);
 		}
 	}
 }

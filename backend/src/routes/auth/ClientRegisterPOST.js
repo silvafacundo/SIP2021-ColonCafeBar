@@ -20,7 +20,6 @@ module.exports = class RegisterPOST extends Route {
 
 			return res.json({ message: 'User successfully registered!' });
 		} catch (error) {
-			if (error.message === 'Email already registered') return res.status(400).json({ message: error.message });
 			return super.error(res, error);
 		}
 

@@ -2,6 +2,7 @@ const Product = require('../../models/products/Product');
 const OrderProduct = require('../../models/products/OrderProduct');
 const Order = require('../../models/orders/Order');
 const Server = require('../../Server');
+const PublicError = require('../../errors/PublicError');
 module.exports = class OrderController {
 	/**
 	 *Creates an instance of OrderController.
@@ -21,19 +22,19 @@ module.exports = class OrderController {
 
 	async createOrder({ clientId, withDelivery, paymentMethod, addressId, products }) {
 		if (!clientId) throw Error('clientId is required');
-		if (!paymentMethod && typeof paymentMethod !== 'string' ) throw Error('paymentMethod is required');
-		if (!products || !Array.isArray(products) || products.length < 1) throw Error('products is required');
-		if (typeof withDelivery !== 'boolean') throw Error('withDelivery must be a boolean');
+		if (!paymentMethod && typeof paymentMethod !== 'string' ) throw new PublicError('paymentMethod is required');
+		if (!products || !Array.isArray(products) || products.length < 1) throw new PublicError('products is required');
+		if (typeof withDelivery !== 'boolean') throw new PublicError('withDelivery must be a boolean');
 
 		const client = await this.utils.clients.getClient({ clientId });
-		if (!client) throw Error('Client does not exist with that clientId');
+		if (!client) throw new PublicError('Client does not exist with that clientId');
 
 		let address;
 		if (withDelivery) {
 			address = await this.utils.addresses.getAddress(addressId);
-			if (!address) throw Error('Address not found!');
+			if (!address) throw new PublicError('Address not found!');
 			const isAddressFromClient = await this.utils.addresses.isAddressFromClient(addressId, clientId);
-			if (!isAddressFromClient) throw Error('The provided address is not from the given client');
+			if (!isAddressFromClient) throw new PublicError('The provided address is not from the given client');
 		}
 
 		const productsId = []

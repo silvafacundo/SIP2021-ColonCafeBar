@@ -14,7 +14,7 @@ module.exports = class OrderGET extends Route {
 
 			return res.json({ message: 'order successfully created', order });
 		} catch (error) {
-			return res.status(400).json({ message: error.message });
+			return super.error(res, error)
 		}
 	}
 }
