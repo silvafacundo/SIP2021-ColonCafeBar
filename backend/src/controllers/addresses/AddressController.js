@@ -49,18 +49,23 @@ module.exports = class AddressController {
 	}
 
 	async getAddress(id, fetchDeleted = false) {
-		const address = await this.db('addresses').where({ id, isDeleted: fetchDeleted ? undefined : false }).first();
+		const whereQuery = { id };
+		if (!fetchDeleted)  whereQuery.isDeleted = false;
+
+		const address = await this.db('addresses').where(whereQuery).first();
 		if (!address) return null;
 		return new Address(this.server, address);
 	}
 
 	async deleteAddress(addressId) {
-		// TODO: Hacer soft delete
 		await this.db('addresses').where({ id: addressId }).update({ isDeleted: true });
 	}
 
 	async getUserAddresses(clientId, fetchDeleted = false) {
-		const addresses = await this.db('addresses').where({ clientId, isDeleted: fetchDeleted ? undefined : false });
+		const whereQuery = { clientId };
+		if (!fetchDeleted)  whereQuery.isDeleted = false;
+
+		const addresses = await this.db('addresses').where(whereQuery);
 		return addresses.map(address => new Address(this.server, address));
 	}
 
