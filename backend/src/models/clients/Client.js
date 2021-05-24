@@ -1,9 +1,18 @@
 const BaseModel = require('../BaseModel');
+const Address = require('./Address');
 
 module.exports = class Client extends BaseModel{
-	constructor(server, user) {
+	constructor(server, user, addresses) {
 		super(server);
 		this._data = user;
+		if (addresses && Array.isArray(addresses)) {
+			for (const address of addresses) {
+				if (!(address instanceof Address)) throw new Error('Addresses should be an array of Addresses');
+			}
+		} else if (addresses) {
+			throw new Error('Addresses should be an array of addresses');
+		}
+		this._addresses = addresses || [];
 	}
 	get id() {
 		return this._data.id;
@@ -23,6 +32,10 @@ module.exports = class Client extends BaseModel{
 
 	get phoneNumber() {
 		return this._data.phoneNumber;
+	}
+
+	get addresses() {
+		return this._addresses;
 	}
 
 	get isActive() {

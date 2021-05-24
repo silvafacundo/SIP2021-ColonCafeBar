@@ -49,7 +49,8 @@ module.exports = class ClientController {
 			})
 			.first();
 		if (!user) return null;
-		return new Client(this.server, user);
+		const addresses = await this.utils.addresses.getUserAddresses(user.id);
+		return new Client(this.server, user, addresses);
 	}
 
 	async getClientHashPassword(userId) {
