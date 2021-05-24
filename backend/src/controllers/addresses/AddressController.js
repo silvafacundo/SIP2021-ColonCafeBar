@@ -49,6 +49,7 @@ module.exports = class AddressController {
 
 	async getAddress(id) {
 		const address = await this.db('addresses').where({ id }).first();
+		if (!address) return null;
 		return new Address(this.server, address);
 	}
 

@@ -102,6 +102,8 @@ module.exports = class OrderController {
 			.where('id', orderId)
 			.first();
 
+		if (!order) return null;
+
 		const client = await this.utils.clients.getClient({ userId: order.clientId });
 
 		let dbOrderProducts = await this.db('orderProducts')

@@ -65,6 +65,7 @@ module.exports = class UserController {
 		if (!roleId) throw Error('roleId is required!');
 
 		const role = await this.db('roles').where({ id: roleId, isActive: true }).first();
+		if (!role) return null;
 		const permissions = await this.getRolePermissions(role.id);
 
 		return { ...role, permissions };

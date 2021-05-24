@@ -22,10 +22,11 @@ module.exports = class DeliveryController {
 
 	//Get specific delivery
 	async getDelivery(id){
-		const Delivery = await this.db('deliveries')
+		const delivery = await this.db('deliveries')
 			.where({ id })
 			.first();
-		return Delivery;
+		if (!delivery) return null;
+		return delivery;
 	}
 
 	//Get all deliveries loaded

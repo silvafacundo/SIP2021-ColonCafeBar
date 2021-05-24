@@ -26,6 +26,7 @@ module.exports = class CategoriesController {
 		const category = await this.db('categories')
 			.where({ id })
 			.first();
+		if (!category) return null;
 		return new Category(this.server, { id: category.id, name: category.name });
 	}
 

@@ -43,6 +43,9 @@ module.exports = class ProductController {
 		if (!description && typeof description !== 'string') throw new PublicError('description is required');
 		if (!price && typeof price !== 'number') throw new PublicError('price is required');
 
+		const category = await this.utils.categories.getCategory(idCategory);
+		if (!category) throw new PublicError('Category doesn\'t exists');
+
 		const trx = await this.db.transaction();
 		try {
 			const product = await this.db('products')
@@ -69,6 +72,7 @@ module.exports = class ProductController {
 	async getProduct(id) {
 		const product = (await this._productQuery({ 'productId': id }))[0];
 
+		if (!product) return null;
 		return new Product(this.server, product, new Category(this.server, { id: product.idCategory, name: product.categoryName }), product.price);
 	}
 
