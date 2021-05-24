@@ -6,11 +6,8 @@ module.exports = class AddressPOST extends Route {
 	}
 
 	async run(req, res, user) {
-		const { street, number, floor, postalCode } = req.body;
+		const { street, number, city, neighborhood, corner, coordinates, floor, postalCode } = req.body;
 		// Check if body parameters are valid
-		if (!street) return res.status(400).json({ message: 'street is required!' });
-		if (!number) return res.status(400).json({ message: 'number is required!' });
-		if (!postalCode) return res.status(400).json({ message: 'postalCode is required!' });
 
 		try {
 			// Insert into database
@@ -20,6 +17,10 @@ module.exports = class AddressPOST extends Route {
 				number,
 				floor,
 				postalCode,
+				neighborhood,
+				corner,
+				coordinates,
+				city
 			});
 
 			return res.json({ message: 'Address successfully created!', address });

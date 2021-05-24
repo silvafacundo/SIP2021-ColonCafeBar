@@ -23,6 +23,7 @@ module.exports = class AddressController {
 		if (typeof street !== 'string') throw new PublicError('street is required and must be a string!');
 		if (!isValid(number)) throw new PublicError('number is required!');
 		if (!isValid(postalCode)) throw new PublicError('postalCode is required!');
+		if (!isValid(corner)) throw new PublicError('corner is required');
 
 		if (floor && typeof floor !== 'string') throw new PublicError('floor must be a string!');
 
