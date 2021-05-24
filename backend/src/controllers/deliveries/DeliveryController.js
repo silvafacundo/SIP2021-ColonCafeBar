@@ -16,22 +16,29 @@ module.exports = class DeliveryController {
 		if (!name && typeof name !=='string') throw Error('name is required');
 		if (!lastName && typeof lastName !=='string') throw Error('last name is required');
 		if (!phoneNumber && typeof phoneNumber !=='string') throw Error('phone number is required');
-		const Delivery = await this.db('deliveries').insert({ name, lastName, phoneNumber });
-		return Delivery;
+		const delivery = await this.db('deliveries').insert({ name, lastName, phoneNumber }).returning('*');
+		return delivery;
 	}
 
 	//Get specific delivery
-	async getDelivery(id){
+	async getDelivery(id, fetchDeleted = true){
+		const whereQuery = { id };
+		if (!fetchDeleted) whereQuery.isDeleted = false;
+
 		const delivery = await this.db('deliveries')
-			.where({ id })
+			.where(whereQuery)
 			.first();
 		if (!delivery) return null;
 		return delivery;
 	}
 
 	//Get all deliveries loaded
-	async getAllDeliveries(){
+	async getAllDeliveries(fetchDeleted = false){
 		const deliveries = await this.db('deliveries')
+			.where(query => {
+				if (!fetchDeleted)
+					query.where({ isDeleted: false })
+			})
 			.select();
 		return deliveries;
 	}
@@ -40,14 +47,14 @@ module.exports = class DeliveryController {
 	async deleteDelivery(id){
 		await this.db('deliveries')
 			.where({ id })
-			.del();
+			.update({ isDeleted: true });
 		return (true);
 	}
 
 	//Update specific Delivery
 	async updateDelivery({ id, name, lastName, phoneNumber }){
 		await this.db('deliveries')
-			.where({ id })
+			.where({ id, isDeleted: false })
 			.update({
 				name,
 				lastName,

@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class DeliveryPOST extends Route {
 	constructor() {
-		super('/delivery/new', 'post');
+		super('/admin/delivery', 'post');
 	}
 
 	async run(req, res) {
@@ -14,8 +14,8 @@ module.exports = class DeliveryPOST extends Route {
 
 		try {
 			// Insert into database
-			await this.utils.deliveries.createDelivery({ name, lastName, phoneNumber });
-			return res.json({ message: 'Delivery successfully created!' });
+			const delivery = await this.utils.deliveries.createDelivery({ name, lastName, phoneNumber });
+			return res.json({ message: 'Delivery successfully created!', delivery });
 		} catch (error) {
 			return super.error(res, error);
 		}

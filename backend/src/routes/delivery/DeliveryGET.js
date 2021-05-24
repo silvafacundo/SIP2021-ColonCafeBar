@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class DeliveryGET extends Route {
 	constructor() {
-		super('/delivery/get', 'get');
+		super('/admin/delivery', 'get');
 	}
 
 	async run(req, res) {
@@ -15,7 +15,7 @@ module.exports = class DeliveryGET extends Route {
 			if (!delivery){
 				return res.json({ message: 'There are no delivery with that id!' });
 			} else {
-				return res.json(delivery);
+				return res.json({ delivery });
 			}
 		} catch (error) {
 			return super.error(res, error);

@@ -1,8 +1,8 @@
 const Route = require('../../models/Route');
 
-module.exports = class DeliveryAllGET extends Route {
+module.exports = class DeliveriesGET extends Route {
 	constructor() {
-		super('/delivery/getAll', 'get');
+		super('/admin/deliveries', 'get');
 	}
 
 	async run(req, res) {
@@ -13,7 +13,7 @@ module.exports = class DeliveryAllGET extends Route {
 			if (!deliveries){
 				return res.json({ message: 'There are no loaded deliveries!' });
 			} else {
-				return res.json(deliveries);
+				return res.json({ deliveries });
 			}
 		} catch (error) {
 			return super.error(res, error);
