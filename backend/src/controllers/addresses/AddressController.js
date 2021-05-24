@@ -48,24 +48,24 @@ module.exports = class AddressController {
 		return new Address(this.server, address[0]);
 	}
 
-	async getAddress(id) {
-		const address = await this.db('addresses').where({ id }).first();
+	async getAddress(id, fetchDeleted = false) {
+		const address = await this.db('addresses').where({ id, isDeleted: fetchDeleted ? undefined : false }).first();
 		if (!address) return null;
 		return new Address(this.server, address);
 	}
 
 	async deleteAddress(addressId) {
 		// TODO: Hacer soft delete
-		await this.db('addresses').where({ id: addressId }).del();
+		await this.db('addresses').where({ id: addressId }).update({ isDeleted: true });
 	}
 
-	async getUserAddresses(clientId) {
-		const addresses = await this.db('addresses').where({ clientId });
+	async getUserAddresses(clientId, fetchDeleted = false) {
+		const addresses = await this.db('addresses').where({ clientId, isDeleted: fetchDeleted ? undefined : false });
 		return addresses.map(address => new Address(this.server, address));
 	}
 
 	async isAddressFromClient(addressId, clientId) {
-		const exists = await this.db('addresses').where({ addressId, clientId }).first();
+		const exists = await this.db('addresses').where({ id: addressId, clientId }).first();
 		return !!exists;
 	}
 }
