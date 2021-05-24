@@ -82,10 +82,15 @@ module.exports = class OrderController {
 		}
 	}
 
-	async updateOrder({ orderId, status, isPaid }) {
+	async updateOrder({ orderId, status, isPaid, deliveryId }) {
+		if (deliveryId) {
+			const delivery = await this.utils.deliveries.getDelivery(deliveryId);
+			if (!delivery) throw new PublicError('the Delivery doesn\'t exists');
+		}
+
 		await this.db('orders')
 			.where('id', orderId)
-			.update({ status, isPaid })
+			.update({ status, isPaid, deliveryId })
 			.returning('*');
 
 		return await this.getOrder(orderId);
