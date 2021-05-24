@@ -21,7 +21,7 @@ module.exports = class DeliveryController {
 	}
 
 	//Get specific delivery
-	async getDelivery(id, fetchDeleted = true){
+	async getDelivery(id, fetchDeleted = false){
 		const whereQuery = { id };
 		if (!fetchDeleted) whereQuery.isDeleted = false;
 
