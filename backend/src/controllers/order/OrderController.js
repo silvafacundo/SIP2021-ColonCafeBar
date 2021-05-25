@@ -111,6 +111,9 @@ module.exports = class OrderController {
 
 		const client = await this.utils.clients.getClient({ userId: order.clientId });
 
+		let delivery = null;
+		if (order.deliveryId)
+			delivery = await this.utils.deliveries.getDelivery(order.deliveryId);
 		let dbOrderProducts = await this.db('orderProducts')
 			.select('*')
 			.innerJoin('products', 'products.id', 'orderProducts.productId' )
@@ -129,7 +132,7 @@ module.exports = class OrderController {
 			orderProducts.push(new OrderProduct(this.server, product, parseInt(price), parseInt(amount)));
 		}
 
-		return new Order(this.server, { ...order, mpLink }, orderProducts, client);
+		return new Order(this.server, { ...order, mpLink }, orderProducts, client, delivery);
 	}
 
 	async getOrders() {

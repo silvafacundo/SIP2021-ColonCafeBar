@@ -1,6 +1,6 @@
 const BaseModel = require('../BaseModel');
 
-module.exports = class Product extends BaseModel {
+module.exports = class Delivery extends BaseModel {
 	constructor(server, category) {
 		super(server);
 		this._category = category;

@@ -1,3 +1,4 @@
+const Delivery = require('../../models/deliveries/delivery');
 module.exports = class DeliveryController {
 	constructor(server) {
 		this.server = server;
@@ -17,7 +18,7 @@ module.exports = class DeliveryController {
 		if (!lastName && typeof lastName !=='string') throw Error('last name is required');
 		if (!phoneNumber && typeof phoneNumber !=='string') throw Error('phone number is required');
 		const delivery = await this.db('deliveries').insert({ name, lastName, phoneNumber }).returning('*');
-		return delivery;
+		return new Delivery(this.server, delivery);
 	}
 
 	//Get specific delivery
@@ -29,7 +30,7 @@ module.exports = class DeliveryController {
 			.where(whereQuery)
 			.first();
 		if (!delivery) return null;
-		return delivery;
+		return new Delivery(this.server, delivery);
 	}
 
 	//Get all deliveries loaded
@@ -40,7 +41,7 @@ module.exports = class DeliveryController {
 					query.where({ isDeleted: false })
 			})
 			.select();
-		return deliveries;
+		return deliveries.map(delivery => new Delivery(this.server, delivery));
 	}
 
 	//Delete specific Delivery
