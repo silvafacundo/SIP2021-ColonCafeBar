@@ -94,7 +94,7 @@ module.exports = class ProductController {
 
 		const orders = [];
 		if (orderBy.price) orders.push({ column: 'price', order: orderBy.price === 'asc' ? 'asc' : 'desc' });
-		if (orderBy.createdAt) orders.push({ column: 'price', order: orderBy.createdAt === 'asc' ? 'asc' : 'desc' });
+		orders.push({ column: 'price', order: orderBy.createdAt === 'asc' ? 'asc' : 'desc' });
 
 		const whereQuery = builder => {
 			const { categoriesId, isActive, fromDate, toDate, fromPrice, toPrice, query } = filters || {};
@@ -112,7 +112,8 @@ module.exports = class ProductController {
 		const products = await this._productQuery()
 			.where(whereQuery)
 			.offset((page - 1) * perPage)
-			.limit(perPage);
+			.limit(perPage)
+			.orderBy(orders);
 
 		return products.map(product => {
 			return new Product(this.server, product, new Category(this.server, { id: product.idCategory, name: product.categoryName }), product.price);
