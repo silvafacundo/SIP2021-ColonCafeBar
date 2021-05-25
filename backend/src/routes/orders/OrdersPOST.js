@@ -7,19 +7,15 @@ module.exports = class OrderGET extends Route {
 
 	async run(req, res, user) {
 		try {
-			const { fromDate, toDate, clientId } = req.body;
-			const orders = await this.utils.orders.getOrders({
-				fromDate,
-				toDate,
-				clientId
-			});
-
+			const { page = 1, perPage = 20, filters, orderBy } = req.body;
+			const { orders, pagination } = await this.utils.orders.getOrders({ page, perPage, filters, orderBy });
 			return res.json({
 				message: 'Orders successfully retrieved',
-				orders
+				orders,
+				pagination
 			});
 		} catch (error) {
-			return res.status(400).json({ message: error.message });
+			return super.error(res, error);
 		}
 	}
 }

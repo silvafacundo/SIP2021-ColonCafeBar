@@ -135,19 +135,35 @@ module.exports = class OrderController {
 		return new Order(this.server, { ...order, mpLink }, orderProducts, client, delivery);
 	}
 
-	async getOrders({ fromDate, toDate, clientId }) {
+	async getOrders({ perPage = 20, page = 1, filters, orderBy = {} }) {
+		if (isNaN(page)) throw new PublicError('page should be a number');
+		if (isNaN(perPage)) throw new PublicError('perPAge should be a number');
+
+		const order = [];
+		order.push({ column: 'createdAt', order: orderBy.createdAt === 'asc' ? 'asc' : 'desc' })
+
+		const whereQuery = builder => {
+			const { fromDate, toDate, clientsId, deliveriesId } = filters || {};
+			if (fromDate) builder.where('createdAt', '>=', fromDate);
+			if (toDate) builder.where('createdAt', '<=', toDate);
+			if (clientsId && Array.isArray(clientsId)) builder.whereIn('clientId', clientsId);
+			if (deliveriesId && Array.isArray(deliveriesId)) builder.whereIn('deliveryId', deliveriesId);
+		}
+
 		const dbOrders = await this.db('orders')
-			.modify(builder => {
-				if (fromDate) builder.where('createdAt', '>=', fromDate);
-				if (toDate) builder.where('createdAt', '<=', toDate);
-				if (clientId) builder.where('clientId', clientId);
-			})
+			.where(whereQuery)
+			.offset((page - 1) * perPage)
+			.limit(perPage)
 			.orderBy('createdAt', 'desc');
+
+		let total = await this.db('orders').select(this.db.raw(`count(id) as count`)).where(whereQuery).first();
+		total = total ? total.count : 0;
 
 		const orders = [];
 		for (const order of dbOrders) {
+			// TODO: Optimizar
 			orders.push(await this.getOrder(order.id));
 		}
-		return orders;
+		return { pagination: { page, perPage, total }, orders };
 	}
 }
