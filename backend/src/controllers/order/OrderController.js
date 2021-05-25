@@ -135,7 +135,19 @@ module.exports = class OrderController {
 		return new Order(this.server, { ...order, mpLink }, orderProducts, client, delivery);
 	}
 
-	async getOrders() {
-		// TODO
+	async getOrders({ fromDate, toDate, clientId }) {
+		const dbOrders = await this.db('orders')
+			.modify(builder => {
+				if (fromDate) builder.where('createdAt', '>=', fromDate);
+				if (toDate) builder.where('createdAt', '<=', toDate);
+				if (clientId) builder.where('clientId', clientId);
+			})
+			.orderBy('createdAt', 'desc');
+
+		const orders = [];
+		for (const order of dbOrders) {
+			orders.push(await this.getOrder(order.id));
+		}
+		return orders;
 	}
 }
