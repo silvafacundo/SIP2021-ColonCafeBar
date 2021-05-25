@@ -20,7 +20,7 @@ module.exports = class ClientController {
 		if (!firstName) throw new PublicError('email is required!');
 
 		const { status, message } = this.utils.auth.isSafePassword(password);
-		if (!status) throw new new PublicError(message);
+		if (!status) throw new PublicError(message);
 
 		if (lastName && typeof lastName !== 'string') throw new PublicError('lastName must be a string!');
 		if (phoneNumber && typeof phoneNumber !== 'string') throw new PublicError('phoneNumber must be a string!');
@@ -52,6 +52,31 @@ module.exports = class ClientController {
 		if (!user) return null;
 		const addresses = await this.utils.addresses.getUserAddresses(user.id);
 		return new Client(this.server, user, addresses);
+	}
+
+	async updateClient({ clientId, email, firstName, lastName, phoneNumber, password, isActive }) {
+		if (!clientId) throw Error('clientId is required!');
+
+		const client = await this.getClient({ userId: clientId });
+		if (!client) throw Error('client not found!');
+
+		if (password) {
+			const { status, message } = this.utils.auth.isSafePassword(password);
+			if (!status) throw new Error(message);
+		}
+
+		const toUpdate = {};
+		if (email) toUpdate.email = email;
+		if (firstName) toUpdate.firstName = firstName;
+		if (lastName) toUpdate.lastName = lastName;
+		if (phoneNumber) toUpdate.phoneNumber = phoneNumber;
+		if (password) toUpdate.password = await this.utils.auth.encryptPassword(password);
+		if (password) toUpdate.sessionValidDate = this.db.fn.now();
+		if (typeof isActive === 'boolean') toUpdate.isActive = isActive;
+
+		if (Object.keys(toUpdate).length < 1) throw PublicError('At least one param is required!');
+
+		await this.db('clients').where({ id: clientId }).update(toUpdate);
 	}
 
 	async getClientHashPassword(userId) {

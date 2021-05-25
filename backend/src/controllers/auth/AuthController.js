@@ -36,14 +36,17 @@ module.exports = class AuthController {
 	}
 	async generateResetPasswordToken(userId, isAdmin = false ) {
 		const tableName = isAdmin ? 'users' : 'clients';
+
 		let user = this.db(tableName).where('id', userId).first();
 		if (!user) throw new Error('Invalid user');
+
 		const token = uuidv4();
 		const result = await this.db('resetPassword').insert({
 			accountId: userId,
 			accountType: tableName,
 			token
 		}).returning('*');
+
 		return result[0];
 	}
 
@@ -57,12 +60,11 @@ module.exports = class AuthController {
 		// Chequea si el token tiene mas de 24hs
 		if ((Date.now() - tokenCreation) > (24 * 60 * 60 * 1000)) throw new PublicError('Invalid token')
 
-		const { accountId: userId, accountType } = tokenData;
+		const { accountId, accountType } = tokenData;
 		if (accountType === 'users') {
-			await this.utils.users.updateUser({ userId, password });
+			await this.utils.users.updateUser({ userId: accountId, password });
 		} else if (accountType === 'clients') {
-			// TODO: Implement this
-			console.warn('TO IMPLEMENT...');
+			await this.utils.clients.updateClient({ clientId: accountId, password });
 		}
 
 		await this.db('resetPassword').where('id', tokenData.id).update({

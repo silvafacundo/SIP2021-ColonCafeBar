@@ -48,6 +48,7 @@ module.exports = class UserController {
 
 		const user = await this.getUser({ userId, ignoreInactive: true });
 		if (!user) throw Error('user not found!');
+
 		if (password) {
 			const { status, message } = this.utils.auth.isSafePassword(password);
 			if (!status) throw new Error(message);

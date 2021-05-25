@@ -18,6 +18,7 @@ const ClientController = require('./controllers/clients/ClientsController');
 const AuthController = require('./controllers/auth/AuthController');
 const OrderController = require('./controllers/order/OrderController');
 const MercadoPagoController = require('./controllers/MercadoPago/MercadoPagoController');
+const MailController = require('./controllers/mail/MailController');
 
 module.exports = class Server {
 	constructor() {
@@ -129,6 +130,7 @@ module.exports = class Server {
 		* @property {DeliveryController} Utils.deliveries
 		* @property {OrderController} Utils.orders
 		* @property {MercadoPagoController} Utils.mercadopago
+		* @property {MailController} Utils.mailController
 		*/
 
 		/** @type {Utils} Server Utils */
@@ -143,7 +145,8 @@ module.exports = class Server {
 			clients: new ClientController(this),
 			orders: new OrderController(this),
 			logger: logger,
-			mercadopago: new MercadoPagoController(this)
+			mercadopago: new MercadoPagoController(this),
+			mailController: new MailController(this)
 		}
 		logger.info('Server running');
 		const admins = await this.db('users').where({ isAdmin: true }).first();
