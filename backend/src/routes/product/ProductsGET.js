@@ -8,7 +8,9 @@ module.exports = class ProductAllGET extends Route {
 	async run(req, res) {
 		try {
 			//get all products
-			const products = await this.utils.products.getAllProducts();
+			// TODO: Que se puedan usar los filtros
+
+			const products = await this.utils.products.getAllProducts({ filters: { isActive: true } });
 
 			return res.json({
 				message: 'Products successfully retrieved!',

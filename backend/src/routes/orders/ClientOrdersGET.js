@@ -7,10 +7,12 @@ module.exports = class ClientOrdersGET extends Route {
 
 	async run(req, res, user) {
 		try {
-			const { perPage = 20, page = 1, filters, orderBy } = req.body;
+			let { perPage = 20, page = 1, filters, orderBy } = req.body;
 
-			if (typeof filters === 'object')
-				filters.clientsId = [user.id];
+			if (typeof filters !== 'object')
+				filters = {};
+
+			filters.clientsId = [user.id];
 
 			const { orders, pagination } = await this.utils.orders.getOrders({ perPage, page, filters, orderBy });
 

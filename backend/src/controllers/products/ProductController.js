@@ -14,7 +14,7 @@ module.exports = class ProductController {
 		return this.server.utils;
 	}
 
-	async _productQuery(where) {
+	_productQuery(where) {
 		if (typeof where === 'undefined' || where === null) where = () => {};
 		const priceSubQuery = this.db('productPrices')
 			.select(this.db.raw(`MAX("createdAt") as productPriceDate`), 'productPrices.productId')
@@ -30,7 +30,7 @@ module.exports = class ProductController {
 			})
 			.as('productPrice');
 
-		return await await this.db('products')
+		return this.db('products')
 			.select('products.*', 'categories.name as categoryName', 'productPrice.price')
 			.innerJoin(priceQuery, 'products.id', 'productPrice.productId')
 			.innerJoin('categories', 'products.idCategory', 'categories.id');
@@ -88,8 +88,31 @@ module.exports = class ProductController {
 	}
 
 	//Get all products loaded
-	async getAllProducts() {
-		const products = await this._productQuery();
+	async getAllProducts({ page = 1, perPage = 20, filters, orderBy = {} } = {}) {
+		if (isNaN(page)) throw new PublicError('page should be a number');
+		if (isNaN(perPage)) throw new PublicError('perPage should be a number');
+
+		const orders = [];
+		if (orderBy.price) orders.push({ column: 'price', order: orderBy.price === 'asc' ? 'asc' : 'desc' });
+		if (orderBy.createdAt) orders.push({ column: 'price', order: orderBy.createdAt === 'asc' ? 'asc' : 'desc' });
+
+		const whereQuery = builder => {
+			const { categoriesId, isActive, fromDate, toDate, fromPrice, toPrice, query } = filters || {};
+			if (categoriesId && Array.isArray(categoriesId)) builder.whereIn('categoryId', categoriesId);
+			if (fromDate) builder.where('createdAt', '>=', fromDate);
+			if (toDate) builder.where('createdAt', '<=', toDate);
+			if (fromPrice) builder.where('price', '>=', fromPrice)
+			if (toPrice) builder.where('price', '<=', toPrice);
+			if (query) {
+				builder.where(this.db.raw(`(lower(products.name) like '%' || ? || '%' or lower(categories.name) like '%'|| ? ||'%' or lower(description) like '%' || ? || '%')`, [query, query, query]), );
+			}
+			if (typeof isActive === 'boolean') builder.where('products.isActive', isActive);
+		}
+
+		const products = await this._productQuery()
+			.where(whereQuery)
+			.offset((page - 1) * perPage)
+			.limit(perPage);
 
 		return products.map(product => {
 			return new Product(this.server, product, new Category(this.server, { id: product.idCategory, name: product.categoryName }), product.price);
