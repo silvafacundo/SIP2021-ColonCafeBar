@@ -14,8 +14,8 @@
 				<router-link class="b-navbar-item" :to="{ name: 'adminRoles' }">Roles</router-link>
 				<router-link class="b-navbar-item" :to="{ name: 'adminPermissions' }">Permisos</router-link>
 				<!-- <router-link class="b-navbar-item" :to="{ name: 'adminUsers' }">Categorías</router-link>
-				<router-link class="b-navbar-item" :to="{ name: 'adminUsers' }">Productos</router-link>
-				<router-link class="b-navbar-item" :to="{ name: 'adminUsers' }">Pedidos</router-link> -->
+				<router-link class="b-navbar-item" :to="{ name: 'adminUsers' }">Productos</router-link> -->
+				<router-link class="b-navbar-item" :to="{ name: 'adminOrders' }">Pedidos</router-link>
 			</template>
 
 			<template #end>

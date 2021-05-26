@@ -8,7 +8,7 @@ module.exports = class OrderPUT extends Route {
 	async run(req, res) {
 		const { orderId, status, isPaid, deliveryId } = req.body;
 		if (!orderId) return res.status(400).json({ message: 'id is required!' });
-		if (typeof isPaid !== 'boolean' && (!status && typeof status !== 'string')) return res.status(400).json({ message: 'isPaid or status is required' });
+		if (typeof isPaid !== 'boolean' && !deliveryId && (!status && typeof status !== 'string')) return res.status(400).json({ message: 'isPaid or status is required' });
 
 		try {
 			const order = await this.utils.orders.getOrder(orderId);

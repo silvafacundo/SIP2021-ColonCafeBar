@@ -6,7 +6,6 @@ module.exports = class DeliveriesGET extends Route {
 	}
 
 	async run(req, res) {
-		// Check if body parameters are valid
 		try {
 			// Get all deliveries
 			const deliveries = await this.utils.deliveries.getAllDeliveries();
