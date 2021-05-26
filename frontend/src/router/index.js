@@ -4,23 +4,24 @@ import store from '../store';
 
 import ResetPassword from '../views/ResetPassword';
 
-import Home from '../views/home';
-import Register from '../views/register';
-import Login from '../views/login';
-import Profile from '../views/profile';
+import Home from '../views/Home';
+import Register from '../views/Register';
+import Login from '../views/Login';
+import Profile from '../views/Profile';
 
 
-import Order from '../views/order';
-import Cart from '../views/cart';
+import Order from '../views/Order';
+import Cart from '../views/Cart';
 
 import EmptyRoute from '../components/EmptyRoute.vue';
 
 //
-import AdminLogin from '../views/admin/login';
-import Dashboard from '../views/admin/dashboard';
-import Users from '../views/admin/users' ;
+import AdminLogin from '../views/admin/Login';
+import Dashboard from '../views/admin/Dashboard';
+import Users from '../views/admin/Users';
 import Permissions from '../views/admin/Permissions';
 import Roles from '../views/admin/Roles';
+import Orders from '../views/admin/Orders';
 //
 
 Vue.use(VueRouter)
@@ -47,7 +48,8 @@ const routes = [
 	{ path: '/admin', name: 'adminDashboard', component: Dashboard, children: [
 		{ path: 'users', name: 'adminUsers', component: Users },
 		{ path: 'roles', name: 'adminRoles', component: Roles },
-		{ path: 'permissions', name: 'adminPermissions', component: Permissions }
+		{ path: 'permissions', name: 'adminPermissions', component: Permissions },
+		{ path: 'ordenes', name: 'adminOrders', component: Orders },
 	] }
 ]
 
