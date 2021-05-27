@@ -32,7 +32,7 @@
 					:can-edit="true"
 					@change="editPhoneNumber(props.row.id, $event)" />
 			</b-table-column>
-			<b-table-column v-slot="props" label="Habilitado">
+			<b-table-column v-slot="props">
 				<b-button type="is-danger"
 					size="is-small"
 					@click="() => deleteDelivery(props.row.id)">
@@ -113,37 +113,36 @@ export default {
 		async editFirstName(id, firstName) {
 			try {
 				await this.$store.dispatch('Delivery/updateDelivery', { id, name: firstName });
+				this.$showToast('Nombre modificado con éxito');
 			} catch (err) {
 				this.$showToast('Error al cambiar el nombre del delivery', true);
 			}
-			this.$showToast('Nombre modificado con éxito');
 		},
 		async editLastName(id, lastName) {
 			try {
 				await this.$store.dispatch('Delivery/updateDelivery', { id, lastName });
+				this.$showToast('Apellido modificado con éxito');
 			} catch (err) {
 				this.$showToast('Error al cambiar el apellido del delivery', true);
 			}
-			this.$showToast('Apellido modificado con éxito');
 		},
 		async editPhoneNumber(id, phoneNumber) {
 			try {
 				await this.$store.dispatch('Delivery/updateDelivery', { id, phoneNumber });
+				this.$showToast('Número de teléfono modificado con éxito');
 			} catch (err) {
 				this.$showToast('Error al cambiar el apellido del delivery', true);
 			}
-			this.$showToast('Número de teléfono modificado con éxito');
 		},
 		async deleteDelivery(id) {
 			this.$buefy.dialog.confirm({
-				title: 'Deshabilitado un delivery',
+				title: 'Deshabilitando un delivery',
 				message: '<b>¿Seguro que desea deshabilitar a este delivery?</b><br>Al deshabilitar el delivery este dejará de aparecer como opción en las ordenes',
 				confirmText: 'Sí',
 				cancelText: 'Cancelar',
 				type: 'is-danger',
 				hasIcon: true,
 				onConfirm: () => this._deleteDelivery(id),
-				onCancel: () => this.fetchDeliveries()
 			});
 		},
 		async _deleteDelivery(id) {
@@ -155,21 +154,23 @@ export default {
 		},
 		async register() {
 			this.error = '';
+			const firstName = this.firstName;
+			const lastName = this.lastName;
+			const phoneNumber= this.phoneNumber;
+			// RESET FIELDS
+			this.firstName = '';
+			this.lastName = '';
+			this.phoneNumber = '';
 			try {
-				await this.$store.dispatch('Delivery/createDelivery', { name: this.firstName, lastName: this.lastName, phoneNumber: this.phoneNumber });
+				await this.$store.dispatch('Delivery/createDelivery', { name: firstName, lastName, phoneNumber });
 				this.registerModalActive = false;
 				await this.fetchDeliveries();
-
-				// RESET FIELDS
-				this.firstName = '';
-				this.lastName = '';
-				this.phoneNumber = '';
+				this.$showToast('Delivery creado con éxito');
 			} catch (err) {
 				console.error('Failed to register', err);
 				if (err && err.response && err.response.data) this.error = err.response.data.message;
 				else this.error = 'Ocurrió un error';
 			}
-			this.$showToast('Delivery creado con éxito');
 		},
 	}
 }

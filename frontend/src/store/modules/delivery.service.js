@@ -18,7 +18,7 @@ const actions = {
 	async fetchDeliveries({ commit }) {
 		try {
 			const response = await Vue.axios.get('/admin/deliveries');
-			const deliveries = response.data.deliveries;
+			const deliveries = response.data.payload;
 			commit('setDeliveries', deliveries);
 			return deliveries;
 		} catch (err) {

@@ -189,15 +189,18 @@ export default {
 		},
 		async register() {
 			this.error = '';
+			const username = this.username;
+			const name = this.name;
+			const password = this.password;
+
+			// RESET FIELDS
+			this.username = '';
+			this.name = '';
+			this.password = '';
 			try {
-				await this.$store.dispatch('Auth/registerAdmin', { username: this.username, name: this.name, password: this.password });
+				await this.$store.dispatch('Auth/registerAdmin', { username, name, password });
 				this.registerModalActive = false;
 				await this.fetchUsers();
-
-				// RESET FIELDS
-				this.username = '';
-				this.name = '';
-				this.password = '';
 			} catch (err) {
 				console.error('Failed to register', err);
 				if (err && err.response && err.response.data) this.error = err.response.data.message;
