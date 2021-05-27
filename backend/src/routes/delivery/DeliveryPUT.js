@@ -12,13 +12,17 @@ module.exports = class DeliveryPUT extends Route {
 
 		try {
 			const delivery = await this.utils.deliveries.getDelivery(id);
-			//if delivery doesn't exists, display a error message
-			if (!delivery){
-				res.json({ message: 'There is no delivery with that id' });
-			} else {
-				await this.utils.deliveries.updateDelivery({ id, name, lastName, phoneNumber });
-				return res.json({ message: 'Delivery successfully updated' });
-			}
+			if (!delivery) return res.status(400).json({ message: 'delivery not found!' });
+
+			const toUpdate = {};
+			if (name) toUpdate.name = name;
+			if (lastName) toUpdate.lastName = lastName;
+			if (phoneNumber) toUpdate.phoneNumber = phoneNumber;
+			if (Object.keys(toUpdate).length === 0) return res.status(400).json({ message: 'At least one param is required!' });
+
+			await this.utils.deliveries.updateDelivery({ id, name, lastName, phoneNumber });
+
+			return res.json({ message: 'Delivery successfully updated' });
 		} catch (error) {
 			return super.error(res, error);
 		}

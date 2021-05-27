@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class ProductGET extends Route {
 	constructor() {
-		super('/product', 'get', { permissions: 'menu' });
+		super('/admin/product', 'get', { permissions: 'menu' });
 	}
 
 	async run(req, res, user) {
@@ -18,7 +18,7 @@ module.exports = class ProductGET extends Route {
 
 			return res.json({
 				message: 'Product successfully retrieved!',
-				product
+				payload: product
 			});
 		} catch (error) {
 			return super.error(res, error);

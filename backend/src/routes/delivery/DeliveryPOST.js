@@ -12,12 +12,8 @@ module.exports = class DeliveryPOST extends Route {
 		if (!lastName) return res.status(400).json({ message: 'lastName is required!' });
 		if (!phoneNumber) return res.status(400).json({ message: 'phoneNumber is required!' });
 
-		try {
-			// Insert into database
-			const delivery = await this.utils.deliveries.createDelivery({ name, lastName, phoneNumber });
-			return res.json({ message: 'Delivery successfully created!', delivery });
-		} catch (error) {
-			return super.error(res, error);
-		}
+		// Insert into database
+		const delivery = await this.utils.deliveries.createDelivery({ name, lastName, phoneNumber });
+		return res.json({ message: 'Delivery successfully created!', delivery });
 	}
 }

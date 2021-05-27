@@ -5,9 +5,11 @@ module.exports = class Delivery extends BaseModel {
 		super(server);
 		this._delivery = delivery;
 	}
+
 	get id() {
 		return this._delivery.id;
 	}
+
 	get name() {
 		return this._delivery.name;
 	}

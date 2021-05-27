@@ -2,6 +2,7 @@ module.exports = class BaseModel {
 	constructor(server) {
 		this.server = server;
 	}
+
 	get publicProperties() {
 		const proto = Object.getPrototypeOf(this);
 		const getters = Object.entries(Object.getOwnPropertyDescriptors(proto))

@@ -5,15 +5,15 @@ module.exports = class DeliveriesGET extends Route {
 		super('/admin/deliveries', 'get');
 	}
 
-	async run(req, res) {
+	async run(req, res, user) {
 		try {
 			// Get all deliveries
 			const deliveries = await this.utils.deliveries.getAllDeliveries();
-			if (!deliveries){
-				return res.json({ message: 'There are no loaded deliveries!' });
-			} else {
-				return res.json({ deliveries });
-			}
+
+			return res.json({
+				message: 'Deliveries Sucessfully retrieved!',
+				payload: deliveries
+			});
 		} catch (error) {
 			return super.error(res, error);
 		}
