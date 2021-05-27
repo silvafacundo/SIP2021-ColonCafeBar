@@ -16,6 +16,7 @@
 				<!-- <router-link class="b-navbar-item" :to="{ name: 'adminUsers' }">Categorías</router-link>
 				<router-link class="b-navbar-item" :to="{ name: 'adminUsers' }">Productos</router-link> -->
 				<router-link class="b-navbar-item" :to="{ name: 'adminOrders' }">Pedidos</router-link>
+				<router-link class="b-navbar-item" :to="{ name: 'adminDeliveries' }">Deliveries</router-link>
 			</template>
 
 			<template #end>
