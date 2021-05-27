@@ -61,7 +61,6 @@ const actions = {
 				isPaid,
 				deliveryId
 			});
-			//await dispatch('fetchOrders');
 		} catch (err) {
 			console.error('Failed to update order', err);
 			throw err;

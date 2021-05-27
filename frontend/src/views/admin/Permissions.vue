@@ -124,22 +124,23 @@ export default {
 		border-top: 2px solid var(--negro);
 		border-radius: 5px;
 		gap:3em;
-			input[type=text] ,label{
-				margin-left: 1em;
-			}
 
-			input[type=submit]{
-				margin-left: 2em;
-				padding:.2em 1.5em;
-				background-color: var(--verde-ok);
-				border-radius:5px;
-				color:var(--blanco);
-				font-size: 1em;
-			}
-
-			input[type=submit]:hover{
-				background-color:var(--verde-oscuro);
-				cursor:pointer;
-			}
+		input[type=text] ,label{
+			margin-left: 1em;
 		}
+
+		input[type=submit]{
+			margin-left: 2em;
+			padding:.2em 1.5em;
+			background-color: var(--verde-ok);
+			border-radius:5px;
+			color:var(--blanco);
+			font-size: 1em;
+		}
+
+		input[type=submit]:hover{
+			background-color:var(--verde-oscuro);
+			cursor:pointer;
+		}
+	}
 </style>

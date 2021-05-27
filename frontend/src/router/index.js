@@ -23,6 +23,7 @@ import Permissions from '../views/admin/Permissions';
 import Roles from '../views/admin/Roles';
 import Orders from '../views/admin/Orders';
 import Deliveries from '../views/admin/Deliveries';
+import Categories from '../views/admin/Categories';
 //
 
 Vue.use(VueRouter)
@@ -52,6 +53,7 @@ const routes = [
 		{ path: 'permissions', name: 'adminPermissions', component: Permissions },
 		{ path: 'ordenes', name: 'adminOrders', component: Orders },
 		{ path: 'deliveries', name: 'adminDeliveries', component: Deliveries },
+		{ path: 'categories', name: 'adminCategories', component: Categories },
 	] }
 ]
 

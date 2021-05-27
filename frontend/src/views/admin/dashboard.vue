@@ -17,6 +17,7 @@
 				<router-link class="b-navbar-item" :to="{ name: 'adminUsers' }">Productos</router-link> -->
 				<router-link class="b-navbar-item" :to="{ name: 'adminOrders' }">Pedidos</router-link>
 				<router-link class="b-navbar-item" :to="{ name: 'adminDeliveries' }">Deliveries</router-link>
+				<router-link class="b-navbar-item" :to="{ name: 'adminCategories' }">Categorías</router-link>
 			</template>
 
 			<template #end>
