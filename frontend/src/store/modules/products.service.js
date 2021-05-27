@@ -17,7 +17,7 @@ const mutations = {
 const actions = {
 	async fetchProducts({ commit } ) {
 		try {
-			const response = await Vue.axios.get('/products');
+			const response = await Vue.axios.post('/products');
 			const products = response.data.products;
 			commit('setProducts', products);
 			return products;
