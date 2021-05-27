@@ -22,6 +22,7 @@ import Users from '../views/admin/Users';
 import Permissions from '../views/admin/Permissions';
 import Roles from '../views/admin/Roles';
 import Orders from '../views/admin/Orders';
+import Deliveries from '../views/admin/Deliveries';
 //
 
 Vue.use(VueRouter)
@@ -50,6 +51,7 @@ const routes = [
 		{ path: 'roles', name: 'adminRoles', component: Roles },
 		{ path: 'permissions', name: 'adminPermissions', component: Permissions },
 		{ path: 'ordenes', name: 'adminOrders', component: Orders },
+		{ path: 'deliveries', name: 'adminDeliveries', component: Deliveries },
 	] }
 ]
 

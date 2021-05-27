@@ -156,7 +156,7 @@ export default {
 			if (value) return this._changeActive(userId, value);
 			this.$buefy.dialog.confirm({
 				title: 'Deshabilitado un usuario',
-				message: '<b>¿Seguro que desea deshabilitar a este usuario?</b><br>Al deshabilitar el usuario este perderá acceso el acceso',
+				message: '<b>¿Seguro que desea deshabilitar a este usuario?</b><br>Al deshabilitar el usuario este perderá el acceso',
 				confirmText: 'Sí',
 				cancelText: 'Cancelar',
 				type: 'is-danger',
