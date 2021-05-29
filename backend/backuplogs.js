@@ -10,7 +10,7 @@ const path = require('path')
 console.log('[CRONJOB] Cronjob backup logs running');
 
 const logsDir = path.join(__dirname, `./src/logs`);
-cron.schedule('* * * * *', () => {
+cron.schedule('0 0 1 * *', () => {
 	const fileName = `${moment().format('YYYY-MM')}.zip`;
 	const output = file_system.createWriteStream(path.join(__dirname, `./backups/logs/${fileName}`));
 	const archive = archiver('zip');
