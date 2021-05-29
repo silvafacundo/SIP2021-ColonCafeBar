@@ -4,4 +4,5 @@ yarn.lock
 package-lock.json
 backend/public
 *.log
+backups
 backend/src/logs/log-api.log
