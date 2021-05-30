@@ -1,7 +1,5 @@
 const cron = require('node-cron');
 const fs = require('fs');
-const jszip = new require('jszip')();
-const file_system = require('fs');
 const archiver = require('archiver');
 const moment = require('moment');
 
@@ -12,7 +10,7 @@ console.log('[CRONJOB] Cronjob backup logs running');
 const logsDir = path.join(__dirname, `./src/logs`);
 cron.schedule('0 0 1 * *', () => {
 	const fileName = `${moment().format('YYYY-MM')}.zip`;
-	const output = file_system.createWriteStream(path.join(__dirname, `./backups/logs/${fileName}`));
+	const output = fs.createWriteStream(path.join(__dirname, `./backups/logs/${fileName}`));
 	const archive = archiver('zip');
 
 	output.on('close', async function () {
