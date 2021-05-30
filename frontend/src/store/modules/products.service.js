@@ -9,7 +9,7 @@ const state = () => ({
 
 const getters = {
 	products: state => state.products,
-	categories: state => state.categories,
+	categories: state => state.categories
 };
 const mutations = {
 	setProducts(state, products) {
@@ -20,14 +20,25 @@ const mutations = {
 	},
 };
 const actions = {
-	async fetchProducts({ commit } ) {
+	async fetchProducts({ commit }, { filters, page, perPage, orderBy } = {} ) {
 		try {
-			const response = await Vue.axios.post('/products');
+			const response = await Vue.axios.post('/products', { filters, page, perPage, orderBy });
 			const products = response.data.payload;
 			commit('setProducts', products);
 			return products;
 		} catch (err) {
 			console.error('Failed to fetch products', err);
+			throw err;
+		}
+	},
+	async fetchAdminProducts({ commit }, { filter, page, perPage, orderBy } = {}) {
+		try {
+			const response = await Vue.axios.post('/admin/products', { filter, page, perPage, orderBy });
+			const products = response.data.payload;
+			commit('setProducts', products);
+			return products;
+		} catch (err) {
+			console.error('Failed to fetch admin products', err);
 			throw err;
 		}
 	},
@@ -45,6 +56,7 @@ const actions = {
 			const response = await Vue.axios.get('/categories');
 			const categories = response.data.categories;
 			commit('setCategories', categories);
+			console.log(categories);
 			return categories;
 		} catch (err) {
 			console.error('Failed to fetch categories', err)
@@ -80,7 +92,32 @@ const actions = {
 			throw err;
 		}
 	},
-};
+	async updateProduct({ dispatch }, { productId, ...values }) {
+		try {
+			const response = await Vue.axios.put(`/admin/product`, {
+				productId,
+				...values,
+			});
+			await dispatch('fetchAdminProducts');
+			return response.data.payload;
+		} catch (err) {
+			console.error('Failed to update product', err);
+			throw err;
+		}
+	},
+	async createProduct({ dispatch }, { ...values }) {
+		try {
+			const response = await Vue.axios.post(`/admin/product`, {
+				...values
+			});
+			await dispatch('fetchAdminProducts');
+			return response.data.payload;
+		} catch (err) {
+			console.error('Failed to create product', err);
+			throw err;
+		}
+	}
+}
 
 export default {
 	namespaced: true,

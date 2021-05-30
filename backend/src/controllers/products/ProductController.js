@@ -97,13 +97,14 @@ module.exports = class ProductController {
 		orders.push({ column: 'price', order: orderBy.createdAt === 'asc' ? 'asc' : 'desc' });
 
 		const whereQuery = builder => {
-			const { categoriesId, isActive, fromDate, toDate, fromPrice, toPrice, query } = filters || {};
+			let { categoriesId, isActive, fromDate, toDate, fromPrice, toPrice, query } = filters || {};
 			if (categoriesId && Array.isArray(categoriesId)) builder.whereIn('categoryId', categoriesId);
 			if (fromDate) builder.where('createdAt', '>=', fromDate);
 			if (toDate) builder.where('createdAt', '<=', toDate);
 			if (fromPrice) builder.where('price', '>=', fromPrice)
 			if (toPrice) builder.where('price', '<=', toPrice);
 			if (query) {
+				query = query.toLowerCase();
 				builder.where(this.db.raw(`(lower(products.name) like '%' || ? || '%' or lower(categories.name) like '%'|| ? ||'%' or lower(description) like '%' || ? || '%')`, [query, query, query]), );
 			}
 			if (typeof isActive === 'boolean') builder.where('products.isActive', isActive);
@@ -131,22 +132,25 @@ module.exports = class ProductController {
 	}
 
 	//Update specific product
-	async updateProduct( { productId, idCategory, name, description, price }) {
-		if (!productId) throw Error('productId is required!');
+	async updateProduct( { productId, idCategory, name, description, isActive, price }) {
+		if (!productId) throw new PublicError('productId is required!');
 
 		const exists = await this.getProduct(productId);
-		if (!exists) throw new Error('Product doesn\'t exists');
+		if (!exists) throw new PublicError('Product doesn\'t exists');
+		if (!productId && !idCategory && !name && !description && typeof isActive !== 'boolean' && !price) throw PublicError('At least one parameter is required');
 
 		const trx = await this.db.transaction();
 		try {
-			await this.db('products')
-				.where({ id: productId })
-				.update({
-					idCategory,
-					name: name,
-					description: description,
-				})
-				.transacting(trx);
+			if (idCategory || name || description || typeof isActive === 'boolean')
+				await this.db('products')
+					.where({ id: productId })
+					.update({
+						idCategory,
+						name: name,
+						description: description,
+						isActive
+					})
+					.transacting(trx);
 
 			if (typeof price !== 'undefined' && price !== null) {
 				await this.updateProductPrice(productId, price, trx);

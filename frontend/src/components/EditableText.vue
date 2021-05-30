@@ -11,7 +11,6 @@
 				@blur="stopEditing"
 				@focus="onStartEdit"
 				@keyup.enter="textInputElement.blur()">
-
 			<b-input v-else
 				ref="text-b-input"
 				v-model="localText"
@@ -43,7 +42,7 @@ export default {
 			default: null
 		},
 		value: {
-			type: String,
+			type: [String, Number],
 			default: ''
 		},
 		placeholder: {

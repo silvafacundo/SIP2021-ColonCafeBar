@@ -23,6 +23,9 @@ module.exports = class Product extends BaseModel {
 		return this._product.description;
 	}
 	get price(){
-		return this._price;
+		return this._price || 0;
+	}
+	get isActive(){
+		return this._product.isActive;
 	}
 }
