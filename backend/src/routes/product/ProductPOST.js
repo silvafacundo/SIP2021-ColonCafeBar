@@ -6,7 +6,7 @@ module.exports = class ProductPOST extends Route {
 	}
 
 	async run(req, res, user) {
-		const { idCategory, name, description, price } = req.body;
+		const { idCategory, name, description, price, variants } = req.body;
 		// Check if body parameters are valid
 		if (!idCategory) return res.status(400).json({ message: 'idCategory is required!' });
 		if (!name && typeof name !=='string') return res.status(400).json({ message: 'name is required!' });
@@ -15,7 +15,7 @@ module.exports = class ProductPOST extends Route {
 
 		try {
 			// Insert into database
-			await this.utils.products.createProduct({ idCategory, name, description, price });
+			await this.utils.products.createProduct({ idCategory, name, description, price, variants });
 			return res.json({ message: 'Product successfully created!' });
 		} catch (error) {
 			return super.error(res, error);

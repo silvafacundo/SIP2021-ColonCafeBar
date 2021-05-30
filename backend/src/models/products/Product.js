@@ -28,4 +28,7 @@ module.exports = class Product extends BaseModel {
 	get isActive(){
 		return this._product.isActive;
 	}
+	get variants() {
+		return this._product.variants;
+	}
 }
