@@ -48,6 +48,23 @@ module.exports = class AddressController {
 		return new Address(this.server, address[0]);
 	}
 
+	async updateAddress({ addressId, alias, city, neighborhood, corner, coordinates, street, number, floor, postalCode }) {
+		if (!isValid(addressId)) throw new PublicError('addressId is required');
+		if (!isValid(city) && !isValid(neighborhood)
+			&& typeof street !== 'string'
+			&& !isValid(number)
+			&& !isValid(alias)
+			&& !isValid(coordinates)
+			&& !isValid(floor)
+			&& !isValid(postalCode)
+			&& !isValid(corner)) throw new PublicError('At least one parameter is required');
+
+		await this.db('addresses').update({
+			alias, city, neighborhood, corner, coordinates, street, number, floor, postalCode
+		})
+			.where({ id: addressId });
+	}
+
 	async getAddress(id, fetchDeleted = false) {
 		const whereQuery = { id };
 		if (!fetchDeleted)  whereQuery.isDeleted = false;

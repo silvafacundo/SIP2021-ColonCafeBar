@@ -21,7 +21,7 @@ const mutations = {
 		if (typeof newCart[productId] !== 'number')
 			newCart[productId] = 0;
 		newCart[productId] += amount || 1;
-		if (newCart[productId] < 0) newCart[productId] = 0;
+		if (newCart[productId] <= 0) delete newCart[productId];
 		localStorage.setItem('cart', JSON.stringify(newCart));
 		state.cart = newCart;
 	},

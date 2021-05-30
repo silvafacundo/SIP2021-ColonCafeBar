@@ -10,6 +10,7 @@ import Login from '../views/Login';
 import Profile from '../views/Profile';
 
 
+import Products from '../views/Products';
 import Order from '../views/Order';
 import Cart from '../views/Cart';
 
@@ -24,6 +25,7 @@ import Roles from '../views/admin/Roles';
 import Orders from '../views/admin/Orders';
 import Deliveries from '../views/admin/Deliveries';
 import Categories from '../views/admin/Categories';
+import AdminProducts from '../views/admin/Products';
 //
 
 Vue.use(VueRouter)
@@ -37,13 +39,15 @@ const publicRoutes = [
 ]
 
 const routes = [
-	{ path: '/', name: 'home', component: Home },
-	{ path: '/login', name: 'login', component: Login },
-	{ path: '/resetpassword/:token', props: true, name: 'resetPassword', component: ResetPassword },
-	{ path: '/register', name: 'register', component: Register },
-	{ path: '/me', name: 'me', component: Profile },
-	{ path: '/cart', name: 'cart', component: Cart },
-	{ path: '/order/:orderId', props: true, name: 'order', component: Order },
+	{ path: '/', component: Home, children: [
+		{ path: '/', name: 'home',  component: Products },
+		{ path: 'login', name: 'login', component: Login },
+		{ path: 'resetpassword/:token', props: true, name: 'resetPassword', component: ResetPassword },
+		{ path: 'register', name: 'register', component: Register },
+		{ path: 'me', name: 'me', component: Profile },
+		{ path: 'cart', name: 'cart', component: Cart },
+		{ path: 'order/:orderId', props: true, name: 'order', component: Order },
+	] },
 
 	// ADMIN:
 	{ path: '/admin/login', name: 'adminLogin', component: AdminLogin },
@@ -54,6 +58,7 @@ const routes = [
 		{ path: 'ordenes', name: 'adminOrders', component: Orders },
 		{ path: 'deliveries', name: 'adminDeliveries', component: Deliveries },
 		{ path: 'categories', name: 'adminCategories', component: Categories },
+		{ path: 'products', name: 'adminProducts', component: AdminProducts }
 	] }
 ]
 

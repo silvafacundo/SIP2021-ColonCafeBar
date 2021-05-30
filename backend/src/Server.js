@@ -128,6 +128,7 @@ module.exports = class Server {
 		* @property {CategoryController} Utils.categories
 		* @property {ProductController} Utils.products
 		* @property {DeliveryController} Utils.deliveries
+		* @property {ClientController} Utils.clients
 		* @property {OrderController} Utils.orders
 		* @property {MercadoPagoController} Utils.mercadopago
 		* @property {MailController} Utils.mailController

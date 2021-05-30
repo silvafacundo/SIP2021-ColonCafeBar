@@ -14,6 +14,12 @@ module.exports = class Address extends BaseModel {
 	get clientId() {
 		return this._address.clientId;
 	}
+	get alias() {
+		return this._address.alias;
+	}
+	get corner() {
+		return this._address.corner;
+	}
 	get street() {
 		return this._address.street;
 	}

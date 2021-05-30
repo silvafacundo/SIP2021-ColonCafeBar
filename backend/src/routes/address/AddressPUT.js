@@ -2,17 +2,17 @@ const Route = require('../../models/Route');
 
 module.exports = class AddressPOST extends Route {
 	constructor() {
-		super('/address', 'post', { isPublic: false });
+		super('/address', 'put', { isPublic: false });
 	}
 
 	async run(req, res, user) {
-		const { alias, street, number, city = 'Buenos Aires', neighborhood = 'Chivilcoy', corner, coordinates, floor, postalCode ='6620' } = req.body;
+		const { addressId, alias, street, number, city, neighborhood, corner, coordinates, floor, postalCode } = req.body;
 		// Check if body parameters are valid
 
 		try {
 			// Insert into database
-			const address = await this.utils.addresses.createAddress({
-				clientId: user.id,
+			const address = await this.utils.addresses.updateAddress({
+				addressId,
 				alias,
 				street,
 				number,
@@ -24,7 +24,7 @@ module.exports = class AddressPOST extends Route {
 				city
 			});
 
-			return res.json({ message: 'Address successfully created!', address });
+			return res.json({ message: 'Address successfully updated!', address });
 		} catch (error) {
 			return super.error(res, error);
 		}
