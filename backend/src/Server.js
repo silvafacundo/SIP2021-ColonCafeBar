@@ -19,7 +19,6 @@ const AuthController = require('./controllers/auth/AuthController');
 const OrderController = require('./controllers/order/OrderController');
 const MercadoPagoController = require('./controllers/MercadoPago/MercadoPagoController');
 const MailController = require('./controllers/mail/MailController');
-const Storage = require('./controllers/Storage');
 
 module.exports = class Server {
 	constructor() {
