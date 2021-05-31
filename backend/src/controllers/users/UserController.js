@@ -90,9 +90,9 @@ module.exports = class UserController {
 
 		let firebaseToken = '';
 		try {
-			firebaseToken = await this.utils.firebase.auth().createCustomToken(userId);
+			firebaseToken = await this.utils.firebase.auth().createCustomToken(`${userId}`);
 		} catch (err) {
-			console.error('Failed to obtain custom firebase token');
+			console.error('Failed to obtain custom firebase token', err);
 		}
 
 		return new User(this.server, user, firebaseToken);
