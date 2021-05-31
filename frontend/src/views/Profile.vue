@@ -113,8 +113,12 @@
 				</footer>
 			</div>
 		</b-modal>
-
-		{{ user }}
+		<b-button type="is-ghost"
+			size="is-small"
+			class="logout"
+			@click="logOut">
+			Cerrar Sesión
+		</b-button>
 	</div>
 </template>
 
@@ -200,6 +204,9 @@ export default {
 	.container {
 		display: grid;
 		gap: 1rem;
+		.logout {
+			color: white;
+		}
 		.main-info {
 			text-align: center;
 			color: white;

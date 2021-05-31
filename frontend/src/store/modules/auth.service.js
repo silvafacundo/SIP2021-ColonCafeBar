@@ -1,5 +1,7 @@
 import Vue from 'vue';
 import router from '../../router';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 
 const state = () => ({
 	user: null,
@@ -73,6 +75,7 @@ const actions = {
 				const response = await Vue.axios.get('/admin/auth/me');
 				commit('setAdminAuth', true);
 				commit('setAdminUser', response.data.user);
+				await firebase.auth().signInWithCustomToken(response.data.user.firebaseToken);
 				return true;
 			} catch (err) {
 				await dispatch('logOut', { admin: true, client: false });
@@ -117,6 +120,7 @@ const actions = {
 	},
 	logOut({ commit, dispatch }, { admin = true, client = true } = {}) {
 		if (admin) {
+			firebase.auth().signOut();
 			commit('setAdminToken', '');
 			commit('setAdminAuth', false);
 			commit('setAdminUser', null);

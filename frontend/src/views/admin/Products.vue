@@ -29,7 +29,10 @@
 		</b-button>
 		<b-modal :active="!!selectedProduct" @close="closeModal">
 			<div v-if="selectedProduct" class="card selected-product">
-				<EditableImage class="test" src="http://http.cat/420.jpg" />
+				<EditableImage class="test"
+					:loading="uploadingImage"
+					:src="selectedProduct.imageUrl || ''"
+					@file="uploadImage" />
 				<b-field label="Nombre">
 					<b-input v-model="selectedProduct.name" />
 				</b-field>
@@ -75,6 +78,8 @@
 
 <script>
 import EditableImage from '../../components/EditableImage.vue';
+import firebase from 'firebase/app';
+import 'firebase/storage';
 export default {
 	name: 'Products',
 	components: {
@@ -83,6 +88,7 @@ export default {
 	data: () => ({
 		isLoading: false,
 		selectedProduct: null,
+		uploadingImage: false
 	}),
 	computed: {
 		products() {
@@ -154,6 +160,20 @@ export default {
 		},
 		async closeModal() {
 			return this.selectedProduct = null;
+		},
+		async uploadImage(e) {
+			this.uploadingImage = true;
+			try {
+				const fileName = `${Date.now()}-${e.name}`
+				const ref = firebase.storage().ref().child(fileName);
+				const snapshot = await ref.put(e);
+				const url = await snapshot.ref.getDownloadURL();
+				this.selectedProduct = { ...this.selectedProduct, imageUrl: url };
+			} catch (err) {
+				console.error('Failed to upload image', err);
+				this.$showToast('Error al subir la imágen');
+			}
+			this.uploadingImage = false;
 		}
 	}
 }

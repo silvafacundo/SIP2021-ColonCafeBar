@@ -1,7 +1,12 @@
 const Client = require('../../models/clients/Client');
 const PublicError = require('../../errors/PublicError');
+const Server = require('../../Server');
 
 module.exports = class ClientController {
+	/**
+	 *Creates an instance of ClientController.
+	 * @param {Server} server
+	 */
 	constructor(server) {
 		this.server = server;
 	}
@@ -27,13 +32,13 @@ module.exports = class ClientController {
 
 		const hash = await this.utils.auth.encryptPassword(password);
 
-		await this.db('clients').insert({
+		const newUser = await this.db('clients').insert({
 			email,
 			password: hash,
 			firstName,
 			lastName,
 			phoneNumber
-		});
+		}).returning('*');
 	}
 
 	async getClient({ userId, email, onlyPublic = false }) {

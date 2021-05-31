@@ -7,7 +7,7 @@
 		"dev": "nodemon ./index.js",
 		"migrate": "knex migrate:latest --debug",
 		"rollback": "knex migrate:rollback",
-		"cron:logs" : "node ./backuplogs.js",
+		"cron:logs": "node ./backuplogs.js",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"lint": "eslint --quiet --ignore-path ../.gitignore .",
 		"lint:fix": "eslint --quiet --fix --ignore-path ../.gitignore ."
@@ -21,6 +21,7 @@
 		"cors": "^2.8.5",
 		"dotenv": "^8.2.0",
 		"express": "^4.17.1",
+		"firebase-admin": "^9.9.0",
 		"fs-jetpack": "^4.1.0",
 		"jsonwebtoken": "^8.5.1",
 		"jszip": "^3.6.0",

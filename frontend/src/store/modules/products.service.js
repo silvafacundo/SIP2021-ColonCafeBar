@@ -56,7 +56,6 @@ const actions = {
 			const response = await Vue.axios.get('/categories');
 			const categories = response.data.categories;
 			commit('setCategories', categories);
-			console.log(categories);
 			return categories;
 		} catch (err) {
 			console.error('Failed to fetch categories', err)

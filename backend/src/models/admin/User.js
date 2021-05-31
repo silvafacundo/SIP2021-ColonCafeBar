@@ -1,9 +1,10 @@
 const BaseModel = require('../BaseModel');
 
 module.exports = class User extends BaseModel {
-	constructor(server, user) {
+	constructor(server, user, firebaseToken) {
 		super(server);
 		this._data = user;
+		this._firebaseToken = firebaseToken;
 	}
 
 	get id() {
@@ -21,6 +22,9 @@ module.exports = class User extends BaseModel {
 	get isRoot() {
 		return this._data.isRoot;
 	}
+	get isAdmin() {
+		return this._data.isAdmin;
+	}
 
 	get isActive() {
 		return this._data.isActive
@@ -28,5 +32,8 @@ module.exports = class User extends BaseModel {
 
 	get createdAt() {
 		return this._data.createdAt;
+	}
+	get firebaseToken() {
+		return this._firebaseToken;
 	}
 }

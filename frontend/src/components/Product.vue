@@ -1,7 +1,7 @@
 <template>
 	<div class="product-container" @click="() => $emit('click')">
-		<div>
-			<img src="https://http.cat/420.jpg" alt="">
+		<div v-if="product.imageUrl">
+			<img :src="product.imageUrl" alt="">
 		</div>
 		<p class="name">{{ product.name }}</p>
 		<p class="description" :title="product.description">{{ shortedDescription }}</p>
@@ -53,6 +53,7 @@ export default {
 		object-fit: cover;
 		width: 100%;
 		height: auto;
+		max-height: 150px;
 	}
 	p {
 		font-weight: bold;

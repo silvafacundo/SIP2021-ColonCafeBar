@@ -31,8 +31,6 @@ export default {
 		password: '',
 		error: ''
 	}),
-	computed() {
-	},
 	mounted() {
 	},
 	methods: {

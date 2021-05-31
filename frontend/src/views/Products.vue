@@ -113,6 +113,15 @@ export default {
 		h3 {
 			color: black;
 		}
+		.image-container {
+			text-align: center;
+			background-color: rgba(0,0,0,.1);
+			img {
+				object-fit: cover;
+				width: auto;
+				max-height: 250px;
+			}
+		}
 		.description {
 			font-size: 14px;
 			font-weight: 400;

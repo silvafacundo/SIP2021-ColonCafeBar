@@ -2,7 +2,7 @@ const BaseModel = require('../BaseModel');
 const Address = require('./Address');
 
 module.exports = class Client extends BaseModel{
-	constructor(server, user, addresses) {
+	constructor(server, user, addresses, firebaseToken) {
 		super(server);
 		this._data = user;
 		if (addresses && Array.isArray(addresses)) {
@@ -13,6 +13,7 @@ module.exports = class Client extends BaseModel{
 			throw new Error('Addresses should be an array of addresses');
 		}
 		this._addresses = addresses || [];
+		this._firebaseToken = firebaseToken || '';
 	}
 	get id() {
 		return this._data.id;
@@ -44,5 +45,8 @@ module.exports = class Client extends BaseModel{
 
 	get createdAt() {
 		return this._data.createdAt;
+	}
+	get firebaseToken() {
+		return this._firebaseToken;
 	}
 }

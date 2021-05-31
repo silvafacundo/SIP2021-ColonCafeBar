@@ -48,7 +48,7 @@ module.exports = class ProductController {
 		return true;
 	}
 
-	async createProduct({ idCategory, name, description, price, variants }) {
+	async createProduct({ idCategory, name, imageUrl, description, price, variants }) {
 		//Check if parameters are valid
 		if (!idCategory && typeof idCategory !== 'bigint') throw new PublicError('idcategory is required');
 		if (!name && typeof name !== 'string') throw new PublicError('name is required');
@@ -68,6 +68,7 @@ module.exports = class ProductController {
 					idCategory,
 					name,
 					description,
+					imageUrl,
 					variants
 				})
 				.returning('*')
@@ -148,12 +149,12 @@ module.exports = class ProductController {
 	}
 
 	//Update specific product
-	async updateProduct( { productId, idCategory, name, description, isActive, price, variants }) {
+	async updateProduct( { productId, idCategory, imageUrl, name, description, isActive, price, variants }) {
 		if (!productId) throw new PublicError('productId is required!');
 
 		const exists = await this.getProduct(productId);
 		if (!exists) throw new PublicError('Product doesn\'t exists');
-		if (!productId && !idCategory && !name && !description && typeof isActive !== 'boolean' && !price && !variants) throw PublicError('At least one parameter is required');
+		if (!productId && !imageUrl && !idCategory && !name && !description && typeof isActive !== 'boolean' && !price && !variants) throw PublicError('At least one parameter is required');
 		if (typeof variants !== 'undefined' && variants !== null) {
 			if (!this._validVariants(variants)) throw new PublicError('variants wrong format');
 		}
@@ -168,6 +169,7 @@ module.exports = class ProductController {
 						name: name,
 						description: description,
 						isActive,
+						imageUrl,
 						variants
 					})
 					.transacting(trx);

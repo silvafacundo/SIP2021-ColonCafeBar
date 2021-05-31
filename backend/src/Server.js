@@ -19,6 +19,7 @@ const AuthController = require('./controllers/auth/AuthController');
 const OrderController = require('./controllers/order/OrderController');
 const MercadoPagoController = require('./controllers/MercadoPago/MercadoPagoController');
 const MailController = require('./controllers/mail/MailController');
+const Storage = require('./controllers/Storage');
 
 module.exports = class Server {
 	constructor() {
@@ -117,6 +118,7 @@ module.exports = class Server {
 	}
 
 	async initializeControllers() {
+		const firebase = require('firebase-admin');
 		/**
 		* Server Utils
 		*
@@ -132,6 +134,7 @@ module.exports = class Server {
 		* @property {OrderController} Utils.orders
 		* @property {MercadoPagoController} Utils.mercadopago
 		* @property {MailController} Utils.mailController
+		* @property {firebase} Utils.firebase
 		*/
 
 		/** @type {Utils} Server Utils */
@@ -147,9 +150,29 @@ module.exports = class Server {
 			orders: new OrderController(this),
 			logger: logger,
 			mercadopago: new MercadoPagoController(this),
-			mailController: new MailController(this)
+			mailController: new MailController(this),
+			firebase
 		}
+		this.initializeFirebase();
 		logger.info('Server running');
 		const admins = await this.db('users').where({ isAdmin: true }).first();
+	}
+	initializeFirebase() {
+		const serviceAccount = {
+			'type': 'service_account',
+			'project_id': process.env.FIREBASE_PID,
+			'private_key_id': process.env.FIREBASE_PKID,
+			'private_key': process.env.FIREBASE_PK.replace(/\\n/g, '\n'),
+			'client_email': process.env.FIREBASE_EMAIL,
+			'client_id': process.env.FIREBASE_CID,
+			'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
+			'token_uri': 'https://oauth2.googleapis.com/token',
+			'auth_provider_x509_cert_url': process.env.FIREBASE_AUTHCERT,
+			'client_x509_cert_url': process.env.FIREBASE_CLIENTCER
+		};
+
+		this.utils.firebase.initializeApp({
+			credential: this.utils.firebase.credential.cert(serviceAccount)
+		});
 	}
 };

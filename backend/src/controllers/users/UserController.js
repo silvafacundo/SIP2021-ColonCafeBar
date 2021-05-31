@@ -1,4 +1,5 @@
 const PublicError = require('../../errors/PublicError');
+const User = require('../../models/admin/User');
 module.exports = class UserController {
 	constructor(server) {
 		this.server = server;
@@ -35,7 +36,8 @@ module.exports = class UserController {
 			})
 			.returning('*');
 
-		return newUser[0];
+		// TODO: Ojo con esto que le saqué el await para que no crashee en caso de que no funcione
+		await this.utils.firebase.auth().createUser({ uid: newUser.id });
 	}
 
 	async getUserHashPassword(userId) {
@@ -86,7 +88,14 @@ module.exports = class UserController {
 			})
 			.first();
 
-		return user;
+		let firebaseToken = '';
+		try {
+			firebaseToken = await this.utils.firebase.auth().createCustomToken(userId);
+		} catch (err) {
+			console.error('Failed to obtain custom firebase token');
+		}
+
+		return new User(this.server, user, firebaseToken);
 	}
 
 	async getUserLogin({ email, password }) {
