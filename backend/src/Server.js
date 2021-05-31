@@ -152,7 +152,12 @@ module.exports = class Server {
 			mailController: new MailController(this),
 			firebase
 		}
-		this.initializeFirebase();
+		try {
+			this.initializeFirebase();
+		} catch (err) {
+			console.warn('[DB] Failed to initialize Firebase \n', err);
+		}
+
 		logger.info('Server running');
 		const admins = await this.db('users').where({ isAdmin: true }).first();
 	}
@@ -161,7 +166,7 @@ module.exports = class Server {
 			'type': 'service_account',
 			'project_id': process.env.FIREBASE_PID,
 			'private_key_id': process.env.FIREBASE_PKID,
-			'private_key': process.env.FIREBASE_PK.replace(/\\n/g, '\n'),
+			'private_key': (process.env.FIREBASE_PK || '').replace(/\\n/g, '\n'),
 			'client_email': process.env.FIREBASE_EMAIL,
 			'client_id': process.env.FIREBASE_CID,
 			'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
