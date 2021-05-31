@@ -127,13 +127,7 @@ export default {
 				idCategory: null,
 				description: '',
 				isActive: true,
-				variants: {
-					nombre: [
-						'hola',
-						'chau',
-						'con queso'
-					]
-				},
+				variants: {},
 				price: 0,
 			}
 		},

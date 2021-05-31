@@ -75,7 +75,15 @@ const actions = {
 				const response = await Vue.axios.get('/admin/auth/me');
 				commit('setAdminAuth', true);
 				commit('setAdminUser', response.data.user);
-				await firebase.auth().signInWithCustomToken(response.data.user.firebaseToken);
+				try {
+					await firebase.auth().signInWithCustomToken(response.data.user.firebaseToken);
+				} catch (err) {
+					if (process.env.NODE_ENV === 'production') {
+						console.error('Failed to authenticated with firebase', err);
+						throw err
+					}
+					console.warn('ERROR IGNORED IN DEVELOPMENT\nFailed to authenticated with firebase', err)
+				}
 				return true;
 			} catch (err) {
 				await dispatch('logOut', { admin: true, client: false });
