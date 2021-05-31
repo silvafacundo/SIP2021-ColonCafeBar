@@ -45,12 +45,12 @@ jobs:
         env:
           VUE_APP_HOST_API: ${{ secrets.VUE_APP_HOST_API }}
           VUE_APP_BASE_URL: ${{ secrets.VUE_APP_BASE_URL }}
-          VUE_FIREBASE_API_KEY: ${{ secrets.VUE_FIREBASE_API_KEY }}
-          VUE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VUE_FIREBASE_AUTH_DOMAIN }}
-          VUE_FIREBASE_PROJECT_ID: ${{ secrets.VUE_FIREBASE_PROJECT_ID }}
-          VUE_FIREBASE_BUCKET: ${{ secrets.VUE_FIREBASE_BUCKET }}
+          VUE_APP_FIREBASE_API_KEY: ${{ secrets.VUE_APP_FIREBASE_API_KEY }}
+          VUE_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.VUE_APP_FIREBASE_AUTH_DOMAIN }}
+          VUE_APP_FIREBASE_PROJECT_ID: ${{ secrets.VUE_APP_FIREBASE_PROJECT_ID }}
+          VUE_APP_FIREBASE_BUCKET: ${{ secrets.VUE_APP_FIREBASE_BUCKET }}
           VUE_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VUE_APP_FIREBASE_MESSAGING_SENDER_ID }}
-          VUE_FIREBASE_APP_ID: ${{ secrets.VUE_FIREBASE_APP_ID }}
+          VUE_APP_FIREBASE_APP_ID: ${{ secrets.VUE_APP_FIREBASE_APP_ID }}
       # Builds docker image
       - name: Login to docker
         uses: docker/login-action@v1
