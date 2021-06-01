@@ -3,6 +3,7 @@ const BaseModel = require('../BaseModel');
 module.exports = class User extends BaseModel {
 	constructor(server, user, firebaseToken) {
 		super(server);
+		if (typeof user !== 'object') throw new Error('user is required, expected an object');
 		this._data = user;
 		this._firebaseToken = firebaseToken;
 	}

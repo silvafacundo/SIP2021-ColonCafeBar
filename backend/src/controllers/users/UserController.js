@@ -94,7 +94,7 @@ module.exports = class UserController {
 		} catch (err) {
 			console.error('Failed to obtain custom firebase token', err);
 		}
-
+		if (!user) return null;
 		return new User(this.server, user, firebaseToken);
 	}
 
