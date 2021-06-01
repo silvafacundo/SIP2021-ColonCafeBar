@@ -1,7 +1,9 @@
 <template>
 	<div class="container">
 		<h3>Productos</h3>
-		<b-table :data="products" @click="row => selectedProduct = { ...row }">
+		<b-table hoverable
+			:data="products"
+			@click="row => selectedProduct = { ...row }">
 			<!-- <b-table-column>
 				<img src="https://http.cat/420.jpg"
 					alt="Imágen del producto">
@@ -57,6 +59,62 @@
 							{{ category.name }}
 						</b-dropdown-item>
 					</b-dropdown>
+				</b-field>
+				<b-field label="Variantes">
+					<div class="variants-container">
+						<div v-for="(variant, index) of selectedProduct.variants"
+							:key="index"
+							class="variant">
+							<p>Título</p>
+							<div class="field has-addons" style="margin: 0;">
+								<b-input :value="index"
+									label="Título"
+									lazy
+									size="is-small"
+									@input="value => updateVariantName(value, index)" />
+								<b-button
+									size="is-small"
+									type="is-danger"
+									@click="() => deleteProductVariant(index)">
+									<b-icon
+										pack="fas"
+										icon="times"
+										size="is-small" />
+								</b-button>
+							</div>
+							<b-checkbox v-model="variant.required" size="is-small">Obligatorio</b-checkbox>
+							<p>Opciones</p>
+							<div v-for="(variantValue, variantIndex) of variant.values"
+								:key="variantIndex"
+								class="field has-addons"
+								style="margin: 0;">
+								<b-input
+									v-model="variant.values[variantIndex]"
+									size="is-small" />
+								<b-button
+									size="is-small"
+									type="is-danger"
+									@click="() => deleteProductVariantValue(index, variantValue)">
+									<b-icon
+										pack="fas"
+										icon="times"
+										size="is-small" />
+								</b-button>
+							</div>
+							<b-button class="variant-button"
+								type="is-primary"
+								size="is-small"
+								@click="() => addProductVariantValue(index)">
+								Nuevo valor
+							</b-button>
+						</div>
+						<b-button type="is-primary"
+							size="is-small"
+							:loading="isLoading"
+							@click="addProductVariant">
+							Agregar variante
+						</b-button>
+					</div>
 				</b-field>
 				<b-field label="Descripcion">
 					<b-input v-model="selectedProduct.description" type="textarea" />
@@ -168,6 +226,45 @@ export default {
 				this.$showToast('Error al subir la imágen');
 			}
 			this.uploadingImage = false;
+		},
+		updateVariantName(newName, oldName) {
+			const newSelectedProduct = { ...this.selectedProduct };
+			if (typeof newName === 'string' && newName.length > 0) {
+				newSelectedProduct.variants[newName] = { ...newSelectedProduct.variants[oldName] };
+				delete newSelectedProduct.variants[oldName];
+			}
+			this.selectedProduct = newSelectedProduct;
+		},
+		addProductVariantValue(variantName) {
+			const newSelectedProduct = { ...this.selectedProduct };
+			newSelectedProduct.variants[variantName].values.push('nuevo');
+			this.selectedProduct = newSelectedProduct;
+		},
+		addProductVariant() {
+			const newSelectedProduct = { ...this.selectedProduct };
+			if (!newSelectedProduct.variants) newSelectedProduct.variants = {};
+			const index = Object.keys(newSelectedProduct.variants).length;
+			newSelectedProduct.variants[index] = {
+				required: false,
+				values: ['1']
+			};
+			this.selectedProduct = newSelectedProduct;
+		},
+		deleteProductVariant(variantName) {
+			const newSelectedProduct = { ...this.selectedProduct };
+			if (newSelectedProduct.variants[variantName]) delete newSelectedProduct.variants[variantName];
+			this.selectedProduct = newSelectedProduct;
+		},
+		deleteProductVariantValue(variantName, variantValue) {
+			const newSelectedProduct = { ...this.selectedProduct };
+			if (newSelectedProduct.variants[variantName]) {
+				const variantValueIndex = newSelectedProduct.variants[variantName].values.indexOf(variantValue);
+
+				if (variantValueIndex !== -1) {
+					newSelectedProduct.variants[variantName].values.splice(variantValueIndex, 1);
+				}
+			}
+			this.selectedProduct = newSelectedProduct;
 		}
 	}
 }
@@ -187,6 +284,26 @@ export default {
 			text-align: left;
 			.test {
 				width: 200px;
+			}
+		}
+
+		.variants-container {
+			display: flex;
+			flex-wrap: wrap;
+			gap: .5rem;
+
+			p {
+				font-size: .8rem;
+			}
+			.variant {
+				display: flex;
+				flex-direction: column;
+				gap: .3rem;
+			}
+
+			.variant-button {
+				display: flex;
+				margin-left: auto;
 			}
 		}
 	}

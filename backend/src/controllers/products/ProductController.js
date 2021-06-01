@@ -40,7 +40,7 @@ module.exports = class ProductController {
 		if (typeof variants !== 'object') return false;
 		for (const variantKey in variants) {
 			const variant = variants[variantKey];
-			if (typeof variant !== 'object') return false;
+			if (typeof variant !== 'object' || variant === null) return false;
 			if (typeof variant.required !== 'boolean') return false;
 			if (!Array.isArray(variant.values) || variant.values.length < 1) return false;
 		}
