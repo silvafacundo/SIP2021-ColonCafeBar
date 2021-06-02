@@ -1,32 +1,36 @@
 import Vue from 'vue';
 import router from '../../router';
 
+function getCart() {
+	const cart = JSON.parse(localStorage.getItem('cart'));
+	if (!Array.isArray(cart)) return [];
+	return cart;
+}
 const state = () => ({
-	cart: JSON.parse(localStorage.getItem('cart')) || {}
+	cart: getCart()
 });
 
 const getters = {
 	cart: state => state.cart,
 	items: state => {
 		let count = 0;
-		for (const key in state.cart) {
-			count += state.cart[key];
+		for (const product of state.cart) {
+			count += product.amount;
 		}
 		return count;
 	}
 };
 const mutations = {
-	updateCart(state, { productId, amount = 1 }) {
-		const newCart = { ...state.cart };
-		if (typeof newCart[productId] !== 'number')
-			newCart[productId] = 0;
-		newCart[productId] += amount || 1;
-		if (newCart[productId] <= 0) delete newCart[productId];
+	updateCart(state, config) {
+		const newCart = [...state.cart];
+		if (typeof config.productId === 'undefined' || config.productId === null) return;
+		if (isNaN(config.amount) || typeof config.amount !== 'number' || config.amount < 1) return;
+		newCart.push(config);
 		localStorage.setItem('cart', JSON.stringify(newCart));
 		state.cart = newCart;
 	},
 	emptyCart(state) {
-		const newCart = {};
+		const newCart = [];
 		localStorage.setItem('cart', JSON.stringify(newCart));
 		state.cart = newCart;
 	}

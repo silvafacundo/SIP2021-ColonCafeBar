@@ -24,16 +24,14 @@ module.exports = class OrderController {
 		let verifiedVariantsAmount = 0;
 		for (const variantIndex in productData.variants) {
 			const variant = productData.variants[variantIndex];
-			const selectedVariant = product.selectedVariants ? product.selectedVariants[variantIndex] : null;
+			const selectedVariant = product.variants ? product.variants[variantIndex] : null;
 			if (variant.required) {
-				if (!selectedVariant) return false;
-				if (!selectedVariant || !variant.values.includes(selectedVariant)) return false;
-			} else {
-				if (selectedVariant && !variant.values.includes(selectedVariant)) return false;
+				if (!selectedVariant) throw new PublicError(`Variant "${variantIndex}" is required`);
 			}
+			if (selectedVariant && !variant.values.includes(selectedVariant)) throw new PublicError(`Invalid variant "${selectedVariant}" for "${variantIndex}"`);
 			if (selectedVariant) ++verifiedVariantsAmount;
 		}
-		if (typeof product.selectedVariants === 'object' && Object.keys(product.selectedVariants).length > verifiedVariantsAmount) return false;
+		if (typeof product.variants === 'object' && Object.keys(product.variants).length > verifiedVariantsAmount) throw new PublicError('Unexpected variants');
 		return true;
 	}
 
@@ -54,13 +52,11 @@ module.exports = class OrderController {
 			if (!isAddressFromClient) throw new PublicError('The provided address is not from the given client');
 		}
 
-		const productsId = []
-		for (const product of products) {
-			productsId.push(product.id);
-		}
+		let productsId = new Set(products.map(product => product.id));
+		productsId = Array.from(productsId.values());
 
 		const productsData = await this.utils.products.getProducts(productsId);
-		if (productsData.length !== products.length) throw new PublicError('The provided products doesn\'t exist');
+		if (productsData.length !== productsId.length) throw new PublicError('The provided products doesn\'t exist');
 
 		const trx = await this.db.transaction();
 		try {
@@ -85,7 +81,7 @@ module.exports = class OrderController {
 					price: productData.price,
 					orderId: order[0].id,
 					amount: product.amount,
-					selectedVariants: product.selectedVariants,
+					selectedVariants: product.variants,
 				})
 			}
 

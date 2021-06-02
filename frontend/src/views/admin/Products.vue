@@ -60,61 +60,39 @@
 						</b-dropdown-item>
 					</b-dropdown>
 				</b-field>
-				<b-field label="Variantes">
-					<div class="variants-container">
-						<div v-for="(variant, index) of selectedProduct.variants"
-							:key="index"
-							class="variant">
-							<p>Título</p>
-							<div class="field has-addons" style="margin: 0;">
-								<b-input :value="index"
-									label="Título"
-									lazy
-									size="is-small"
-									@input="value => updateVariantName(value, index)" />
-								<b-button
-									size="is-small"
-									type="is-danger"
-									@click="() => deleteProductVariant(index)">
-									<b-icon
-										pack="fas"
-										icon="times"
-										size="is-small" />
-								</b-button>
-							</div>
-							<b-checkbox v-model="variant.required" size="is-small">Obligatorio</b-checkbox>
-							<p>Opciones</p>
-							<div v-for="(variantValue, variantIndex) of variant.values"
-								:key="variantIndex"
-								class="field has-addons"
-								style="margin: 0;">
-								<b-input
-									v-model="variant.values[variantIndex]"
-									size="is-small" />
-								<b-button
-									size="is-small"
-									type="is-danger"
-									@click="() => deleteProductVariantValue(index, variantValue)">
-									<b-icon
-										pack="fas"
-										icon="times"
-										size="is-small" />
-								</b-button>
-							</div>
-							<b-button class="variant-button"
-								type="is-primary"
+				<b-field class="variants-container" label="Variantes">
+					<div v-for="(variant, index) of selectedProduct.variants"
+						:key="index"
+						class="variant">
+						<b-field label="Nombre" label-position="on-border">
+							<b-input :value="index"
+								label="Título"
+								lazy
+								expanded
 								size="is-small"
-								@click="() => addProductVariantValue(index)">
-								Nuevo valor
-							</b-button>
-						</div>
-						<b-button type="is-primary"
-							size="is-small"
-							:loading="isLoading"
-							@click="addProductVariant">
-							Agregar variante
-						</b-button>
+								@input="value => updateVariantName(value, index)" />
+							<b-button
+								type="is-danger"
+								size="is-small"
+								icon-left="times"
+								@click="() => deleteProductVariant(index)" />
+						</b-field>
+						<b-field label="Opciones" label-position="on-border">
+							<!-- TODO: Cambiar esto... -->
+							<b-taginput v-model="variant.values"
+								size="is-small"
+								placeholder="Agregar Opción" />
+						</b-field>
+						<b-field>
+							<b-checkbox v-model="variant.required">Obligatorio</b-checkbox>
+						</b-field>
 					</div>
+					<b-button type="is-primary"
+						size="is-small"
+						:loading="isLoading"
+						@click="addProductVariant">
+						Agregar variante
+					</b-button>
 				</b-field>
 				<b-field label="Descripcion">
 					<b-input v-model="selectedProduct.description" type="textarea" />
@@ -244,9 +222,9 @@ export default {
 			const newSelectedProduct = { ...this.selectedProduct };
 			if (!newSelectedProduct.variants) newSelectedProduct.variants = {};
 			const index = Object.keys(newSelectedProduct.variants).length;
-			newSelectedProduct.variants[index] = {
+			newSelectedProduct.variants[`Variante ${index + 1}`] = {
 				required: false,
-				values: ['1']
+				values: ['Opción 1']
 			};
 			this.selectedProduct = newSelectedProduct;
 		},
@@ -287,24 +265,15 @@ export default {
 			}
 		}
 
-		.variants-container {
+		::v-deep .variants-container, ::v-deep .variants-container > div > div,  ::v-deep .variants-container > div > div > .variant {
 			display: flex;
-			flex-wrap: wrap;
-			gap: .5rem;
-
-			p {
-				font-size: .8rem;
-			}
-			.variant {
-				display: flex;
-				flex-direction: column;
-				gap: .3rem;
-			}
-
-			.variant-button {
-				display: flex;
-				margin-left: auto;
-			}
+			flex-flow: column;
+			gap: 1rem;
+		}
+		.variants-container .variant:not(:first-child) {
+			border-top: 1px solid rgba(0,0,0,.1);
+			padding-top: 1.5rem;
+			margin-top: .5rem;
 		}
 	}
 </style>

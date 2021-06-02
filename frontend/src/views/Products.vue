@@ -18,15 +18,10 @@
 			<h4 v-if="products.length <= 0" class="no-result">No se han encontrado resultados</h4>
 		</div>
 		<b-modal :active="!!selectedProduct" @close="closeModal">
-			<div v-if="selectedProduct" class="card selected-product">
-				<div v-if="selectedProduct.imageUrl" class="image-container">
-					<img :src="selectedProduct.imageUrl" :alt="selectedProduct.name">
-				</div>
-				<h3>{{ selectedProduct.name }}</h3>
-				<p class="description">{{ selectedProduct.description }}</p>
-				<p class="price">${{ selectedProduct.price }}</p>
-				<b-button type="is-success" @click="addToCart"> Agregar al Carrito</b-button>
-			</div>
+			<product-selector v-if="selectedProduct"
+				:product="selectedProduct"
+				@addToCart="closeModal"
+				@cancel="closeModal" />
 		</b-modal>
 	</div>
 </template>
@@ -34,10 +29,12 @@
 <script>
 //import EditableText from '../../components/EditableText';
 import Product from '../components/Product.vue';
+import ProductSelector from '../components/ProductSelector';
 export default {
 	name: 'Products',
 	components: {
 		Product,
+		ProductSelector,
 	},
 	data: () => ({
 		isLoading: true,
@@ -108,32 +105,5 @@ export default {
 			color: white;
 		}
 	}
-	.selected-product {
-		padding: 20px;
-		h3 {
-			color: black;
-		}
-		.image-container {
-			text-align: center;
-			background-color: rgba(0,0,0,.1);
-			img {
-				object-fit: cover;
-				width: auto;
-				max-height: 250px;
-			}
-		}
-		.description {
-			font-size: 14px;
-			font-weight: 400;
-			text-align: left;
-			line-height: 18px;
-			color: rgb(88, 80, 101);
-			margin-top: 10px;
-		}
-		.price {
-			font-size: 18px;
-			font-weight: 700;
-			margin-top: 8px;
-		}
-	}
+
 </style>

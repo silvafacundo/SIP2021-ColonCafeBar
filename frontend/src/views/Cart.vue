@@ -41,11 +41,12 @@ export default {
 		},
 		parsedCart() {
 			const cartArray = [];
-			for (const productId in this.cart) {
-				const amount = this.cart[productId];
-				const product = this.products.find( p => p.id === productId);
+			for (const cartProduct of this.cart) {
+				const amount = cartProduct.amount;
+				const product = this.products.find( p => p.id === cartProduct.productId);
 				cartArray.push({
 					...product,
+					variants: cartProduct.variants,
 					amount
 				});
 			}
@@ -69,7 +70,7 @@ export default {
 		async createOrder() {
 			try {
 				this.isLoading = true;
-				const products = this.parsedCart.map(product => ({ id: product.id, amount: product.amount }));
+				const products = this.parsedCart.map(product => ({ id: product.id, variants: product.variants, amount: product.amount }));
 				const order = await this.$store.dispatch('Orders/createOrder', { paymentMethod: 'online', withDelivery: false, products })
 				this.$store.commit('Cart/emptyCart');
 				this.$router.push({ name: 'order', params: { orderId: order.id } });
