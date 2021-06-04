@@ -194,7 +194,7 @@ export default {
 			}
 		},
 		async logOut() {
-			await this.$store.dispatch('Auth/logOut');
+			await this.$store.dispatch('Auth/logOut', { client: true });
 		}
 	}
 }

@@ -126,21 +126,21 @@ const actions = {
 		const response = await Vue.axios.post('/auth/register', { email, password, firstName });
 		return response.data;
 	},
-	logOut({ commit, dispatch }, { admin = true, client = true } = {}) {
+	logOut({ commit, dispatch }, { admin = false, client = false } = {}) {
 		if (admin) {
 			firebase.auth().signOut();
 			commit('setAdminToken', '');
 			commit('setAdminAuth', false);
 			commit('setAdminUser', null);
-			dispatch('User/RESET', null, { root: true })
+			dispatch('User/RESET', null, { root: true });
+			router.push({ name: 'adminLogin' });
 		}
 		if (client) {
 			commit('setClientToken', '');
 			commit('setClientAuth', false);
 			commit('setClientUser', null);
+			router.push({ name: 'login' });
 		}
-		router.push({ name: 'login' });
-
 	}
 };
 
