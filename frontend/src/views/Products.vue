@@ -74,7 +74,7 @@ export default {
 		},
 		addToCart() {
 			const amount = 1;
-			this.$store.commit('Cart/updateCart', { productId: this.selectedProduct.id, amount });
+			this.$store.commit('Cart/addToCart', { productId: this.selectedProduct.id, amount });
 			this.closeModal();
 			const message = amount > 1 ? 'Producto agregado al carrito': 'Productos agregado al carrito';
 			this.$showToast(message);

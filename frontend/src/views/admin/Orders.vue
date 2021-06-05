@@ -69,7 +69,7 @@
 						</b-select>
 					</b-field>
 					<b-field>
-						<b-select v-model="order.status"
+						<b-select :value="order.status"
 							placeholder="Estado de la orden"
 							@input="value => { updateStatus(order, value) }">
 							<option

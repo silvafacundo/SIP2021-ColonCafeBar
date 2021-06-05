@@ -37,6 +37,9 @@ export default {
 		gap: 1rem;
 		cursor: pointer;
 		padding: 1rem;
+		&.selected {
+			background-color:rgba(0,0,0,.05)
+		}
 		p {
 			margin-bottom: 0!important;
 			span.alias {

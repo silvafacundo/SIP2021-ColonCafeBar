@@ -13,7 +13,7 @@ import Profile from '../views/Profile';
 
 import Products from '../views/Products';
 import Order from '../views/Order';
-import Cart from '../views/Cart';
+import Checkout from '../views/Checkout';
 
 import EmptyRoute from '../components/EmptyRoute.vue';
 
@@ -48,7 +48,7 @@ const routes = [
 		{ path: 'password/reset/:token', props: true, name: 'resetPassword', component: ResetPassword },
 		{ path: 'register', name: 'register', component: Register },
 		{ path: 'me', name: 'me', component: Profile },
-		{ path: 'cart', name: 'cart', component: Cart },
+		{ path: 'checkout', name: 'checkout', component: Checkout },
 		{ path: 'order/:orderId', props: true, name: 'order', component: Order },
 	] },
 

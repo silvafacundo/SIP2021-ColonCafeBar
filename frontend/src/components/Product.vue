@@ -34,7 +34,7 @@ export default {
 	},
 	methods: {
 		addToCart() {
-			this.$store.commit('Cart/updateCart', { productId: this.product.id, amount: 1 });
+			this.$store.commit('Cart/addToCart', { productId: this.product.id, amount: 1 });
 		}
 	}
 }

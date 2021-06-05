@@ -21,11 +21,18 @@ const getters = {
 	}
 };
 const mutations = {
-	updateCart(state, config) {
+	addToCart(state, config) {
 		const newCart = [...state.cart];
 		if (typeof config.productId === 'undefined' || config.productId === null) return;
 		if (isNaN(config.amount) || typeof config.amount !== 'number' || config.amount < 1) return;
 		newCart.push(config);
+		localStorage.setItem('cart', JSON.stringify(newCart));
+		state.cart = newCart;
+	},
+	deleteIndex(state, index) {
+		if (index < 0 || index >= state.cart.length) return;
+		const newCart = [...state.cart];
+		newCart.splice(index, 1);
 		localStorage.setItem('cart', JSON.stringify(newCart));
 		state.cart = newCart;
 	},

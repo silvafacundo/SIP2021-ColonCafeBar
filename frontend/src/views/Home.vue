@@ -7,11 +7,16 @@
 					alt="Logo Colón Café Bar"
 				>
 			</router-link>
-			<b-button class="cart-button"
-				type="is-text"
-				@click="goToCart">
-				<BadgeIcon icon="shopping-cart" :value="cartItems" />
-			</b-button>
+			<div class="cart-wrapper">
+				<b-button class="cart-button"
+					type="is-text"
+					@click="goToCart">
+					<BadgeIcon icon="shopping-cart" :value="cartItems" />
+				</b-button>
+				<div class="cart-container">
+					<cart v-model="cartActive" />
+				</div>
+			</div>
 			<a role="button"
 				class="navbar-burger burger"
 				:class="{'is-active': isMenuOpen }"
@@ -32,7 +37,14 @@
 						tag="router-link"
 						to="/"
 						label="Inicio" />
-					<b-menu-item icon="user"
+					<b-menu-item v-if="!user"
+						style="font-size: 0.8rem"
+						icon="user"
+						tag="router-link"
+						to="/login"
+						label="Iniciar Sesión/Registrarse" />
+					<b-menu-item v-else
+						icon="user"
 						tag="router-link"
 						to="/me"
 						label="Mi Cuenta" />
@@ -45,13 +57,16 @@
 
 <script>
 import BadgeIcon from '../components/BadgeIcon';
+import Cart from '../components/Cart';
 export default {
 	name: 'Home',
 	components: {
-		BadgeIcon
+		BadgeIcon,
+		Cart
 	},
 	data: () => ({
-		isMenuOpen: false
+		isMenuOpen: false,
+		cartActive: false,
 	}),
 	computed: {
 		user() {
@@ -63,7 +78,8 @@ export default {
 	},
 	methods: {
 		goToCart() {
-			this.$router.push({ name: 'cart' })
+			this.cartActive = !this.cartActive;
+			// this.$router.push({ name: 'cart' })
 		}
 	}
 }
@@ -86,10 +102,11 @@ export default {
 			height: 100%;
 			padding: 5px;
 		}
-		.cart-button {
+		.cart-wrapper {
+			margin-left: auto;
 			align-self: center;
 			justify-content: flex-end;
-			margin-left: auto;
+			position: relative;
 		}
 		.navbar-burger {
 			align-self: center;
