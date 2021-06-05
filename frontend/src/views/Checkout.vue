@@ -13,6 +13,7 @@
 			</b-table-column>
 			<b-table-column v-slot="props">
 				<b-button type="is-text"
+					:disabled="isLoading"
 					icon-left="times"
 					@click="()=>deleteProduct(props.row.index)" />
 			</b-table-column>

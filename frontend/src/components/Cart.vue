@@ -144,6 +144,8 @@ export default {
 			}
 		}
 		footer {
+			display: flex;
+			flex-flow: column;
 			> * {
 				margin: .5rem 0;
 			}
@@ -152,6 +154,9 @@ export default {
 				display: flex;
 				justify-content: space-between;
 				font-size: 1.3rem;
+			}
+			button {
+				margin-left: auto;
 			}
 		}
 		width: 320px;
