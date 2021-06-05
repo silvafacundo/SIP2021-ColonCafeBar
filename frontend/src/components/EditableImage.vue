@@ -71,7 +71,7 @@ export default {
 		drop(e) {
 			e.preventDefault();
 			this.dragCount = 0;
-			this.$emit('file', e.dataTransfer.files.pop());
+			this.$emit('file', [...e.dataTransfer.files].pop());
 		},
 		updateFile(e) {
 			const { target } = e;
