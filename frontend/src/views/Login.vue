@@ -19,6 +19,8 @@
 				<button>Ingresar</button>
 			</form>
 			<router-link to="/register" title="Crear una cuenta">¿No tenes cuenta? ¡Regístrese haciendo click aquí!</router-link>
+			<br>
+			<router-link to="/request/password/reset" title="Solicitar cambio de contraseña">Olvidé mi contraseña</router-link>
 		</div>
 		<p class="error">{{ error && 'Error: ' + error }}</p>
 	</div>

@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class UserResetPasswordPOST extends Route {
 	constructor() {
-		super('/auth/reset', 'post');
+		super('/auth/reset', 'post', { isPublic: true });
 	}
 
 	async run(req, res, user) {

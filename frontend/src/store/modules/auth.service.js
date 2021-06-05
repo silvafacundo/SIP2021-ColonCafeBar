@@ -67,6 +67,17 @@ const actions = {
 			throw err;
 		}
 	},
+	async requestResetPassword(_, { email }) {
+		try {
+			const response = await Vue.axios.post('/reset', {
+				email
+			});
+			return response;
+		} catch (err) {
+			console.error('Failed to send reset password email', err);
+			throw err;
+		}
+	},
 	async checkAdminToken({ getters, commit, dispatch }) {
 		const token = getters.adminToken;
 		if (token) {

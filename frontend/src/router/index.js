@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import store from '../store';
 
 import ResetPassword from '../views/ResetPassword';
+import RequestResetPassword from '../views/RequestResetPassword';
 
 import Home from '../views/Home';
 import Register from '../views/Register';
@@ -35,6 +36,7 @@ const publicRoutes = [
 	'login',
 	'adminLogin',
 	'register',
+	'requestResetPassword',
 	'resetPassword'
 ]
 
@@ -42,7 +44,8 @@ const routes = [
 	{ path: '/', component: Home, children: [
 		{ path: '/', name: 'home',  component: Products },
 		{ path: 'login', name: 'login', component: Login },
-		{ path: 'resetpassword/:token', props: true, name: 'resetPassword', component: ResetPassword },
+		{ path: 'request/password/reset', name: 'requestResetPassword', component: RequestResetPassword },
+		{ path: 'password/reset/:token', props: true, name: 'resetPassword', component: ResetPassword },
 		{ path: 'register', name: 'register', component: Register },
 		{ path: 'me', name: 'me', component: Profile },
 		{ path: 'cart', name: 'cart', component: Cart },
