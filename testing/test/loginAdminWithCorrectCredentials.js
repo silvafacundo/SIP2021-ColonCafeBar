@@ -12,16 +12,16 @@ async function loginAdminWithCorrectCredentials() {
     await driver.findElement(By.name("password"))
         .sendKeys("12345");
     await driver.findElement(By.css("form > button")).click();
-        try {
-            await driver.wait(
-                until.elementLocated(
-                    By.css('nav')),10000);
-            let response= await driver.findElement(By.css('.navbar .navbar-end a')).getAttribute('textContent');
-            assert.match(username, new RegExp(response),'error');  
-            await driver.close();        
-        } catch (error) {
-            console.log('Something was wrong!')
-        }
+    try {
+       await driver.wait(
+            until.elementLocated(
+                By.css('nav')),10000);
+        let response= await driver.findElement(By.css('.navbar .navbar-end a')).getAttribute('textContent');
+        assert.match(username, new RegExp(response),'error');  
+        await driver.close();        
+    } catch (error) {
+        console.log('Something was wrong!');
+    }
 }
 
 loginAdminWithCorrectCredentials();
