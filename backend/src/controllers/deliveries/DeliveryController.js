@@ -10,6 +10,10 @@ module.exports = class DeliveryController {
 		return this.server.db;
 	}
 
+	get models() {
+		return this.server.models;
+	}
+
 	get utils() {
 		return this.server.utils;
 	}
@@ -25,9 +29,8 @@ module.exports = class DeliveryController {
 		if (!phoneNumber && typeof phoneNumber !=='string') throw Error('phone number is required');
 		if (phoneNumber && !this.isPhoneNumberValid(phoneNumber)) throw new PublicError('phone number not valid');
 
-		const delivery = await this.db('deliveries').insert({ name, lastName, phoneNumber }).returning('*');
-
-		return new Delivery(this.server, delivery);
+		const delivery = await this.models.Delivery.create({ name, lastName, phoneNumber });
+		return delivery;
 	}
 
 	//Get specific delivery
@@ -35,31 +38,25 @@ module.exports = class DeliveryController {
 		const whereQuery = { id };
 		if (!fetchDeleted) whereQuery.isDeleted = false;
 
-		const delivery = await this.db('deliveries')
-			.where(whereQuery)
-			.first();
-
-		if (!delivery) return null;
-
-		return new Delivery(this.server, delivery);
+		const delivery = await this.models.Delivery.findByPk(id);
+		return delivery;
 	}
 
 	//Get all deliveries loaded
 	async getAllDeliveries(fetchDeleted = false) {
-		const deliveries = await this.db('deliveries')
-			.where(query => {
-				if (!fetchDeleted) query.where({ isDeleted: false })
-			})
-
-		return deliveries.map(delivery => new Delivery(this.server, delivery));
+		const where = {}
+		if (!fetchDeleted) where.isDeleted = false;
+		const deliveries = await this.models.Delivery.findAll({
+			where
+		});
+		return deliveries;
 	}
 
 	//Delete specific Delivery
 	async deleteDelivery(id) {
-		await this.db('deliveries')
-			.where({ id })
-			.update({ isDeleted: true });
-
+		const delivery = await this.models.Delivery.findByPk(id);
+		delivery.isDeleted = true;
+		await delivery.save();
 		return (true);
 	}
 
@@ -70,14 +67,11 @@ module.exports = class DeliveryController {
 		if (phoneNumber && typeof phoneNumber !== 'string') throw new PublicError('phoneNumber must be a string');
 		if (phoneNumber && !this.isPhoneNumberValid(phoneNumber)) throw new PublicError('phone number not valid');
 
-		await this.db('deliveries')
-			.where({ id })
-			.update({
-				name,
-				lastName,
-				phoneNumber
-			});
-
-		return (true);
+		const delivery = await this.getDelivery(id);
+		if (name) delivery.name = name;
+		if (lastName) delivery.lastName = lastName;
+		if (phoneNumber) delivery.phoneNumber = phoneNumber;
+		await delivery.save();
+		return true;
 	}
 }

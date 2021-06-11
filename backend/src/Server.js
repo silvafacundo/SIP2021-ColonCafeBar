@@ -19,12 +19,15 @@ const AuthController = require('./controllers/auth/AuthController');
 const OrderController = require('./controllers/order/OrderController');
 const MercadoPagoController = require('./controllers/MercadoPago/MercadoPagoController');
 const MailController = require('./controllers/mail/MailController');
+const Sequelize = require('sequelize');
 
 module.exports = class Server {
 	constructor() {
 		this.webserver = express();
 		this.db = null;
 		this.utils = {};
+		this.models = {};
+		this.sequelize = null;
 	}
 
 	get port() {
@@ -37,6 +40,7 @@ module.exports = class Server {
 		console.log('Starting server...');
 		console.log(`COMMIT SHA: ${sha}\nJOB NUMBER: ${jobNum}`);
 		await this.initializeDatabase();
+		await this.initializeSequelize();
 		await this.initializeControllers();
 		await this.initializeWebServer();
 	}
@@ -114,6 +118,26 @@ module.exports = class Server {
 			}
 		}
 		// await this.db('users').first();
+	}
+
+	async initializeSequelize() {
+		console.log(`[Sequelize] initializing sequelize`);
+		const sequelize = new Sequelize({
+			dialect: 'postgres',
+			host: process.env.DATABASE_HOST,
+			port: process.env.DATABASE_PORT,
+			username: process.env.DATABASE_USER,
+			password: process.env.DATABASE_PASSWORD,
+			database: process.env.DATABASE_DB,
+			logging: false
+		});
+		await sequelize.authenticate();
+		console.log(`[Sequelize] sequelize initialized`)
+		console.log(`[Sequelize] Initializing models...`)
+		this.sequelize = sequelize;
+		const models = require('./database/models')(this);
+		this.models = models;
+		console.log(`[Sequelize] models initialized`)
 	}
 
 	async initializeControllers() {

@@ -1,8 +1,5 @@
-const Product = require('../../models/products/Product');
-const OrderProduct = require('../../models/products/OrderProduct');
-const Order = require('../../models/orders/Order');
-const Server = require('../../Server');
 const PublicError = require('../../errors/PublicError');
+const { Op } = require('sequelize');
 module.exports = class OrderController {
 	/**
 	 *Creates an instance of OrderController.
@@ -18,6 +15,13 @@ module.exports = class OrderController {
 
 	get utils() {
 		return this.server.utils;
+	}
+	get sequelize() {
+		return this.server.sequelize;
+	}
+
+	get models () {
+		return this.server.models;
 	}
 
 	_isValidVariant(product, productData) {
@@ -58,18 +62,7 @@ module.exports = class OrderController {
 		const productsData = await this.utils.products.getProducts(productsId);
 		if (productsData.length !== productsId.length) throw new PublicError('The provided products doesn\'t exist');
 
-		const trx = await this.db.transaction();
 		try {
-			const order = await this.db('orders')
-				.insert({
-					clientId,
-					paymentMethod,
-					withDelivery,
-					addressId,
-				})
-				.returning('*')
-				.transacting(trx);
-
 			let productsToInsert = [];
 
 			for (const product of products) {
@@ -79,24 +72,26 @@ module.exports = class OrderController {
 				productsToInsert.push({
 					productId: productData.id,
 					price: productData.price,
-					orderId: order[0].id,
 					amount: product.amount,
+					// orderId: order[0],
 					selectedVariants: product.variants,
 				})
 			}
 
-			if (productsToInsert.length === products.length) {
-				await this.db('orderProducts').insert(productsToInsert).transacting(trx);
-			} else {
+			if (productsToInsert.length !== products.length) {
 				throw new PublicError('The provided products doesn\'t exist or they are not available');
 			}
 
-			await trx.commit();
-			if (paymentMethod === 'online') await this.utils.mercadopago.createOrderPayment(order[0].id)
-			return await this.getOrder(order[0].id);
+			const order = await this.models.Order.create({
+				clientId,
+				paymentMethod,
+				withDelivery,
+				addressId,
+				products: productsToInsert
+			}, { include: ['products', 'address', 'delivery'] });
+			return order;
 		} catch (error) {
 			console.error('Failed to create order:', error);
-			await trx.rollback();
 			throw error;
 		}
 	}
@@ -107,12 +102,17 @@ module.exports = class OrderController {
 			if (!delivery) throw new PublicError('the Delivery doesn\'t exists');
 		}
 
-		await this.db('orders')
-			.where('id', orderId)
-			.update({ status, isPaid, deliveryId })
-			.returning('*');
+		const order = await this.models.Order.findByPk(orderId);
+		if (deliveryId)
+			order.deliveryId = deliveryId;
+		if (typeof isPaid === 'boolean')
+			order.isPaid = isPaid;
+		if (typeof status === 'string')
+			order.status = status;
 
-		return await this.getOrder(orderId);
+		await order.save();
+
+		return order;
 	}
 
 	/**
@@ -122,67 +122,30 @@ module.exports = class OrderController {
 	 * @returns {Order} order
 	 */
 	async getOrder(orderId) {
-		const order = await this.db('orders')
-			.where('id', orderId)
-			.first();
-
-		if (!order) return null;
-
-		const client = await this.utils.clients.getClient({ userId: order.clientId });
-
-		let delivery = null;
-		if (order.deliveryId)
-			delivery = await this.utils.deliveries.getDelivery(order.deliveryId);
-		let dbOrderProducts = await this.db('orderProducts')
-			.select('*')
-			.innerJoin('products', 'products.id', 'orderProducts.productId' )
-			.where({ orderId });
-
-		let mpLink = null;
-		if (order.paymentMethod === 'online') {
-			mpLink = await this.utils.mercadopago.getPaymentLink(orderId);
-		}
-
-		const  orderProducts = [];
-
-		for (const orderProduct of dbOrderProducts) {
-			const { amount, price, selectedVariants, ...productData } = orderProduct;
-			const product = new Product(this.server, productData, null, parseInt(price));
-			orderProducts.push(new OrderProduct(this.server, product, parseInt(price), parseInt(amount), selectedVariants));
-		}
-
-		return new Order(this.server, { ...order, mpLink }, orderProducts, client, delivery);
+		const order = await this.models.Order.findByPk(orderId, { include: ['client'] });
+		return order;
 	}
 
-	async getOrders({ perPage = 20, page = 1, filters, orderBy = {} }) {
+	async getOrders({ perPage = 20, page = 1, filters = {}, orderBy = {} }) {
 		if (isNaN(page)) throw new PublicError('page should be a number');
 		if (isNaN(perPage)) throw new PublicError('perPAge should be a number');
 
 		const order = [];
-		order.push({ column: 'createdAt', order: orderBy.createdAt === 'asc' ? 'asc' : 'desc' })
+		order.push([ 'createdAt', orderBy.createdAt === 'asc' ? 'ASC' : 'DESC' ]);
+		const whereQuery = {}
+		const { fromDate, toDate, clientsId, deliveriesId } = filters || {};
+		if (fromDate) whereQuery.createdAt = { [Op.gte]: fromDate };
+		if (toDate) whereQuery.createAt = { ...whereQuery.createdAt, [Op.lte]: toDate };
+		if (Array.isArray(clientsId)) whereQuery.clientId = { [Op.in]: clientsId };
+		if (Array.isArray(deliveriesId)) whereQuery.deliveryId = { [Op.in]: deliveriesId };
 
-		const whereQuery = builder => {
-			const { fromDate, toDate, clientsId, deliveriesId } = filters || {};
-			if (fromDate) builder.where('createdAt', '>=', fromDate);
-			if (toDate) builder.where('createdAt', '<=', toDate);
-			if (clientsId && Array.isArray(clientsId)) builder.whereIn('clientId', clientsId);
-			if (deliveriesId && Array.isArray(deliveriesId)) builder.whereIn('deliveryId', deliveriesId);
-		}
-
-		const dbOrders = await this.db('orders')
-			.where(whereQuery)
-			.offset((page - 1) * perPage)
-			.limit(perPage)
-			.orderBy('createdAt', 'desc');
-
-		let total = await this.db('orders').select(this.db.raw(`count(id) as count`)).where(whereQuery).first();
-		total = total ? total.count : 0;
-
-		const orders = [];
-		for (const order of dbOrders) {
-			// TODO: Optimizar
-			orders.push(await this.getOrder(order.id));
-		}
-		return { pagination: { page, perPage, total }, orders };
+		const { count: total, rows: orders }= await this.models.Order.findAndCountAll({
+			where: whereQuery,
+			offset: (page - 1) * perPage,
+			limit: perPage,
+			order,
+			include: ['address', 'client', 'products', 'delivery']
+		});
+		return { orders, pagination: { page, perPage, total } }
 	}
 }

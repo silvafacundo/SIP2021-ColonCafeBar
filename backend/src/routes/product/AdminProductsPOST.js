@@ -10,11 +10,11 @@ module.exports = class ProductAllGET extends Route {
 			//get all products
 			let { page = 1, perPage = 20, filters, orderBy } = req.body;
 
-			const products = await this.utils.products.getAllProducts({ page, perPage, filters: { ...filters }, orderBy });
+			const results = await this.utils.products.getAllProducts({ page, perPage, filters: { ...filters }, orderBy });
 
 			return res.json({
 				message: 'Products successfully retrieved!',
-				payload: products
+				...results
 			});
 		} catch (error) {
 			return super.error(res, error);

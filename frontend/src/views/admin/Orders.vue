@@ -54,7 +54,7 @@
 					<br>
 					<p>Método de pago: {{ order.paymentMethod }}</p>
 					<br>
-					<b-field v-if="order.withDelivery">
+					<b-field v-if="order.withDelivery && order.delivery">
 						<b-select v-model="order.delivery.id"
 							placeholder="Delivery"
 							icon="motorcycle"

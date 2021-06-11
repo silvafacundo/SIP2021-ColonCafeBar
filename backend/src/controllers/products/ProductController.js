@@ -1,7 +1,13 @@
 const Product = require('../../models/products/Product');
 const Category = require('../../models/products/Category');
 const PublicError = require('../../errors/PublicError');
+const { Op } = require('sequelize');
+/** @typedef {import('../../Server')} Server */
 module.exports = class ProductController {
+	/**
+	 *Creates an instance of ProductController.
+	 * @param {Server} server
+	 */
 	constructor(server) {
 		this.server = server;
 	}
@@ -14,6 +20,20 @@ module.exports = class ProductController {
 		return this.server.utils;
 	}
 
+	get models() {
+		return this.server.models;
+	}
+
+	get sequelize() {
+		return this.server.sequelize;
+	}
+
+	/**
+	 *
+	 * @deprecated
+	 * @param {*} where
+	 * @returns
+	 */
 	_productQuery(where) {
 		if (typeof where === 'undefined' || where === null) where = () => {};
 		const priceSubQuery = this.db('productPrices')
@@ -61,47 +81,49 @@ module.exports = class ProductController {
 		const category = await this.utils.categories.getCategory(idCategory);
 		if (!category) throw new PublicError('Category doesn\'t exists');
 
-		const trx = await this.db.transaction();
+		const trx = await this.sequelize.transaction();
 		try {
-			const product = await this.db('products')
-				.insert({
-					idCategory,
-					name,
-					description,
-					imageUrl,
-					variants
-				})
-				.returning('*')
-				.transacting(trx);
+			const product = await this.models.Product.create({
+				idCategory,
+				name,
+				description,
+				imageUrl,
+				variants
+			}, { transaction: trx });
+			const productPrice = await this.models.ProductPrice.create({
+				productId: product.id,
+				price
+			}, { transaction: trx });
 
-			await this.updateProductPrice(product[0].id, price, trx);
+			product.priceId = productPrice.id;
+			await product.save({ transaction: trx });
 
 			await trx.commit();
-			this.utils.logger.info('Product '+name+' created');
-			return await this.getProduct(product[0].id);
-		} catch (error) {
+			return product;
+		} catch (err) {
 			await trx.rollback();
-			throw error;
+			throw err;
 		}
 	}
 
 	//Get specific product
 	async getProduct(id) {
-		const product = (await this._productQuery({ 'productId': id }))[0];
-
-		if (!product) return null;
-		return new Product(this.server, product, new Category(this.server, { id: product.idCategory, name: product.categoryName }), product.price);
+		const product = await this.models.Product.findByPk(id);
+		return product;
 	}
 
 	// Get products by given an array of products id
 	async getProducts(productsId) {
 		if (!productsId || !Array.isArray(productsId) || productsId.length < 1) throw Error('products must be an array of products id');
 
-		const products = await this._productQuery(query => query.whereIn('productId', productsId));
-
-		return products.map(product => {
-			return new Product(this.server, product, new Category(this.server, { id: product.idCategory, name: product.categoryName }), product.price);
-		});
+		const products = await this.models.Product.findAll({
+			where: {
+				id: {
+					[Op.in]: productsId
+				}
+			}
+		})
+		return products;
 	}
 
 	//Get all products loaded
@@ -109,41 +131,57 @@ module.exports = class ProductController {
 		if (isNaN(page)) throw new PublicError('page should be a number');
 		if (isNaN(perPage)) throw new PublicError('perPage should be a number');
 
-		const orders = [];
-		if (orderBy.price) orders.push({ column: 'price', order: orderBy.price === 'asc' ? 'asc' : 'desc' });
-		orders.push({ column: 'price', order: orderBy.createdAt === 'asc' ? 'asc' : 'desc' });
 
-		const whereQuery = builder => {
-			let { categoriesId, isActive, fromDate, toDate, fromPrice, toPrice, query } = filters || {};
-			if (categoriesId && Array.isArray(categoriesId)) builder.whereIn('categoryId', categoriesId);
-			if (fromDate) builder.where('createdAt', '>=', fromDate);
-			if (toDate) builder.where('createdAt', '<=', toDate);
-			if (fromPrice) builder.where('price', '>=', fromPrice)
-			if (toPrice) builder.where('price', '<=', toPrice);
-			if (query) {
-				query = query.toLowerCase();
-				builder.where(this.db.raw(`(lower(products.name) like '%' || ? || '%' or lower(categories.name) like '%'|| ? ||'%' or lower(description) like '%' || ? || '%')`, [query, query, query]), );
-			}
-			if (typeof isActive === 'boolean') builder.where('products.isActive', isActive);
+		const whereAnd = [];
+		let { categoriesId, isActive, fromDate, toDate, fromPrice, toPrice, query } = filters || {};
+		if (categoriesId && Array.isArray(categoriesId))
+			whereAnd.push({ categoryId: { [Op.in]: categoriesId } })
+
+		if (fromDate)
+			whereAnd.push({ createdAt: { [Op.gte]: fromDate } });
+		if (toDate)
+			whereAnd.push({ createdAt: { [Op.lte]: toDate } });
+
+		if (fromPrice)
+			whereAnd.push({ '$priceData.price$': { [Op.gte]: fromPrice } });
+		if (toPrice)
+			whereAnd.push({ '$priceData.price$': { [ Op.lte]: toPrice } });
+
+		if (query) {
+			query = `%${query.toLowerCase()}%`;
+			whereAnd.push({
+				[Op.or]: [
+					{ '$Product.name$': { [Op.iLike]: query } },
+					{ '$category.name$': { [Op.iLike]: query } },
+					{ '$Product.description$': { [Op.iLike]: query } }
+				]
+			} );
 		}
+		if (typeof isActive === 'boolean')
+			whereAnd.push({ isActive });
 
-		const products = await this._productQuery()
-			.where(whereQuery)
-			.offset((page - 1) * perPage)
-			.limit(perPage)
-			.orderBy(orders);
+		const orders = [];
+		orders.push(['createdAt', orderBy.createdAt === 'asc' ? 'ASC' : 'DESC']);
+		if (orderBy.price)
+			orders.push(['price', orderBy.price === 'asc' ? 'ASC' : 'DESC']);
 
-		return products.map(product => {
-			return new Product(this.server, product, new Category(this.server, { id: product.idCategory, name: product.categoryName }), product.price);
+		const { count: total, rows: products } = await this.models.Product.findAndCountAll({
+			where: {
+				[Op.and]: whereAnd
+			},
+			order: orders,
+			offset: (page - 1) * perPage,
+			limit: perPage
 		});
+
+		return { products, pagination: { page, perPage, total } };
 	}
 
 	//Delete specific product
 	async deleteProduct(id) {
-		await this.db('products')
-			.where({ id })
-			.update({ isActive: false });
-
+		const product = await this.getProduct(id);
+		product.isActive = false;
+		await product.save();
 		this.utils.logger.info('Product '+id+' deleted');
 		return (true);
 	}
@@ -152,43 +190,55 @@ module.exports = class ProductController {
 	async updateProduct( { productId, idCategory, imageUrl, name, description, isActive, price, variants }) {
 		if (!productId) throw new PublicError('productId is required!');
 
-		const exists = await this.getProduct(productId);
-		if (!exists) throw new PublicError('Product doesn\'t exists');
+		const product = await this.getProduct(productId);
+		if (!product) throw new PublicError('Product doesn\'t exists');
 		if (!productId && !imageUrl && !idCategory && !name && !description && typeof isActive !== 'boolean' && !price && !variants) throw PublicError('At least one parameter is required');
 		if (typeof variants !== 'undefined' && variants !== null) {
 			if (!this._validVariants(variants)) throw new PublicError('variants wrong format');
 		}
 
-		const trx = await this.db.transaction();
+		const trx = await this.sequelize.transaction();
 		try {
-			if (idCategory || name || description || typeof isActive === 'boolean')
-				await this.db('products')
-					.where({ id: productId })
-					.update({
-						idCategory,
-						name: name,
-						description: description,
-						isActive,
-						imageUrl,
-						variants
-					})
-					.transacting(trx);
+			if (idCategory || name || description || typeof isActive === 'boolean') {
+				const toUpdate = {
+					idCategory,
+					name,
+					description,
+					isActive,
+					imageUrl,
+					variants
+				}
 
-			if (typeof price !== 'undefined' && price !== null) {
-				await this.updateProductPrice(productId, price, trx);
+				for (const key in toUpdate) {
+					product[key] = toUpdate[key];
+				}
 			}
 
+			if (typeof price !== 'undefined' && price !== null) {
+				const productPrice = await this.models.ProductPrice.create({
+					productId: product.id,
+					price
+				}, { transaction: trx });
+				product.priceId = productPrice.id;
+			}
+
+			await product.save({ transaction: trx });
 			await trx.commit();
+			this.utils.logger.info('Product '+name+' uploaded');
+			return product;
 		} catch (error) {
 			await trx.rollback();
 			throw error;
 		}
-
-		this.utils.logger.info('Product '+name+' uploaded');
-
-		return (true);
 	}
 
+	/**
+	 *
+	 * @deprecated
+	 * @param {*} productId
+	 * @param {*} price
+	 * @param {*} trx
+	 */
 	async updateProductPrice(productId, price, trx) {
 		await this.db('productPrices')
 			.insert({

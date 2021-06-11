@@ -1,8 +1,13 @@
 const UserController = require('../users/UserController');
 const Address = require('../../models/clients/Address');
 const PublicError = require('../../errors/PublicError');
+/** @typedef {import('../../Server')} Server */
 
 module.exports = class AddressController {
+	/**
+	 *Creates an instance of AddressController.
+	 * @param {Server} server
+	 */
 	constructor(server) {
 		this.server = server;
 	}
@@ -13,6 +18,10 @@ module.exports = class AddressController {
 
 	get utils() {
 		return this.server.utils;
+	}
+
+	get models() {
+		return this.server.models;
 	}
 
 	async createAddress({ clientId, alias, city, neighborhood, corner, coordinates, street, number, floor, postalCode }) {
@@ -32,7 +41,7 @@ module.exports = class AddressController {
 		if (!client) throw Error('user does not exists!');
 
 		// Insert address on database
-		const address = await this.db('addresses').insert({
+		const address = await this.models.Address.create({
 			clientId,
 			alias,
 			city,
@@ -43,9 +52,9 @@ module.exports = class AddressController {
 			number,
 			floor,
 			postalCode,
-		}).returning('*');
+		});
 
-		return new Address(this.server, address[0]);
+		return address;
 	}
 
 	async updateAddress({ addressId, alias, city, neighborhood, corner, coordinates, street, number, floor, postalCode }) {
@@ -59,35 +68,50 @@ module.exports = class AddressController {
 			&& !isValid(postalCode)
 			&& !isValid(corner)) throw new PublicError('At least one parameter is required');
 
-		await this.db('addresses').update({
-			alias, city, neighborhood, corner, coordinates, street, number, floor, postalCode
-		})
-			.where({ id: addressId });
+		const toUpdate = { alias, city, neighborhood, corner, coordinates, street, number, floor, postalCode };
+		const address = await this.getAddress(addressId);
+
+		for (const key in toUpdate) {
+			address[key] = toUpdate[key];
+		}
+
+		await address.save();
+		return address;
 	}
 
 	async getAddress(id, fetchDeleted = false) {
-		const whereQuery = { id };
+		const whereQuery = {};
 		if (!fetchDeleted)  whereQuery.isDeleted = false;
 
-		const address = await this.db('addresses').where(whereQuery).first();
-		if (!address) return null;
-		return new Address(this.server, address);
+		const address = await this.models.Address.findByPk(id, { where: whereQuery });
+		return address;
 	}
 
 	async deleteAddress(addressId) {
-		await this.db('addresses').where({ id: addressId }).update({ isDeleted: true });
+		const address = await this.getAddress(addressId);
+		if (!address) return true;
+		address.isDeleted = true;
+		await address.save();
+		return true;
 	}
 
 	async getUserAddresses(clientId, fetchDeleted = false) {
 		const whereQuery = { clientId };
 		if (!fetchDeleted)  whereQuery.isDeleted = false;
 
-		const addresses = await this.db('addresses').where(whereQuery);
-		return addresses.map(address => new Address(this.server, address));
+		const addresses = await this.models.Address.findAll({
+			where: whereQuery
+		});
+		return addresses;
 	}
 
 	async isAddressFromClient(addressId, clientId) {
-		const exists = await this.db('addresses').where({ id: addressId, clientId }).first();
+		const exists = await this.models.Address.findOne({
+			where: {
+				id: addressId,
+				clientId
+			}
+		});
 		return !!exists;
 	}
 }

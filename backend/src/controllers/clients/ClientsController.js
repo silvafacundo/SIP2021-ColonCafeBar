@@ -15,6 +15,10 @@ module.exports = class ClientController {
 		return this.server.db;
 	}
 
+	get models() {
+		return this.server.models;
+	}
+
 	get utils() {
 		return this.server.utils;
 	}
@@ -32,31 +36,30 @@ module.exports = class ClientController {
 
 		const hash = await this.utils.auth.encryptPassword(password);
 
-		const newUser = await this.db('clients').insert({
+		const user = await this.models.Client.create({
 			email,
 			password: hash,
 			firstName,
 			lastName,
 			phoneNumber
-		}).returning('*');
+		})
+		return user;
 	}
 
 	async getClient({ userId, email, onlyPublic = false }) {
-		const clientsSelect = [];
+		let clientsSelect = null;
 		if (onlyPublic) {
-			clientsSelect.push('clients.email', 'clients.firstName', 'clients.lastName', 'clients.phoneNumber');
-		} else clientsSelect.push('clients.*');
+			clientsSelect = ['clients.email', 'clients.firstName', 'clients.lastName', 'clients.phoneNumber'];
+		}
 
-		const user = await this.db('clients')
-			.select(clientsSelect)
-			.where(builder => {
-				if (userId) builder.where({ id: userId });
-				if (email) builder.where({ email });
-			})
-			.first();
-		if (!user) return null;
-		const addresses = await this.utils.addresses.getUserAddresses(user.id);
-		return new Client(this.server, user, addresses);
+		const where = {};
+		if (typeof userId !== 'undefined' && userId !== null) where.id = userId;
+		if (typeof email !== 'undefined' && email !== null) where.email = email;
+		const user = await this.models.Client.findOne({
+			where,
+			attributes: clientsSelect
+		});
+		return user;
 	}
 
 	async updateClient({ clientId, email, firstName, lastName, phoneNumber, password, isActive }) {
@@ -81,7 +84,11 @@ module.exports = class ClientController {
 
 		if (Object.keys(toUpdate).length < 1) throw PublicError('At least one param is required!');
 
-		await this.db('clients').where({ id: clientId }).update(toUpdate);
+		for (const key in toUpdate) {
+			client[key] = toUpdate[key];
+		}
+		await client.save();
+		return client;
 	}
 
 	async getClientHashPassword(userId) {

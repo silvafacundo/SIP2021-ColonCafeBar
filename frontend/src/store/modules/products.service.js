@@ -23,7 +23,7 @@ const actions = {
 	async fetchProducts({ commit }, { filters, page, perPage, orderBy } = {} ) {
 		try {
 			const response = await Vue.axios.post('/products', { filters, page, perPage, orderBy });
-			const products = response.data.payload;
+			const products = response.data.products;
 			commit('setProducts', products);
 			return products;
 		} catch (err) {
@@ -34,7 +34,7 @@ const actions = {
 	async fetchAdminProducts({ commit }, { filter, page, perPage, orderBy } = {}) {
 		try {
 			const response = await Vue.axios.post('/admin/products', { filter, page, perPage, orderBy });
-			const products = response.data.payload;
+			const products = response.data.products;
 			commit('setProducts', products);
 			return products;
 		} catch (err) {
