@@ -1,4 +1,3 @@
-const Client = require('../../models/clients/Client');
 const PublicError = require('../../errors/PublicError');
 const Server = require('../../Server');
 
@@ -59,7 +58,7 @@ module.exports = class ClientController {
 			where,
 			attributes: clientsSelect
 		});
-		return user;
+		return user.dataValues;
 	}
 
 	async updateClient({ clientId, email, firstName, lastName, phoneNumber, password, isActive }) {

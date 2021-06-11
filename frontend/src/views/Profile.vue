@@ -77,40 +77,68 @@
 
 		<b-modal :active="!!selectedAddress" @close="closeModal">
 			<div v-if="selectedAddress" class="card selected-address">
-				<b-field label="Alias">
-					<b-input v-model="selectedAddress.alias" />
-				</b-field>
-				<b-field label="Calle*">
-					<b-input v-model="selectedAddress.street" />
-				</b-field>
-				<b-field label="Número*">
-					<b-input v-model="selectedAddress.number" />
-				</b-field>
-				<b-field label="Piso">
-					<b-input v-model="selectedAddress.floor" />
-				</b-field>
-				<b-field label="Entre Calles*">
-					<b-input v-model="selectedAddress.corner" />
-				</b-field>
-				<b-button v-if="selectedAddress.id"
-					type="is-ghost"
-					:disabled="isLoading"
-					expanded
-					@click="deleteAddress">
-					Eliminar dirección
-				</b-button>
-				<footer>
-					<b-button type="is-danger"
-						:disabled="isLoading"
-						@click="closeModal">
-						Cancelar
-					</b-button>
-					<b-button type="is-success"
-						:loading="isLoading"
-						@click="saveAddress">
-						Guardar
-					</b-button>
-				</footer>
+				<b-steps
+					:has-navigation="hasAddressData"
+					@input="stepHandler">
+					<b-step-item
+						value="1">
+						<b-field label="Alias">
+							<b-input v-model="selectedAddress.alias" />
+						</b-field>
+						<b-field label="Calle*">
+							<b-input v-model="selectedAddress.street" />
+						</b-field>
+						<b-field label="Número*">
+							<b-input v-model="selectedAddress.number" />
+						</b-field>
+						<b-field label="Localidad*">
+							<b-input v-model="selectedAddress.neighborhood" />
+						</b-field>
+						<b-field label="Piso">
+							<b-input v-model="selectedAddress.floor" />
+						</b-field>
+						<b-field label="Entre Calles*">
+							<b-input v-model="selectedAddress.corner" />
+						</b-field>
+						<b-button v-if="selectedAddress.id"
+							type="is-ghost"
+							:disabled="isLoading"
+							expanded
+							@click="deleteAddress">
+							Eliminar dirección
+						</b-button>
+					</b-step-item>
+					<b-step-item
+						value="2">
+						<b-field v-if="hasAddressData && hasAddresPosition" class="map-container">
+							<GmapMap
+								:center="addresPosition"
+								:zoom="15"
+								map-type-id="terrain"
+								style="width: 500px; height: 300px">
+								<GmapMarker
+									:position="addresPosition"
+									:clickable="true"
+									:draggable="false"
+									title="Colón Café Bar"
+									@click="clickedMarker(m)"
+								/>
+							</GmapMap>
+						</b-field>
+						<footer>
+							<b-button type="is-danger"
+								:disabled="isLoading"
+								@click="closeModal">
+								Cancelar
+							</b-button>
+							<b-button type="is-success"
+								:loading="isLoading"
+								@click="saveAddress">
+								Guardar
+							</b-button>
+						</footer>
+					</b-step-item>
+				</b-steps>
 			</div>
 		</b-modal>
 		<b-button type="is-ghost"
@@ -140,6 +168,17 @@ export default {
 		},
 		user() {
 			return { ...this.$store.getters['Auth/clientUser'] };
+		},
+		hasAddressData() {
+			return !!(this.selectedAddress
+				&& this.selectedAddress.street
+				&& this.selectedAddress.number);
+		},
+		hasAddresPosition() {
+			return !!(this.selectedAddress && this.selectedAddress.coordinates);
+		},
+		addresPosition() {
+			return this.selectedAddress.coordinates;
 		}
 	},
 	methods: {
@@ -153,8 +192,26 @@ export default {
 				postalCode: 6620
 			};
 		},
-		async updateProfile() {
+		stepHandler(step) {
+			if (step == 2) {
+				this.convertAddresPosition();
+			}
+		},
+		async convertAddresPosition() {
+			const address = `${this.selectedAddress.street}+${this.selectedAddress.number}+${this.selectedAddress.neighborhood}+${this.selectedAddress.city}`;
+			const axios = this.axios.create();
+			delete axios.defaults.headers.common['Authorization'];
 
+			const { data } = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${address.replace(' ', '')},+AR&key=${process.env.VUE_APP_MAPS_APIKEY}`);
+			if (!data || !data.results) return;
+			const { results } = data;
+			if (results && Array.isArray(results) && results.length > 0 && results[0] && results[0].geometry && results[0].geometry.location);
+
+			const newSelectedAddress = { ...this.selectedAddress };
+			newSelectedAddress.coordinates = results[0].geometry.location;
+			this.selectedAddress = newSelectedAddress;
+		},
+		async updateProfile() {
 			try {
 				const data = {
 					firstName: this.user.firstName,
@@ -236,5 +293,9 @@ export default {
 			align-items: center;
 			gap: 1rem;
 		}
+	}
+	.map-container {
+		display: flex;
+		justify-content: center;
 	}
 </style>

@@ -22,6 +22,14 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.STRING,
 				required: true
 			},
+			city: {
+				type: DataTypes.STRING,
+				required: true
+			},
+			neighborhood: {
+				type: DataTypes.STRING,
+				required: true
+			},
 			number: {
 				type: DataTypes.STRING,
 				required: true

@@ -36,6 +36,17 @@ const firebaseSettings = {
 
 firebase.initializeApp(firebaseSettings)
 
+import * as VueGoogleMaps from 'vue2-google-maps';
+Vue.use(VueGoogleMaps, {
+	load: {
+		key: process.env.VUE_APP_MAPS_APIKEY,
+		libraries: 'places',
+		region: 'AR',
+		language: 'es'
+	},
+	installComponents: true
+});
+
 require('./assets/styles/reset.css');
 require('./assets/styles/style.css');
 require('./assets/fonts/font.css');
