@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
 			firstName: DataTypes.STRING,
 			lastName: DataTypes.STRING,
 			phoneNumber: DataTypes.STRING,
+			password: DataTypes.STRING,
 			isActive: {
 				type: DataTypes.BOOLEAN,
 				default: true
@@ -27,7 +28,10 @@ module.exports = (sequelize, DataTypes) => {
 		{
 			sequelize,
 			defaultScope: {
-				include: ['addresses']
+				include: [{
+					required: false,
+					association: 'addresses'
+				}]
 			},
 			tableName: 'clients',
 			modelName: 'Client',
