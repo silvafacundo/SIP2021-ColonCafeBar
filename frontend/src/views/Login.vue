@@ -1,7 +1,6 @@
 <template>
 	<div>
 		<div class="form-div">
-			<h3>Bienvenido</h3>
 			<form @submit.prevent="login">
 				<img src="@/assets/images/logo.png" alt="logo">
 				<input v-model="email"
@@ -22,7 +21,6 @@
 			<br>
 			<router-link to="/request/password/reset" title="Solicitar cambio de contraseña">Olvidé mi contraseña</router-link>
 		</div>
-		<p class="error">{{ error && 'Error: ' + error }}</p>
 	</div>
 </template>
 
@@ -30,8 +28,8 @@
 export default {
 	data: () => ({
 		email: '',
-		password: '',
-		error: ''
+		password: ''
+		// error: ''
 	}),
 	mounted() {
 	},
@@ -42,30 +40,30 @@ export default {
 				this.$router.push({ name: 'home' });
 			} catch (err) {
 				console.error('Failed to log in', err);
-				if (err && err.response && err.response.data) this.error = err.response.data.message
-				else this.error = 'Ocurrió un error'
+				this.danger();
 			}
+		},
+		danger() {
+			this.$buefy.toast.open({
+				duration: 5000,
+				message: `Usuario o contraseña incorrecto`,
+				position: 'is-bottom',
+				type: 'is-danger'
+			})
 		}
 	}
 }
 </script>
 
 <style scoped>
-h3{
-	text-transform: uppercase;
+div:nth-child(1){
+	margin-top:5em;
 }
-
-.error{
-	color:#ea2a3d;
-}
-
 .form-div{
-	width: 55vw;
-	height: 55vh;
-	margin:auto;
 	padding:3em;
-	border: 1px solid black;
-	border-radius: 3em;
+	width:70%;
+	border-radius: 10px;
+	margin:auto;
 	background-color: #fafafa;
 	text-align: center;
 	color: black;
@@ -93,7 +91,7 @@ h3{
 	text-transform: uppercase;
 	color:#fafafa;
 	margin-bottom: 1em;
-	border-radius: 3em;
+	border-radius: 10px;
 }
 
 .form-div > form > button:hover{
@@ -102,11 +100,29 @@ h3{
 }
 
 .form-div > a{
+	display: block;
+	font-size: 1em;
+	widows: 100%;
 	color: #3498db;
 }
 
 .form-div > a:hover{
 	color:#ea2a3d;
+}
+
+@media (max-width: 900px){
+	div:nth-child(1){
+		margin-top:1em;
+	}
+	.form-div{
+		width: 100vw;
+	}
+	.form-div > form > input, form > button{
+		display:block;
+		width:90%;
+		margin:auto;
+		padding:1em;
+	}
 }
 
 </style>
