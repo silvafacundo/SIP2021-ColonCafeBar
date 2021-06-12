@@ -122,7 +122,7 @@ module.exports = class OrderController {
 	 * @returns {Order} order
 	 */
 	async getOrder(orderId) {
-		const order = await this.models.Order.findByPk(orderId, { include: ['client'] });
+		const order = await this.models.Order.findByPk(orderId, { include: ['client', 'products'] });
 		return order;
 	}
 
