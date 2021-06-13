@@ -15,10 +15,10 @@
 				<router-link class="b-navbar-item" :to="{ name: 'adminPermissions' }">Permisos</router-link>
 				<!-- <router-link class="b-navbar-item" :to="{ name: 'adminUsers' }">Categorías</router-link>
 				<router-link class="b-navbar-item" :to="{ name: 'adminUsers' }">Productos</router-link> -->
-				<router-link class="b-navbar-item" :to="{ name: 'adminOrders' }">Pedidos</router-link>
+				<router-link class="b-navbar-item" :to="{ name: 'adminOrders' }">Ordenes</router-link>
 				<router-link class="b-navbar-item" :to="{ name: 'adminDeliveries' }">Deliveries</router-link>
 				<router-link class="b-navbar-item" :to="{ name: 'adminCategories' }">Categorías</router-link>
-				<router-link class="b-navbar-item" :to="{ name: 'adminProducts' }">Products</router-link>
+				<router-link class="b-navbar-item" :to="{ name: 'adminProducts' }">Productos</router-link>
 			</template>
 
 			<template #end>
@@ -66,9 +66,11 @@ export default {
 }*/
 .b-navbar-item {
 	display: flex;
-	justify-content: center;
 	align-items: center;
 	padding: 0 1rem;
+	border-left: 3px solid black;
+	padding: .5em;
+	margin-bottom:.2em;
 
 }
 .b-navbar-item:hover {

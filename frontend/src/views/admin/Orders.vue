@@ -171,4 +171,10 @@ div.orders-container {
 	flex-direction: column;
 	padding: .2rem 1rem;
 }
+@media (max-width: 900px){
+		div.container{
+			padding: 0;
+			width: 95%;
+		}
+	}
 </style>

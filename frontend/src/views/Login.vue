@@ -29,7 +29,6 @@ export default {
 	data: () => ({
 		email: '',
 		password: ''
-		// error: ''
 	}),
 	mounted() {
 	},
@@ -58,6 +57,7 @@ export default {
 <style scoped>
 div:nth-child(1){
 	margin-top:5em;
+	max-width: 100vw;
 }
 .form-div{
 	padding:3em;
@@ -84,7 +84,6 @@ div:nth-child(1){
 	border:none;
 	border-bottom: 1px solid #ea2a3d;
 	background-color: #fafafa;
-	user-select: none;
 }
 .form-div > form > button{
 	background-color: #ea2a3d;
@@ -112,7 +111,7 @@ div:nth-child(1){
 
 @media (max-width: 900px){
 	div:nth-child(1){
-		margin-top:1em;
+		margin-top:3em;
 	}
 	.form-div{
 		width: 100vw;
@@ -124,5 +123,6 @@ div:nth-child(1){
 		padding:1em;
 	}
 }
+
 
 </style>

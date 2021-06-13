@@ -105,5 +105,10 @@ export default {
 			color: white;
 		}
 	}
-
+	@media (max-width: 900px){
+		div.container{
+			padding: 0;
+			width: 95%;
+		}
+	}
 </style>

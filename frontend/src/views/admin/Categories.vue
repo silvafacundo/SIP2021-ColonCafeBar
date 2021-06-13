@@ -14,7 +14,7 @@
 					:can-edit="true"
 					@change="editName(props.row.id, $event)" />
 			</b-table-column>
-			<b-table-column v-slot="props">
+			<b-table-column v-slot="props" label="Acciones">
 				<b-button type="is-danger"
 					size="is-small"
 					@click="() => deleteCategory(props.row.id)">
@@ -25,11 +25,13 @@
 		<div class="new-category">
 			<h3>Agregar nueva categoría</h3>
 			<form @submit.prevent="createCategory">
-				<label for="permissionKey"> Nombre: </label>
-				<input id="permissionKey"
-					v-model="name"
-					type="text"
-					name="permissionKey">
+				<div>
+					<label for="permissionKey"> Nombre: </label>
+					<input id="permissionKey"
+						v-model="name"
+						type="text"
+						name="permissionKey">
+				</div>
 				<input type="submit" value="Crear">
 			</form>
 		</div>
@@ -110,8 +112,16 @@ export default {
 </script>
 
 <style scoped lang="scss">
+	h3{
+		font-size: 1em;
+		margin-top:1em;
+	}
 	.new-category{
 		margin-top:2em;
+
+		h3{
+			margin-top: 0em;
+		}
 	}
 
 	form{
@@ -119,24 +129,60 @@ export default {
 		background-color: var(--blanco);
 		border-top: 2px solid var(--negro);
 		border-radius: 5px;
-		gap:3em;
+		display: flex;
+		align-items: center;
 
-		input[type=text] ,label{
-			margin-left: 1em;
+		div{
+			width:80%;
+
+			input[type=text] ,label{
+				margin-left: 1em;
+			}
+
+			input[type=text]{
+				width:80%;
+			}
 		}
-
 		input[type=submit]{
-			margin-left: 2em;
 			padding:.2em 1.5em;
 			background-color: var(--verde-ok);
 			border-radius:5px;
 			color:var(--blanco);
 			font-size: 1em;
+			width:20%;
 		}
 
 		input[type=submit]:hover{
 			background-color:var(--verde-oscuro);
 			cursor:pointer;
+		}
+	}
+
+	@media (max-width: 900px){
+		div.container{
+			padding: 0;
+			width: 95%;
+		}
+		form{
+			display: block;
+
+			div{
+				display: flex;
+				width: 100%;
+				align-items: center;
+
+				input[type=text] ,label{
+					margin: 0em;
+				}
+				input[type=text]{
+					margin-left: 1em;
+				}
+			}
+			input[type=submit]{
+				margin: 0em;
+				margin-top:1em;
+				width: 100%;
+			}
 		}
 	}
 </style>

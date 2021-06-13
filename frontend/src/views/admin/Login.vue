@@ -1,7 +1,6 @@
 <template>
 	<div>
 		<div class="form-div">
-			<h3>Bienvenido</h3>
 			<form @submit.prevent="login">
 				<img src="@/assets/images/logo.png" alt="logo">
 				<input v-model="username"
@@ -20,7 +19,6 @@
 			</form>
 			<!-- <router-link to="/register" title="Crear una cuenta">¿No tenes cuenta? ¡Regístrese haciendo click aquí!</router-link> -->
 		</div>
-		<p class="error">{{ error && 'Error: ' + error }}</p>
 	</div>
 </template>
 
@@ -28,8 +26,7 @@
 export default {
 	data: () => ({
 		username: '',
-		password: '',
-		error: ''
+		password: ''
 	}),
 	mounted() {
 	},
@@ -40,32 +37,34 @@ export default {
 				await this.$router.push({ name: 'adminDashboard' });
 			} catch (err) {
 				console.error('Failed to log in', err);
-				if (err && err.response && err.response.data) this.error = err.response.data.message
-				else this.error = 'Ocurrió un error'
+				this.danger();
 			}
+		},
+		danger() {
+			this.$buefy.toast.open({
+				duration: 5000,
+				message: `Usuario o contraseña incorrecto`,
+				position: 'is-bottom',
+				type: 'is-danger'
+			})
 		}
 	}
 }
 </script>
 
 <style scoped>
-h3{
-	text-transform: uppercase;
+div:nth-child(1){
+	margin-top:5em;
+	max-width: 100vw;
 }
-
-.error{
-	color:#ea2a3d;
-}
-
 .form-div{
-	width: 55vw;
-	height: 55vh;
-	margin:auto;
 	padding:3em;
-	border: 1px solid black;
-	border-radius: 3em;
+	width:70%;
+	border-radius: 10px;
+	margin:auto;
 	background-color: #fafafa;
 	text-align: center;
+	color: black;
 }
 
 .form-div > form > input, form > button{
@@ -83,14 +82,13 @@ h3{
 	border:none;
 	border-bottom: 1px solid #ea2a3d;
 	background-color: #fafafa;
-	user-select: none;
 }
 .form-div > form > button{
 	background-color: #ea2a3d;
 	text-transform: uppercase;
 	color:#fafafa;
 	margin-bottom: 1em;
-	border-radius: 3em;
+	border-radius: 10px;
 }
 
 .form-div > form > button:hover{
@@ -99,6 +97,9 @@ h3{
 }
 
 .form-div > a{
+	display: block;
+	font-size: 1em;
+	widows: 100%;
 	color: #3498db;
 }
 
@@ -106,4 +107,18 @@ h3{
 	color:#ea2a3d;
 }
 
+@media (max-width: 900px){
+	div:nth-child(1){
+		margin-top:3em;
+	}
+	.form-div{
+		width: 100vw;
+	}
+	.form-div > form > input, form > button{
+		display:block;
+		width:90%;
+		margin:auto;
+		padding:1em;
+	}
+}
 </style>

@@ -12,6 +12,16 @@ exports.seed = async knex => {
 		isActive: true
 	});
 
+	const hashClient = await bcrypt.hash('Hola12345', 10);
+	await knex('clients').insert({
+		email: 'test@test.com',
+		firstName: 'test',
+		lastName: 'testeado',
+		phoneNumber: '2346558877',
+		password: hashClient,
+		isActive: true
+	});
+
 	// permissions
 	const permissions = await knex('permissions')
 		.insert([

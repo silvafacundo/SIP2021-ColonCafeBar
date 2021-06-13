@@ -117,6 +117,5 @@ export default {
 	.sidebar ::v-deep .sidebar-content {
 		padding: 1rem;
 		padding-top: 80px;
-
 	}
 </style>
