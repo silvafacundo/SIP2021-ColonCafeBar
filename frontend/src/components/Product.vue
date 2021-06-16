@@ -6,11 +6,6 @@
 		<p class="name">{{ product.name }}</p>
 		<p class="description" :title="product.description">{{ shortedDescription }}</p>
 		<p class="price">${{ product.price }}</p>
-		<!-- <b-button type="is-success"
-			class="buy"
-			@click="addToCart">
-			Comprar
-		</b-button> -->
 	</div>
 </template>
 

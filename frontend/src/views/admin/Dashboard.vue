@@ -68,7 +68,6 @@ export default {
 	display: flex;
 	align-items: center;
 	padding: 0 1rem;
-	border-left: 3px solid black;
 	padding: .5em;
 	margin-bottom:.2em;
 

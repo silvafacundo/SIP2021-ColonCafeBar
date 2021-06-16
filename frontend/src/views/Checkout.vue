@@ -1,23 +1,23 @@
 <template>
 	<div class="cart">
 		<h3>Checkout</h3>
-		<b-table :data="parsedCart">
-			<b-table-column v-slot="props" label="Item">
-				{{ props.row.name }}
-			</b-table-column>
-			<b-table-column v-slot="props" label="Precio">
-				{{ props.row.price }}
-			</b-table-column>
-			<b-table-column v-slot="props" label="Cantidad">
-				{{ props.row.amount }}
-			</b-table-column>
-			<b-table-column v-slot="props">
-				<b-button type="is-text"
-					:disabled="isLoading"
-					icon-left="times"
-					@click="()=>deleteProduct(props.row.index)" />
-			</b-table-column>
-		</b-table>
+		<div v-for="(product, index) of parsedCart"
+			:key="index"
+			class="product">
+			<div>
+				<p class="name">{{ product.name }}</p>
+					<div>
+						<p>Precio: ${{ product.price }}</p>
+						<p>Cantidad: {{ product.amount }}</p>
+					</div>
+			</div>
+			<b-button type="is-text"
+				size="is-small"
+				icon-left="trash"
+				@click="e => deleteProduct(e, index)">
+				ELIMINAR
+			</b-button>
+		</div>
 		<h4>Subtotal: ${{ totalPrice }}</h4>
 		<b-field>
 			<b-checkbox v-model="takeAway">TakeAway</b-checkbox>
@@ -124,6 +124,7 @@ export default {
 				const products = this.parsedCart.map(product => ({ id: product.id, variants: product.variants, amount: product.amount }));
 				if (!this.takeAway && !this.selectedAddress) {
 					this.$showToast('Selecciona una dirección para realizar el delivery', true);
+					this.isLoading = false;
 					return;
 				}
 				const paymentMethod = this.payWithCash ? 'cash' : 'online';
@@ -168,8 +169,20 @@ export default {
 		display: flex;
 		flex-flow: column;
 		gap: .5rem;
-		::v-deep table tr td {
-			vertical-align: middle;
+
+		.product{
+			display: flex;
+			justify-content: space-between;
+			border-bottom: 1px dotted black;
+			align-items: center;
+			padding: 0 0 1em 0;
+		}
+		.name{
+			font-family: 'Reboto', sans-serif;
+			font-size: 1.2em;
+		}
+		.name::first-letter{
+			text-transform: uppercase;
 		}
 		::v-deep .modal-content {
 			max-width: 55vw!important;
@@ -185,12 +198,24 @@ export default {
 		h3 {
 			color: black;
 			text-align: center;
+			font-family: Holtzberg-Regular;
 		}
-		p, h4 {
+		p,h4 {
 			margin: 1rem 0;
 		}
 		.create-order {
 			align-self: flex-end;
+		}
+	}
+	@media (max-width: 900px){
+		.cart{
+			max-width: 100vw;
+			border-radius: 0px;
+			padding:1em;
+
+			.create-order{
+				width:100%;
+			}
 		}
 	}
 </style>

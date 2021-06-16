@@ -33,6 +33,5 @@ export default {
 <style scoped>
 	#app{
 		max-width: 100vw;
-		overflow-x: hidden;
 	}
 </style>

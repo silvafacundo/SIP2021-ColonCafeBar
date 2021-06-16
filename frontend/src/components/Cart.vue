@@ -4,9 +4,13 @@
 		<div v-for="(product, index) of products"
 			:key="index"
 			class="product">
-			<p class="name">{{ product.name }}</p>
-			<p>Precio: {{ product.price }}</p>
-			<p>Cantidad: {{ product.amount }}</p>
+			<div>
+				<p class="name">{{ product.name }}</p>
+					<div>
+						<p>Precio: ${{ product.price }}</p>
+						<p>Cantidad: {{ product.amount }}</p>
+					</div>
+			</div>
 			<b-button type="is-text"
 				size="is-small"
 				icon-left="trash"
@@ -17,12 +21,20 @@
 		<p v-if="isEmpty" class="empty">El carrito se encuentra vacío</p>
 		<footer>
 			<p>Subtotal: <span>${{ totalPrice }}</span></p>
-			<b-button type="is-success"
-				size="is-small"
-				:disabled="isEmpty"
-				@click="goToCheckout">
-				Continuar
-			</b-button>
+			<div>
+				<b-button type="is-danger"
+					size="is-small"
+					:disabled="isEmpty"
+					@click="emptyCart">
+					Vaciar
+				</b-button>
+				<b-button type="is-success"
+					size="is-small"
+					:disabled="isEmpty"
+					@click="goToCheckout">
+					Continuar
+				</b-button>
+			</div>
 		</footer>
 	</div>
 </template>
@@ -96,7 +108,20 @@ export default {
 		goToCheckout() {
 			this.$router.push({ name: 'checkout' })
 			this.$emit('close')
+		},
+		emptyCart(){
+			this.$store.commit('Cart/emptyCart');
+			this.success();
+		},
+		success() {
+			this.$buefy.toast.open({
+				duration: 5000,
+				message: `Productos eliminados`,
+				position: 'is-bottom',
+				type: 'is-success'
+			})
 		}
+
 	}
 
 }
@@ -124,22 +149,30 @@ export default {
 		}
 		padding: 1rem;
 		border-radius:5px;
-		right: 0;
+		right: -4em;
 		position: absolute;
 		background-color:white;
 		border:1px solid black;
+		min-width:30vw;
 		.product {
 			margin: .5rem 5px;
-			p:first-child {
+			display: flex;
+			justify-content: space-between;
+			border-bottom: 1px dotted black;
+			.name{
 				font-weight: bold;
 				color: black;
 				font-size: 1rem;
 				padding: 0;
 			}
+
+			.name::first-letter{
+				text-transform: uppercase;
+			}
+
 			p {
 				color: gray;
 				font-size:.9rem;
-				padding: 0 5px;
 				margin: .3rem 0;
 			}
 		}
@@ -155,10 +188,20 @@ export default {
 				justify-content: space-between;
 				font-size: 1.3rem;
 			}
-			button {
-				margin-left: auto;
+			div{
+				display: flex;
+				justify-content: space-around;
+
+				button{
+					width: 25%;
+				}
 			}
 		}
-		width: 320px;
+	}
+
+	@media (max-width: 900px){
+		.cart-container{
+			width:80vw;
+		}
 	}
 </style>
