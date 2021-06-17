@@ -148,6 +148,7 @@ module.exports = class Server {
 		* @typedef {object} Utils
 		* @property {AuthController} Utils.auth
 		* @property {UserController} Utils.users
+		* @property {ClientController} Utils.clients
 		* @property {AddressController} Utils.addresses
 		* @property {RoleController} Utils.roles
 		* @property {CategoryController} Utils.categories

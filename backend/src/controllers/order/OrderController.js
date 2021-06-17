@@ -96,10 +96,15 @@ module.exports = class OrderController {
 		}
 	}
 
-	async updateOrder({ orderId, status, isPaid, deliveryId }) {
+	async updateOrder({ orderId, statusId, isPaid, deliveryId }) {
 		if (deliveryId) {
 			const delivery = await this.utils.deliveries.getDelivery(deliveryId);
 			if (!delivery) throw new PublicError('the Delivery doesn\'t exists');
+		}
+
+		if (statusId) {
+			const status = await this.utils.orders.getOrderStatus(statusId);
+			if (!status) throw new PublicError('the status doesn\'t exists');
 		}
 
 		const order = await this.models.Order.findByPk(orderId);
@@ -107,8 +112,8 @@ module.exports = class OrderController {
 			order.deliveryId = deliveryId;
 		if (typeof isPaid === 'boolean')
 			order.isPaid = isPaid;
-		if (typeof status === 'string')
-			order.status = status;
+		if (statusId)
+			order.statusId = statusId;
 
 		await order.save();
 
@@ -131,7 +136,7 @@ module.exports = class OrderController {
 		if (isNaN(perPage)) throw new PublicError('perPAge should be a number');
 
 		const order = [];
-		order.push([ 'createdAt', orderBy.createdAt === 'asc' ? 'ASC' : 'DESC' ]);
+		order.push(['createdAt', orderBy.createdAt === 'asc' ? 'ASC' : 'DESC']);
 		const whereQuery = {}
 		const { fromDate, toDate, clientsId, deliveriesId } = filters || {};
 		if (fromDate) whereQuery.createdAt = { [Op.gte]: fromDate };
@@ -143,9 +148,18 @@ module.exports = class OrderController {
 			where: whereQuery,
 			offset: (page - 1) * perPage,
 			limit: perPage,
-			order,
-			include: ['address', 'client', 'products', 'delivery']
+			order
 		});
 		return { orders, pagination: { page, perPage, total } }
+	}
+
+	async getOrderStatus(id) {
+		const status = await this.models.OrderStatus.findByPk(id);
+		return status;
+	}
+
+	async getAllOrderStatus() {
+		const status = await this.models.OrderStatus.findAll();
+		return status;
 	}
 }

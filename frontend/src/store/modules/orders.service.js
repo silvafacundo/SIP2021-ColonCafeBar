@@ -4,14 +4,7 @@ import router from '../../router';
 const state = () => ({
 	orders: [],
 	// TODO hay que cambiar esto maybe
-	possibleStatus: [
-		'Pendiente a ser aceptado',
-		'En preparación',
-		'En camino',
-		'Esperando a ser retirado',
-		'Entregado',
-		'Cancelado'
-	]
+	possibleStatus: []
 });
 
 const getters = {
@@ -21,14 +14,18 @@ const getters = {
 const mutations = {
 	setOrders(state, orders) {
 		state.orders = orders || [];
+	},
+	setPossibleStatus(state, possibleStatus) {
+		state.possibleStatus = possibleStatus || [];
 	}
 };
 const actions = {
 	async fetchOrders({ commit }, { page, perPage, filters, orderBy } ) {
 		try {
 			const response = await Vue.axios.post('/admin/orders', { page, perPage, filters, orderBy });
-			const orders = response.data.orders;
+			const { orders, status } = response.data;
 			commit('setOrders', orders);
+			commit('setPossibleStatus', status);
 			return orders;
 		} catch (err) {
 			console.error('Failed to fetch orders', err);
@@ -53,11 +50,11 @@ const actions = {
 			throw err;
 		}
 	},
-	async updateOrder({ dispatch }, { orderId, status, isPaid, deliveryId }) {
+	async updateOrder({ dispatch }, { orderId, statusId, isPaid, deliveryId }) {
 		try {
 			await Vue.axios.put('/admin/order', {
 				orderId,
-				status,
+				statusId,
 				isPaid,
 				deliveryId
 			});

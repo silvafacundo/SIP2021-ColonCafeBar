@@ -27,8 +27,9 @@ module.exports = class Order extends BaseModel{
 	get id() {
 		return this._orderData.id;
 	}
+
 	get status() {
-		return this._orderData.status;
+		return this._orderData.statusId;
 	}
 
 	/**
@@ -68,8 +69,9 @@ module.exports = class Order extends BaseModel{
 		return this._orderData.address;
 	}
 	get paymentMethod() {
-		return this._orderData.paymentMethod;
+		return this._orderData.paymentMethodId;
 	}
+
 	get paymentLink() {
 		return this._orderData.mpLink;
 	}

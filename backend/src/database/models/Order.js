@@ -18,14 +18,25 @@ module.exports = (sequelize, DataTypes) => {
 			Order.hasMany(models.OrderProduct, {
 				foreignKey: 'orderId',
 				as: 'products',
-			})
+			});
+			Order.belongsTo(models.OrderStatus, {
+				foreignKey: 'statusId',
+				as: 'orderStatus'
+			});
+			Order.belongsTo(models.OrderPaymentMethod, {
+				foreignKey: 'paymentMethodId',
+				as: 'orderPaymentMethod'
+			});
 		}
 	}
 	Order.init(
 		{
 			status: {
-				type: DataTypes.STRING,
-				required: true
+				type: DataTypes.VIRTUAL,
+				get() {
+					if (!this.orderStatus) return 'Pending';
+					return this.orderStatus.statusName;
+				}
 			},
 			isPaid: {
 				type: DataTypes.BOOLEAN,
@@ -36,18 +47,31 @@ module.exports = (sequelize, DataTypes) => {
 				defaultValue: false
 			},
 			paymentMethod: {
-				type: DataTypes.BOOLEAN,
-				defaultValue: false
+				type: DataTypes.VIRTUAL,
+				get() {
+					if (!this.orderPaymentMethod) return 'Not Defined';
+					return this.orderPaymentMethod.methodName;
+				}
 			},
 		},
 		{
 			sequelize,
-			defaultScope: [
-				'client',
-				'delivery',
-				'address',
-				'products'
-			],
+			defaultScope: {
+				include: [
+					'client',
+					{
+						required: false,
+						association: 'delivery'
+					},
+					{
+						required: false,
+						association: 'address'
+					},
+					'products',
+					'orderStatus',
+					'orderPaymentMethod'
+				]
+			},
 			tableName: 'orders',
 			modelName: 'Order',
 			updatedAt: false

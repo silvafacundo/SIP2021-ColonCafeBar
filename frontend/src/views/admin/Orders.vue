@@ -69,14 +69,14 @@
 						</b-select>
 					</b-field>
 					<b-field>
-						<b-select :value="order.status"
+						<b-select :value="order.statusId"
 							placeholder="Estado de la orden"
 							@input="value => { updateStatus(order, value) }">
 							<option
 								v-for="status in ordersPossibleStatus"
-								:key="status"
-								:value="status">
-								{{ status }}
+								:key="status.id"
+								:value="status.id">
+								{{ status.statusName }}
 							</option>
 						</b-select>
 					</b-field>
@@ -149,11 +149,11 @@ export default {
 				this.$showToast('Error al modificar el delivery', true);
 			}
 		},
-		async updateStatus(order, status) {
+		async updateStatus(order, statusId) {
 			try {
 				await this.$store.dispatch('Orders/updateOrder', {
 					orderId: order.id,
-					status
+					statusId
 				});
 				this.$showToast('Estado de la orden modificado');
 			} catch (err) {
