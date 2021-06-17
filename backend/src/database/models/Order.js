@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
 			});
 		}
 	}
+	Order.prototype._paymentLink = null;
 	Order.init(
 		{
 			status: {
@@ -44,7 +45,21 @@ module.exports = (sequelize, DataTypes) => {
 			},
 			paymentMethod: {
 				type: DataTypes.STRING,
-				required: true
+			},
+			paymentLink: {
+				type: DataTypes.VIRTUAL,
+				get() {
+					return this._paymentLink;
+				},
+				set(val) {
+					return this._paymentLink = val;
+				}
+			},
+			total: {
+				type: DataTypes.VIRTUAL,
+				get() {
+					return this.products.reduce((prev, product) => prev + product.price * product.amount, 0);
+				}
 			}
 		},
 		{

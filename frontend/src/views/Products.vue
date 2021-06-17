@@ -182,14 +182,18 @@ export default {
 			background-color: transparent;
 			border: none;
 			box-shadow: none;
+			::v-deep .card-content {
+				padding: 1.5rem 0;
+			}
 			.card-header {
 				border: none;
 				box-shadow: none;
 			}
 
-				h2{
+				h2 {
 					color: #fafafa;
-					font-family: BebasNeue-Regular, 'sans-serif';
+					font-family: 'Noto Sans JP', 'sans-serif';
+					text-transform: uppercase;
 					font-size: 1.5em;
 					border-bottom:1px solid #fafafa;
 					user-select: none;

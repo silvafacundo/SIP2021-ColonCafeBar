@@ -6,6 +6,9 @@ module.exports = class OrderController {
 	 * @param {Server} server
 	 */
 	constructor(server) {
+		/**
+		 * @type {Server}
+		 */
 		this.server = server;
 	}
 
@@ -14,7 +17,7 @@ module.exports = class OrderController {
 	}
 
 	get utils() {
-		return this.server.utils;
+		return this.server.utils
 	}
 	get sequelize() {
 		return this.server.sequelize;
@@ -92,6 +95,9 @@ module.exports = class OrderController {
 				products: productsToInsert,
 				statusId: status.id
 			}, { include: ['products', 'address', 'delivery'] });
+
+			const payment = await this.utils.mercadopago.createOrderPayment(order.id);
+			if (payment) order.paymentLink = payment.init_link;
 			return order;
 		} catch (error) {
 			console.error('Failed to create order:', error);
@@ -131,6 +137,8 @@ module.exports = class OrderController {
 	 */
 	async getOrder(orderId) {
 		const order = await this.models.Order.findByPk(orderId, { include: ['client', 'products'] });
+		// TODO: Chequear si el payment method es online
+		order.paymentLink = await this.utils.mercadopago.getPaymentLink(order.id);
 		return order;
 	}
 
@@ -153,6 +161,7 @@ module.exports = class OrderController {
 			limit: perPage,
 			order
 		});
+
 		return { orders, pagination: { page, perPage, total } }
 	}
 
