@@ -58,7 +58,7 @@ module.exports = class ClientController {
 			where,
 			attributes: clientsSelect
 		});
-		return user.dataValues;
+		return user;
 	}
 
 	async updateClient({ clientId, email, firstName, lastName, phoneNumber, password, isActive }) {
