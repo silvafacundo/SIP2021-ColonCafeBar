@@ -82,12 +82,15 @@ module.exports = class OrderController {
 				throw new PublicError('The provided products doesn\'t exist or they are not available');
 			}
 
+			const status = await this.utils.orders.getOrderStatus({ key: 'pending' });
+
 			const order = await this.models.Order.create({
 				clientId,
 				paymentMethod,
 				withDelivery,
 				addressId,
-				products: productsToInsert
+				products: productsToInsert,
+				statusId: status.id
 			}, { include: ['products', 'address', 'delivery'] });
 			return order;
 		} catch (error) {
@@ -103,7 +106,7 @@ module.exports = class OrderController {
 		}
 
 		if (statusId) {
-			const status = await this.utils.orders.getOrderStatus(statusId);
+			const status = await this.utils.orders.getOrderStatus({ id: statusId });
 			if (!status) throw new PublicError('the status doesn\'t exists');
 		}
 
@@ -153,9 +156,17 @@ module.exports = class OrderController {
 		return { orders, pagination: { page, perPage, total } }
 	}
 
-	async getOrderStatus(id) {
-		const status = await this.models.OrderStatus.findByPk(id);
+	async getOrderStatus({ id, key }) {
+		const whereObj = {};
+		if (id) whereObj.id = id;
+		if (key) whereObj.key = key;
+
+		const status = await this.models.OrderStatus.findOne({
+			where: whereObj
+		});
+
 		return status;
+
 	}
 
 	async getAllOrderStatus() {

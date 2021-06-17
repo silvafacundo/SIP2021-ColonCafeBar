@@ -7,13 +7,13 @@ module.exports = class orderCreatePOST extends Route {
 
 	async run(req, res, user) {
 		try {
-			const { withDelivery, paymentMethodId, addressId, products } = req.body;
+			const { withDelivery, paymentMethod, addressId, products } = req.body;
 
 			const clientId = user.id;
 			const order = await this.utils.orders.createOrder({
 				clientId,
 				withDelivery,
-				paymentMethodId,
+				paymentMethod,
 				addressId,
 				products
 			});

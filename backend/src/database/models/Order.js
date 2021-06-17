@@ -23,10 +23,6 @@ module.exports = (sequelize, DataTypes) => {
 				foreignKey: 'statusId',
 				as: 'orderStatus'
 			});
-			Order.belongsTo(models.OrderPaymentMethod, {
-				foreignKey: 'paymentMethodId',
-				as: 'orderPaymentMethod'
-			});
 		}
 	}
 	Order.init(
@@ -47,12 +43,9 @@ module.exports = (sequelize, DataTypes) => {
 				defaultValue: false
 			},
 			paymentMethod: {
-				type: DataTypes.VIRTUAL,
-				get() {
-					if (!this.orderPaymentMethod) return 'Not Defined';
-					return this.orderPaymentMethod.methodName;
-				}
-			},
+				type: DataTypes.STRING,
+				required: true
+			}
 		},
 		{
 			sequelize,
@@ -68,8 +61,7 @@ module.exports = (sequelize, DataTypes) => {
 						association: 'address'
 					},
 					'products',
-					'orderStatus',
-					'orderPaymentMethod'
+					'orderStatus'
 				]
 			},
 			tableName: 'orders',
