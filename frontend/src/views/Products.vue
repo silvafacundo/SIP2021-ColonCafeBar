@@ -1,83 +1,89 @@
 <template>
-	<!-- <div class="container-principal">
-		<div class="sidebar-page">
-			<h2>Filtros</h2>
-			<b-field v-for="(category, key) in renderProducts"
-				:key="key">
-				<b-checkbox>{{ category.category }}</b-checkbox>
-			</b-field>
-		</div> -->
 	<div class="container">
-		<b-field>
-			<b-input v-model="filters.query"
-				placeholder="Buscar..."
-				type="search"
-				icon="search"
-				:loading="isLoading || isSearching"
-				icon-clickable
-				@input="searchProduct"
-			/>
-		</b-field>
-		<div class="categories-container">
-			<b-collapse v-for="(category,keyc) in renderProducts"
-				:key="keyc"
-				class="card category-container"
-				animation="slide"
-				aria-id="contentIdForA11y3">
-				<template #trigger="props">
-					<div
-						class="card-header"
-						role="button"
-						aria-controls="contentIdForA11y3">
-						<h2 class="card-header-title">
-							<!-- <b-icon
-									pack="fas"
-									icon=""
-									size="is-small">
-								</b-icon> -->
-							{{ category.category }}
-						</h2>
-						<a class="card-header-icon">
-							<b-icon
-								:icon="props.open ? 'caret-down' : 'caret-up'" />
-						</a>
-					</div>
-				</template>
-				<div class="card-content">
-					<div class="content producto-container">
-						<product v-for="(product, key) in category.products"
-							:key="key"
-							:product="product"
-							class="product"
-							@click="() => selectedProduct = product" />
-					</div>
-				</div>
-			</b-collapse>
-			<h4 v-if="products.length <= 0" class="no-result">No se han encontrado resultados</h4>
+		<div class="filters-container">
+			<div class="filters">
+				<h2>Filtros</h2>
+				<h3>Categorías</h3>
+				<b-field v-for="(category, key) in categories"
+					:key="key">
+					<b-checkbox @input="searchCategory(category.id)">{{ category.name }}</b-checkbox>
+				</b-field>
+				<h3>Precios</h3>
+				<b-field>
+					<b-input v-model="filters.fromPrice"
+						placeholder="Precio desde"
+						type="number"
+						:loading="isLoading || isSearching"
+						lazy
+						size="is-small"
+						class="price-filter"
+						@input="searchProduct"
+					/>
+				</b-field>
+				<b-field>
+					<b-input v-model="filters.toPrice"
+						placeholder="Precio hasta"
+						type="number"
+						:loading="isLoading || isSearching"
+						lazy
+						size="is-small"
+						class="price-filter"
+						@input="searchProduct"
+					/>
+				</b-field>
+			</div>
 		</div>
-		<!-- <div class="categories-container">
-				<div v-for="(category,keyc) in renderProducts"
+		<div class="products-container">
+			<b-field>
+				<b-input v-model="filters.query"
+					placeholder="Buscar..."
+					type="search"
+					icon="search"
+					:loading="isLoading || isSearching"
+					icon-clickable
+					@input="searchProduct"
+				/>
+			</b-field>
+			<div class="categories-container">
+				<b-collapse v-for="(category,keyc) in renderProducts"
 					:key="keyc"
-					class="category-container">
-					<h2> {{ category.category }} </h2>
-						<div class="product-container">
-							<product v-for="(product, key) in category.products"
-							:key="key"
-							:product="product"
-							@click="() => selectedProduct = product"
-							/>
+					class="card category-container"
+					animation="slide"
+					aria-id="contentIdForA11y3">
+					<template v-if="category && category.products && category.products.length > 0" #trigger="props">
+						<div
+							class="card-header"
+							role="button"
+							aria-controls="contentIdForA11y3">
+							<h2 class="card-header-title">
+								{{ category.category }}
+							</h2>
+							<a class="card-header-icon">
+								<b-icon
+									:icon="props.open ? 'caret-down' : 'caret-up'" />
+							</a>
 						</div>
-				</div>
+					</template>
+					<div v-if="category && category.products && category.products.length > 0" class="card-content">
+						<div class="content producto-container">
+							<product v-for="(product, key) in category.products"
+								:key="key"
+								:product="product"
+								class="product"
+								@click="() => selectedProduct = product" />
+						</div>
+					</div>
+				</b-collapse>
 				<h4 v-if="products.length <= 0" class="no-result">No se han encontrado resultados</h4>
-			</div> -->
-		<b-modal :active="!!selectedProduct" @close="closeModal">
-			<product-selector v-if="selectedProduct"
-				:product="selectedProduct"
-				@addToCart="closeModal"
-				@cancel="closeModal" />
-		</b-modal>
+			</div>
+			<b-modal :active="!!selectedProduct" @close="closeModal">
+				<product-selector v-if="selectedProduct"
+					:product="selectedProduct"
+					@addToCart="closeModal"
+					@cancel="closeModal" />
+			</b-modal>
+		</div>
 	</div>
-	<!-- </div> -->
 </template>
 
 <script>
@@ -95,7 +101,10 @@ export default {
 		isSearching: false,
 		selectedProduct: null,
 		filters: {
-			query: ''
+			query: '',
+			categoriesId: [],
+			fromPrice: null,
+			toPrice: null,
 		},
 		searchTimeout: null,
 	}),
@@ -157,6 +166,12 @@ export default {
 				this.isSearching = false;
 			}, 500);
 		},
+		searchCategory(categoryId) {
+			const categoryIndex = this.filters.categoriesId.indexOf(categoryId);
+			if (categoryIndex !== -1) this.filters.categoriesId.splice(categoryIndex, 1)
+			else this.filters.categoriesId.push(categoryId);
+			this.searchProduct();
+		},
 		closeModal() {
 			this.selectedProduct = null;
 		}
@@ -173,6 +188,44 @@ export default {
 // 		background-color: #fafafa;
 // 		height: 100vh;
 // 	}
+	.container {
+		margin: 0;
+		display: flex;
+		flex-wrap: wrap;
+		padding: 2rem 0;
+	}
+	.filters-container {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		color: white;
+		.filters {
+			padding: 0 4rem;
+
+			h2 {
+				margin-bottom: 1rem;
+				border-bottom: 1px solid white;
+				padding: 0;
+				color: white;
+			}
+			h3 {
+				font-size: 1em;
+				margin-bottom: .7rem;
+			}
+			::v-deep .price-filter input {
+				background-color: transparent;
+				border-radius: 20px;
+				border: 2px solid;
+				color: white;
+			}
+			::v-deep .price-filter input::placeholder {
+				color: white;
+			}
+		}
+	}
+	.products-container {
+		flex: 2;
+	}
 	.categories-container{
 		border: none;
 		box-shadow: none;
