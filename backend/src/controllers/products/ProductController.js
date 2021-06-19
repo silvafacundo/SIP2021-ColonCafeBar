@@ -131,11 +131,11 @@ module.exports = class ProductController {
 		if (isNaN(page)) throw new PublicError('page should be a number');
 		if (isNaN(perPage)) throw new PublicError('perPage should be a number');
 
-
 		const whereAnd = [];
 		let { categoriesId, isActive, fromDate, toDate, fromPrice, toPrice, query } = filters || {};
-		if (categoriesId && Array.isArray(categoriesId))
-			whereAnd.push({ categoryId: { [Op.in]: categoriesId } })
+
+		if (Array.isArray(categoriesId) && categoriesId.length > 0)
+			whereAnd.push({ idCategory: { [Op.in]: categoriesId } })
 
 		if (fromDate)
 			whereAnd.push({ createdAt: { [Op.gte]: fromDate } });
