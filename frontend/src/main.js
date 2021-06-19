@@ -37,6 +37,7 @@ const firebaseSettings = {
 firebase.initializeApp(firebaseSettings)
 
 import * as VueGoogleMaps from 'vue2-google-maps';
+import './registerServiceWorker'
 Vue.use(VueGoogleMaps, {
 	load: {
 		key: process.env.VUE_APP_MAPS_APIKEY,

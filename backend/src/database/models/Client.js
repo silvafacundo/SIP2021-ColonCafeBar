@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
 		{
 			sequelize,
 			defaultScope: {
+				attributes: { exclude: 'password' },
 				include: [{
 					required: false,
 					association: 'addresses'
