@@ -1,45 +1,58 @@
 <template>
 	<div class="cart">
 		<h3>Checkout</h3>
-		<div v-for="(product, index) of parsedCart"
-			:key="index"
-			class="product">
-			<div>
-				<p class="name">{{ product.name }}</p>
-					<div>
-						<p>Precio: ${{ product.price }}</p>
-						<p>Cantidad: {{ product.amount }}</p>
-					</div>
-			</div>
-			<b-button type="is-text"
-				size="is-small"
-				icon-left="trash"
-				@click="e => deleteProduct(e, index)">
-				ELIMINAR
+		<b-steps v-model="step" :has-navigation="false">
+			<b-step-item icon="clipboard-list">
+				<CartProduct v-for="(product, index) of parsedCart"
+					:key="index"
+					:product="product"
+					@delete="e => deleteProduct(index)" />
+				<h4>Subtotal: ${{ totalPrice }}</h4>
+			</b-step-item>
+			<b-step-item icon="bicycle">
+				<h4>¿Cómo quieres que sea la entrega?</h4>
+				<b-field>
+					<b-checkbox v-model="takeAway">Take Away</b-checkbox>
+				</b-field>
+				<div v-if="!takeAway" class="delivery">
+					<h4>Dirección de la entrega:</h4>
+					<Address v-if="selectedAddress"
+						:address="selectedAddress"
+						@click="openSelectAddress" />
+					<b-button v-else @click="openSelectAddress">Seleccionar Dirección</b-button>
+					<p>Envio: $0</p>
+				</div>
+				<h4>Subtotal: ${{ totalPrice }}</h4>
+			</b-step-item>
+			<b-step-item icon="clipboard-check">
+				<b-field label="Método de pago:" class="mb-2">
+					<b-select v-model="paymentMethod" placeholder="Método de pago">
+						<option value="cash">Efectivo</option>
+						<option value="online">Mercadopago</option>
+					</b-select>
+				</b-field>
+				<p v-if="takeAway">Retiro del pedido por el local</p>
+				<p>Su pedido será entregado en <span class="has-text-weight-bold">{{ addressText }}</span>.</p>
+				<h4>Total: ${{ totalPrice }}</h4>
+			</b-step-item>
+		</b-steps>
+		<footer>
+			<b-button v-if="step > 0"
+				icon-left="angle-left"
+				type="is-danger"
+				:disabled="isLoading"
+				:loading="isLoading"
+				@click="prevStep">
+				Volver
 			</b-button>
-		</div>
-		<h4>Subtotal: ${{ totalPrice }}</h4>
-		<b-field>
-			<b-checkbox v-model="takeAway">TakeAway</b-checkbox>
-		</b-field>
-		<div v-if="!takeAway" class="delivery">
-			<Address v-if="selectedAddress"
-				:address="selectedAddress"
-				@click="openSelectAddress" />
-			<b-button v-else @click="openSelectAddress">Seleccionar Dirección</b-button>
-			<p>Envio: $0</p>
-		</div>
-		<h4>Total: ${{ totalPrice }}</h4>
-		<b-field>
-			<b-checkbox v-model="payWithCash">Pago en efectivo</b-checkbox>
-		</b-field>
-		<b-button :disabled="!canCreateOrder"
-			class="create-order"
-			:loading="isLoading"
-			type="is-success"
-			@click="createOrder">
-			Finalizar Compra
-		</b-button>
+			<b-button type="is-success"
+				icon-right="angle-right"
+				:loading="isLoading"
+				:disabled="!canContinue || isLoading"
+				@click="nextStep">
+				{{ nextStepButtonText }}
+			</b-button>
+		</footer>
 		<b-modal v-model="selectingAddress">
 			<div class="card address-selector">
 				<h2>Mis direcciones</h2>
@@ -55,9 +68,13 @@
 
 <script>
 import Address from '../components/Address.vue';
+import CartProduct from '../components/CartProduct.vue';
 export default {
 	name: 'Checkout',
-	components: { Address },
+	components: {
+		Address,
+		CartProduct
+	},
 	data: () => ({
 		isLoading: false,
 		order: null,
@@ -66,10 +83,31 @@ export default {
 		selectedAddress: null,
 		selectingAddress: false,
 		payWithCash: false,
+		paymentMethod: 'cash',
+		step: 0,
 	}),
 	computed: {
 		products() {
 			return this.$store.getters['Products/products'] || [];
+		},
+		nextStepButtonText() {
+			switch (this.step) {
+				case 0: return 'Entrega';
+				case 1: return 'Continuar';
+				default: return 'Finalizar Compra'
+			}
+		},
+		addressText() {
+			const { street, number, floor } = this.selectedAddress;
+			let text = `${street} ${number}`;
+
+			if (typeof floor !== 'undefined' && floor !== null) text += ` - ${floor}`;
+
+			return text;
+		},
+		canContinue() {
+			if (this.step >= 1 && !this.takeAway && !this.selectedAddress) return false;
+			return true;
 		},
 		cart() {
 			return this.$store.getters['Cart/cart'];
@@ -118,6 +156,14 @@ export default {
 			const diff = oldAmount - newAmount;
 			this.$store.commit('Cart/addToCart', { productId, amount: -diff })
 		},
+		prevStep() {
+			if (this.step <= 0) this.step = 0;
+			else this.step --;
+		},
+		nextStep() {
+			if (this.step >= 2) this.createOrder();
+			else this.step++;
+		},
 		async createOrder() {
 			try {
 				this.isLoading = true;
@@ -127,10 +173,9 @@ export default {
 					this.isLoading = false;
 					return;
 				}
-				const paymentMethod = this.payWithCash ? 'cash' : 'online';
 				const addressId = !this.takeAway ? this.selectedAddress.id : null
 				const order = await this.$store.dispatch('Orders/createOrder', {
-					paymentMethod: paymentMethod,
+					paymentMethod: this.paymentMethod,
 					withDelivery: !this.takeAway,
 					addressId: addressId,
 					products
@@ -170,20 +215,6 @@ export default {
 		flex-flow: column;
 		gap: .5rem;
 
-		.product{
-			display: flex;
-			justify-content: space-between;
-			border-bottom: 1px dotted black;
-			align-items: center;
-			padding: 0 0 1em 0;
-		}
-		.name{
-			font-family: 'Reboto', sans-serif;
-			font-size: 1.2em;
-		}
-		.name::first-letter{
-			text-transform: uppercase;
-		}
 		::v-deep .modal-content {
 			max-width: 55vw!important;
 		}
@@ -198,10 +229,15 @@ export default {
 		h3 {
 			color: black;
 			text-align: center;
-			font-family: Holtzberg-Regular;
 		}
 		p,h4 {
 			margin: 1rem 0;
+		}
+		> footer {
+			display: flex;
+			> *:last-child {
+				margin-left: auto;
+			}
 		}
 		.create-order {
 			align-self: flex-end;

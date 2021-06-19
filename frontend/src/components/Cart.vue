@@ -1,15 +1,19 @@
 <template>
 	<div class="cart-container" :class="{ active }">
 		<h4>Mi Compra <span>({{ items }})</span></h4>
-		<div v-for="(product, index) of products"
+		<CartProduct v-for="(product, index) of products"
+			:key="index"
+			:product="product" />
+
+		<!-- <div v-for="(product, index) of products"
 			:key="index"
 			class="product">
 			<div>
 				<p class="name">{{ product.name }}</p>
-					<div>
-						<p>Precio: ${{ product.price }}</p>
-						<p>Cantidad: {{ product.amount }}</p>
-					</div>
+				<div>
+					<p>Precio: ${{ product.price }}</p>
+					<p>Cantidad: {{ product.amount }}</p>
+				</div>
 			</div>
 			<b-button type="is-text"
 				size="is-small"
@@ -17,7 +21,7 @@
 				@click="e => deleteProduct(e, index)">
 				ELIMINAR
 			</b-button>
-		</div>
+		</div> -->
 		<p v-if="isEmpty" class="empty">El carrito se encuentra vacío</p>
 		<footer>
 			<p>Subtotal: <span>${{ totalPrice }}</span></p>
@@ -40,8 +44,12 @@
 </template>
 
 <script>
+import CartProduct from '../components/CartProduct';
 export default {
 	name: 'Cart',
+	components: {
+		CartProduct
+	},
 	model: {
 		prop: 'active',
 		event: 'close'
@@ -154,28 +162,6 @@ export default {
 		background-color:white;
 		border:1px solid black;
 		min-width:30vw;
-		.product {
-			margin: .5rem 5px;
-			display: flex;
-			justify-content: space-between;
-			border-bottom: 1px dotted black;
-			.name{
-				font-weight: bold;
-				color: black;
-				font-size: 1rem;
-				padding: 0;
-			}
-
-			.name::first-letter{
-				text-transform: uppercase;
-			}
-
-			p {
-				color: gray;
-				font-size:.9rem;
-				margin: .3rem 0;
-			}
-		}
 		footer {
 			display: flex;
 			flex-flow: column;
