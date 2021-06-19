@@ -1,0 +1,24 @@
+{
+    "name": "Colón Café bar",
+    "description": "Bar",
+    "short_name": "Colón Café bar",
+    "background_color": "#1e1e1e",
+    "theme_color": "#1e1e1e",	
+    "icons": [	
+      {
+        "src": "img/icons/logo 48x48.png",
+        "type": "image/png",
+        "sizes": "48x48"
+      },
+      {
+        "src": "img/icons/logo 144x144.png",
+        "type": "image/png",
+        "sizes": "144x144"
+      }
+      ],	
+    "lang": "es",
+    "dir": "ltr",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "portrait"
+}
