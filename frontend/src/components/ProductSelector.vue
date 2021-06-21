@@ -6,6 +6,7 @@
 		<h3>{{ product.name }}</h3>
 		<p class="description">{{ product.description }}</p>
 		<p class="price">${{ product.price }}</p>
+		<p class="price points">Precio en puntos: {{ product.pointsPrice }}</p>
 		<b-field v-for="(variant, variantName) of product.variants"
 			:key="variantName"
 			:label="variantName + (variant.required ? '': ' (Opcional)')">
@@ -136,6 +137,10 @@ export default {
 			font-size: 18px;
 			font-weight: 700;
 			margin-top: 8px;
+		}
+		.points {
+			font-size: 12px;
+			margin-bottom: 8px;
 		}
 	}
 </style>

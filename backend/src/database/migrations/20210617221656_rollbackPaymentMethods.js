@@ -17,6 +17,8 @@ exports.up = async knex => {
 
 	await knex.schema.dropTableIfExists('orderPaymentMethods');
 
+	await knex('orders').del();
+
 	await knex('orderStatus').del();
 
 	await knex.schema.alterTable('orderStatus', table => {

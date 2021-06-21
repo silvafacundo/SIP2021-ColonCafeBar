@@ -47,6 +47,18 @@
 						min="0"
 						type="number" />
 				</b-field>
+				<b-field label="Precio en puntos">
+					<b-input v-model="selectedProduct.pointsPrice"
+						icon="parking"
+						min="0"
+						type="number" />
+				</b-field>
+				<b-field label="Puntos otorgables">
+					<b-input v-model="selectedProduct.grantablePoints"
+						icon="parking"
+						min="0"
+						type="number" />
+				</b-field>
 				<b-field label="Categoría">
 					<b-dropdown v-model="selectedProduct.idCategory">
 						<b-button slot="trigger"

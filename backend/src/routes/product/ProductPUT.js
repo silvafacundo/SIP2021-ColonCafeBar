@@ -6,13 +6,13 @@ module.exports = class ProductPUT extends Route {
 	}
 
 	async run(req, res, user) {
-		const { productId, idCategory, name, description, imageUrl, price, isActive, variants } = req.body;
+		const { productId, idCategory, name, description, imageUrl, price, isActive, variants, pointsPrice, grantablePoints } = req.body;
 		// Check if body parameters are valid
 		try {
 			// var product = await this.utils.products.getProduct(id);
 			//if product doesn't exists, display a error message
 			//update product
-			await this.utils.products.updateProduct({ productId, idCategory, name, imageUrl, description, price, isActive, variants });
+			await this.utils.products.updateProduct({ productId, idCategory, name, imageUrl, description, price, isActive, variants, pointsPrice, grantablePoints });
 			return res.json({ message: 'Product updated successfully' });
 		} catch (error) {
 			return super.error(res, error)
