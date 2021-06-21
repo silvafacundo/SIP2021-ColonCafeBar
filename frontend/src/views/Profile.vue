@@ -58,7 +58,6 @@
 					</a>
 				</div>
 			</template>
-
 			<div class="card-content">
 				<div class="content">
 					<Address v-for="(address, index ) in user.addresses"
@@ -75,13 +74,13 @@
 			</div>
 		</b-collapse>
 
-		<b-modal :active="!!selectedAddress" @close="closeModal">
+		<b-modal :active="!!selectedAddress"
+			@close="closeModal">
 			<div v-if="selectedAddress" class="card selected-address">
 				<b-steps
-					:has-navigation="hasAddressData"
-					@input="stepHandler">
-					<b-step-item
-						value="1">
+					v-model="addressStep"
+					:has-navigation="false">
+					<b-step-item icon="address-card">
 						<b-field label="Alias">
 							<b-input v-model="selectedAddress.alias" />
 						</b-field>
@@ -108,37 +107,40 @@
 							Eliminar dirección
 						</b-button>
 					</b-step-item>
-					<b-step-item
-						value="2">
-						<b-field v-if="hasAddressData && hasAddresPosition" class="map-container">
+					<b-step-item icon="map-marker">
+						<b-field v-if="canContinueAddress && hasAddresPosition"
+							class="map-container"
+							label="Confirme la ubicación de la dirección:">
 							<GmapMap
-								:center="addresPosition"
+								:center="initialCenter"
 								:zoom="15"
+								:options="{ streetViewControl: false }"
 								map-type-id="terrain"
-								style="width: 500px; height: 300px">
+								style="width: 500px; height: 300px"
+								@click="handleMapClick">
 								<GmapMarker
 									:position="addresPosition"
 									:clickable="true"
 									:draggable="false"
-									title="Colón Café Bar"
-									@click="clickedMarker(m)"
+									:title="selectedAddress.alias"
 								/>
 							</GmapMap>
 						</b-field>
-						<footer>
-							<b-button type="is-danger"
-								:disabled="isLoading"
-								@click="closeModal">
-								Cancelar
-							</b-button>
-							<b-button type="is-success"
-								:loading="isLoading"
-								@click="saveAddress">
-								Guardar
-							</b-button>
-						</footer>
 					</b-step-item>
 				</b-steps>
+				<footer>
+					<b-button type="is-danger"
+						:disabled="isLoading"
+						@click="prevStepAddress">
+						{{ cancelAddressStepText }}
+					</b-button>
+					<b-button type="is-success"
+						:loading="isLoading"
+						:disabled="!canContinueAddress || isLoading"
+						@click="nextStepAddress">
+						{{ addressStepText }}
+					</b-button>
+				</footer>
 			</div>
 		</b-modal>
 		<b-button type="is-ghost"
@@ -159,6 +161,8 @@ export default {
 	data: () => ({
 		isLoading: false,
 		selectedAddress: null,
+		initialCenter: { lat: 0, lng: 0 },
+		addressStep: 0
 	}),
 	computed: {
 		fullName() {
@@ -169,21 +173,45 @@ export default {
 		user() {
 			return { ...this.$store.getters['Auth/clientUser'] };
 		},
-		hasAddressData() {
-			return !!(this.selectedAddress
-				&& this.selectedAddress.street
-				&& this.selectedAddress.number);
+		canContinueAddress() {
+			return !!(this.selectedAddress && this.selectedAddress.street && this.selectedAddress.number && this.selectedAddress.neighborhood && this.selectedAddress.corner);
 		},
 		hasAddresPosition() {
 			return !!(this.selectedAddress && this.selectedAddress.coordinates);
 		},
 		addresPosition() {
-			return this.selectedAddress.coordinates;
+			if (!this.selectedAddress || !this.selectedAddress.coordinates) return null;
+			const [lat, lng] = this.selectedAddress.coordinates.split(';');
+			return { lat: Number(lat), lng: Number(lng) };
+		},
+		cancelAddressStepText() {
+			switch (this.addressStep) {
+				case 0:
+					return 'Cancelar'
+				default:
+					return 'Volver'
+			}
+		},
+		addressStepText() {
+			switch (this.addressStep) {
+				case 1:
+					return 'Guardar'
+				default:
+					return 'Continuar'
+			}
 		}
 	},
 	methods: {
 		closeModal() {
 			this.selectedAddress = null;
+			this.addressStep = 0;
+		},
+		handleMapClick(e) {
+			const lat = e.latLng.lat();
+			const lng = e.latLng.lng();
+			const newSelectedAddress = { ...this.selectedAddress };
+			newSelectedAddress.coordinates = `${lat};${lng}`;
+			this.selectedAddress = newSelectedAddress;
 		},
 		newAddress() {
 			this.selectedAddress = {
@@ -192,11 +220,11 @@ export default {
 				postalCode: 6620
 			};
 		},
-		stepHandler(step) {
-			if (step == 2) {
-				this.convertAddresPosition();
-			}
-		},
+		// stepHandler(step) {
+		// 	if (step == 2) {
+		// 		this.convertAddresPosition();
+		// 	}
+		// },
 		async convertAddresPosition() {
 			const address = `${this.selectedAddress.street}+${this.selectedAddress.number}+${this.selectedAddress.neighborhood}+${this.selectedAddress.city}`;
 			const axios = this.axios.create();
@@ -208,7 +236,8 @@ export default {
 			if (results && Array.isArray(results) && results.length > 0 && results[0] && results[0].geometry && results[0].geometry.location);
 
 			const newSelectedAddress = { ...this.selectedAddress };
-			newSelectedAddress.coordinates = results[0].geometry.location;
+			const { lat, lng } = results[0].geometry.location;
+			newSelectedAddress.coordinates = `${lat};${lng}`;
 			this.selectedAddress = newSelectedAddress;
 		},
 		async updateProfile() {
@@ -224,10 +253,30 @@ export default {
 				this.$showToast('Error al actualizar los datos', true);
 			}
 		},
+		async nextStepAddress() {
+			this.isLoading = true;
+			switch (this.addressStep) {
+				case 0:
+					if (!this.selectedAddress.coordinates) {
+						await this.convertAddresPosition();
+					}
+					this.initialCenter = this.addresPosition;
+					break;
+				case 1:
+					await this.saveAddress()
+					break;
+				default:
+					break;
+			}
+			this.isLoading = false;
+			this.addressStep++;
+		},
+		async prevStepAddress() {
+			if (this.addressStep <= 0) this.closeModal();
+			else this.addressStep--;
+		},
 		async saveAddress() {
-
 			try {
-
 				if (this.selectedAddress.id)
 					await this.$store.dispatch('Client/updateAddress', { addressId: this.selectedAddress.id, ...this.selectedAddress });
 				else
@@ -292,10 +341,15 @@ export default {
 			justify-content: flex-end;
 			align-items: center;
 			gap: 1rem;
+			button:last-child {
+				margin-left: auto;
+			}
 		}
 	}
 	.map-container {
+		width: 100%;
+		flex-flow: column;
 		display: flex;
-		justify-content: center;
+		align-items: center;
 	}
 </style>
