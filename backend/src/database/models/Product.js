@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
 				foreignKey: 'priceId',
 				as: 'priceData'
 			});
+			Product.belongsTo(models.ProductPoints, {
+				foreignKey: 'pointsId',
+				as: 'pointsData'
+			});
 		}
 	}
 	Product.init(
@@ -30,6 +34,20 @@ module.exports = (sequelize, DataTypes) => {
 					return this.priceData.price;
 				}
 			},
+			pointsPrice: {
+				type: DataTypes.VIRTUAL,
+				get() {
+					if (!this.pointsData) return -1;
+					return this.pointsData.price;
+				}
+			},
+			grantablePoints: {
+				type: DataTypes.VIRTUAL,
+				get() {
+					if (!this.pointsData) return -1;
+					return this.pointsData.grant;
+				}
+			},
 			variants: DataTypes.JSON,
 			imageUrl: DataTypes.STRING,
 			isActive: DataTypes.BOOLEAN
@@ -39,7 +57,8 @@ module.exports = (sequelize, DataTypes) => {
 			defaultScope: {
 				include: [
 					'category',
-					'priceData'
+					'priceData',
+					'pointsData'
 				]
 			},
 			tableName: 'products',

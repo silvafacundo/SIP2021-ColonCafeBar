@@ -68,15 +68,17 @@ module.exports = class ProductController {
 		return true;
 	}
 
-	async createProduct({ idCategory, name, imageUrl, description, price, variants }) {
+	async createProduct({ idCategory, name, imageUrl, description, price, variants, pointsPrice, grantablePoints = 0 }) {
 		//Check if parameters are valid
 		if (!idCategory && typeof idCategory !== 'bigint') throw new PublicError('idcategory is required');
 		if (!name && typeof name !== 'string') throw new PublicError('name is required');
-		if (!description && typeof description !== 'string') throw new PublicError('description is required');
-		if (!price && typeof price !== 'number') throw new PublicError('price is required');
+		if (description && typeof description !== 'string') throw new PublicError('description must be a string');
+		if (typeof price === 'undefined' || isNaN(Number(price))) throw new PublicError('price is required');
 		if (typeof variants !== 'undefined' && variants !== null) {
 			if (!this._validVariants(variants)) throw new PublicError('variants wrong format');
 		}
+		if (typeof pointsPrice === 'undefined' || isNaN(Number(pointsPrice))) throw new PublicError('pointsPrice is required!');
+		if (typeof grantablePoints !== 'undefined' && isNaN(Number(grantablePoints))) throw new PublicError('grantablePoints not valid!');
 
 		const category = await this.utils.categories.getCategory(idCategory);
 		if (!category) throw new PublicError('Category doesn\'t exists');
@@ -90,12 +92,20 @@ module.exports = class ProductController {
 				imageUrl,
 				variants
 			}, { transaction: trx });
+
 			const productPrice = await this.models.ProductPrice.create({
 				productId: product.id,
 				price
 			}, { transaction: trx });
 
+			const productPoints = await this.models.ProductPoints.create({
+				productId: product.id,
+				price: pointsPrice,
+				grant: grantablePoints,
+			}, { transaction: trx })
+
 			product.priceId = productPrice.id;
+			product.pointsId = productPoints.id;
 			await product.save({ transaction: trx });
 
 			await trx.commit();
@@ -187,12 +197,23 @@ module.exports = class ProductController {
 	}
 
 	//Update specific product
-	async updateProduct( { productId, idCategory, imageUrl, name, description, isActive, price, variants }) {
+	async updateProduct( { productId, idCategory, imageUrl, name, description, isActive, price, variants, pointsPrice, grantablePoints }) {
 		if (!productId) throw new PublicError('productId is required!');
 
 		const product = await this.getProduct(productId);
 		if (!product) throw new PublicError('Product doesn\'t exists');
-		if (!productId && !imageUrl && !idCategory && !name && !description && typeof isActive !== 'boolean' && !price && !variants) throw PublicError('At least one parameter is required');
+
+		if (!productId
+			&& !imageUrl
+			&& !idCategory
+			&& !name
+			&& !description
+			&& typeof isActive !== 'boolean'
+			&& !price
+			&& !variants
+			&& !pointsPrice
+			&& !grantablePoints) throw PublicError('At least one parameter is required');
+
 		if (typeof variants !== 'undefined' && variants !== null) {
 			if (!this._validVariants(variants)) throw new PublicError('variants wrong format');
 		}
@@ -220,6 +241,24 @@ module.exports = class ProductController {
 					price
 				}, { transaction: trx });
 				product.priceId = productPrice.id;
+			}
+
+			if ((typeof pointsPrice !== 'undefined' && pointsPrice !== null)
+				|| (typeof grantablePoints !== 'undefined' && grantablePoints !== null)) {
+				const toInsert = {
+					price: product.pointsPrice,
+					grant: product.grantablePoints
+				}
+
+				if (pointsPrice) toInsert.price = pointsPrice;
+				if (grantablePoints) toInsert.grant = grantablePoints;
+
+				const pointsPriceInsert = await this.models.ProductPoints.create({
+					productId: product.id,
+					...toInsert
+				}, { transaction: trx });
+
+				product.pointsId = pointsPriceInsert.id;
 			}
 
 			await product.save({ transaction: trx });
