@@ -310,6 +310,9 @@ export default {
 	.container {
 		display: grid;
 		gap: 1rem;
+		h3{
+			text-align: center;
+		}
 		.logout {
 			color: white;
 		}
@@ -352,4 +355,9 @@ export default {
 		display: flex;
 		align-items: center;
 	}
+@media (max-width: 900px){
+	div.container{
+		padding:0;
+	}
+}
 </style>

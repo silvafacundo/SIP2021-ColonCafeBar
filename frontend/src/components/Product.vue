@@ -44,6 +44,7 @@ export default {
 	flex-flow: column;
 	gap: 5px 0;
 	cursor: pointer;
+	flex-wrap: wrap;
 	img {
 		object-fit: cover;
 		width: 100%;
@@ -75,5 +76,10 @@ export default {
 		}
 	}
 }
-
+@media (max-width: 900px){
+	.product-container {
+		width:60%;
+		margin:auto;
+	}
+}
 </style>

@@ -2,7 +2,69 @@
 	<div class="container">
 		<div class="filters-container">
 			<div class="filters">
-				<h2>Filtros</h2>
+				<b-collapse class="card" animation="slide" aria-id="contentIdForA11y3">
+						<template #trigger="props">
+							<div
+								class="card-header"
+								role="button"
+								aria-controls="contentIdForA11y3">
+								<p class="card-header-title">
+									<b-icon
+									pack="fas"
+									icon="filter"
+									size="is-small">
+									</b-icon>
+									Filtros
+								</p>
+								<a class="card-header-icon">
+									<b-icon
+										:icon="props.open ? 'caret-down' : 'caret-up'">
+									</b-icon>
+								</a>
+							</div>
+						</template>
+
+						<div class="card-content">
+							<div class="content">
+								<h3>Categorías</h3>
+								<b-field v-for="(category, key) in renderProducts"
+									:key="key">
+									<b-checkbox @input="searchCategory(category.idcategory)"
+										v-if="category && category.products && category.products.length > 0"
+									>{{ category.category }}</b-checkbox>
+								</b-field>
+								<h3>Precios</h3>
+								<b-field>
+									<b-input v-model="filters.fromPrice"
+										placeholder="Precio desde"
+										type="number"
+										:loading="isLoading || isSearching"
+										lazy
+										size="is-small"
+										class="price-filter"
+										@input="searchProduct"
+									/>
+								</b-field>
+								<b-field>
+									<b-input v-model="filters.toPrice"
+										placeholder="Precio hasta"
+										type="number"
+										:loading="isLoading || isSearching"
+										lazy
+										size="is-small"
+										class="price-filter"
+										@input="searchProduct"
+									/>
+								</b-field>
+							</div>
+						</div>
+					</b-collapse>
+				<!-- <h2><b-icon
+					pack="fas"
+					icon="filter"
+					size="is-small">
+					</b-icon>
+					Filtros</h2>
 				<h3>Categorías</h3>
 				<b-field v-for="(category, key) in categories"
 					:key="key">
@@ -30,7 +92,7 @@
 						class="price-filter"
 						@input="searchProduct"
 					/>
-				</b-field>
+				</b-field>-->
 			</div>
 		</div>
 		<div class="products-container">
@@ -131,6 +193,7 @@ export default {
 				});
 				categoryProducts.push({
 					'category': category.name,
+					'idcategory': category.id,
 					'products': prod
 				});
 			}
@@ -181,104 +244,109 @@ export default {
 </script>
 
 <style scoped lang="scss">
-// .container-principal{
-// 	display: flex;
+.container {
+	margin: 0;
+	display: flex;
+	flex-wrap: wrap;
+	padding: 2rem 0;
+}
+.filters-container {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	color: white;
+	.filters {
+		padding: 0 4rem;
 
-// 	.sidebar-page{
-// 		background-color: #fafafa;
-// 		height: 100vh;
-// 	}
-	.container {
-		margin: 0;
-		display: flex;
-		flex-wrap: wrap;
-		padding: 2rem 0;
-	}
-	.filters-container {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		color: white;
-		.filters {
-			padding: 0 4rem;
+		h2 {
+			margin-bottom: 1rem;
+			padding: 0;
+			color: white;
+		}
 
-			h2 {
-				margin-bottom: 1rem;
-				border-bottom: 1px solid white;
-				padding: 0;
-				color: white;
-			}
-			h3 {
-				font-size: 1em;
-				margin-bottom: .7rem;
-			}
-			::v-deep .price-filter input {
-				background-color: transparent;
-				border-radius: 20px;
-				border: 2px solid;
-				color: white;
-			}
-			::v-deep .price-filter input::placeholder {
-				color: white;
-			}
+		a{
+			color: rgb(30,30,30);
+		}
+		h3 {
+			font-size: 1em;
+			margin-bottom: .7rem;
+		}
+		::v-deep .price-filter input {
+			background-color: transparent;
+			border-radius: 20px;
+			border: 2px solid;
+			color: white;
+		}
+		::v-deep .price-filter input::placeholder {
+			color: black;
 		}
 	}
-	.products-container {
-		flex: 2;
-	}
-	.categories-container{
+}
+.products-container {
+	flex: 2;
+}
+.categories-container{
+	border: none;
+	box-shadow: none;
+	.category-container {
+		display: block;
+		margin-bottom: .5em;
+		background-color: transparent;
 		border: none;
 		box-shadow: none;
-		.category-container {
-			display: block;
-			margin-bottom: .5em;
-			background-color: transparent;
+		::v-deep .card-content {
+			padding: 1.5rem 0;
+		}
+		.card-header {
 			border: none;
 			box-shadow: none;
-			::v-deep .card-content {
-				padding: 1.5rem 0;
+		}
+
+			h2 {
+				color: #fafafa;
+				font-family: 'Noto Sans JP', 'sans-serif';
+				text-transform: uppercase;
+				font-size: 1.5em;
+				border-bottom:1px solid #fafafa;
+				user-select: none;
 			}
-			.card-header {
-				border: none;
-				box-shadow: none;
+			a {
+				color: #fafafa;
+				border-bottom:1px solid #fafafa;
 			}
-
-				h2 {
-					color: #fafafa;
-					font-family: 'Noto Sans JP', 'sans-serif';
-					text-transform: uppercase;
-					font-size: 1.5em;
-					border-bottom:1px solid #fafafa;
-					user-select: none;
+			.producto-container{
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+				grid-gap: 1em;
+				.no-result {
+					grid-column: 1/-1;
+					color: white;
 				}
-				a {
-					color: #fafafa;
-					border-bottom:1px solid #fafafa;
-				}
-				.producto-container{
-					display: grid;
-					grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-					grid-gap: 1em;
-					.no-result {
-						grid-column: 1/-1;
-						color: white;
-					}
 
-					.product{
-						display: block;
-						border:1px solid black;
-						box-shadow: 10px 10px 17px -11px rgba(0,0,0,0.55);
-						transition: .8s box-shadow;
-					}
-
+				.product{
+					display: block;
+					border:1px solid black;
+					box-shadow: 10px 10px 17px -11px rgba(0,0,0,0.55);
+					transition: .8s box-shadow;
 				}
+
+			}
+	}
+}
+
+@media (max-width: 900px){
+	div.container{
+		padding: 0;
+		width: 95%;
+		margin:auto;
+
+		.filters-container{
+			margin-bottom: 1em;
+
+			.filters{
+				padding: 0;
+			}
 		}
 	}
-// }
-	@media (max-width: 900px){
-		div.container{
-			padding: 0;
-			width: 95%;
-		}
-	}
+}
 </style>
