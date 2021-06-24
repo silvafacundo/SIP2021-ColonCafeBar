@@ -8,6 +8,7 @@
 					:product="product"
 					@delete="e => deleteProduct(index)" />
 				<h4>Subtotal: ${{ totalPrice }}</h4>
+				<h5>Precio en puntos: {{ totalPointsPrice }}</h5>
 			</b-step-item>
 			<b-step-item icon="bicycle">
 				<h4>¿Cómo quieres que sea la entrega?</h4>
@@ -29,11 +30,13 @@
 					<b-select v-model="paymentMethod" placeholder="Método de pago">
 						<option value="cash">Efectivo</option>
 						<option value="online">Mercadopago</option>
+						<option value="points">Puntos</option>
 					</b-select>
 				</b-field>
 				<p v-if="takeAway">Retiro del pedido por el local</p>
-				<p>Su pedido será entregado en <span class="has-text-weight-bold">{{ addressText }}</span>.</p>
-				<h4>Total: ${{ totalPrice }}</h4>
+				<p v-else>Su pedido será entregado en <span class="has-text-weight-bold">{{ addressText }}</span>.</p>
+				<h4 v-if="paymentMethod === 'points'">Precio en puntos: {{ totalPointsPrice }}</h4>
+				<h4 v-else>Total: ${{ totalPrice }}</h4>
 			</b-step-item>
 		</b-steps>
 		<footer>
@@ -134,6 +137,10 @@ export default {
 		},
 		totalPrice() {
 			return this.parsedCart.reduce((prevValue, product) => prevValue + (product.price * product.amount), 0);
+		},
+		totalPointsPrice() {
+			console.log(this.parsedCart);
+			return this.parsedCart.reduce((prevValue, product) => prevValue + (product.pointsPrice * product.amount), 0);
 		},
 		user() {
 			return this.$store.getters['Auth/clientUser']

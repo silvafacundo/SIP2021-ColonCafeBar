@@ -90,6 +90,18 @@ module.exports = class ClientController {
 		return client;
 	}
 
+	async addPoints(clientId, pointsToAdd) {
+		const client = await this.getClient({ usersId: Number(clientId) });
+		client.availablePoints = client.availablePoints + Number(pointsToAdd);
+		await client.save();
+	}
+
+	async discountPoints(clientId, pointsToDiscount) {
+		const client = await this.getClient({ usersId: clientId });
+		client.availablePoints = client.availablePoints - pointsToDiscount;
+		await client.save();
+	}
+
 	async getClientHashPassword(userId) {
 		const client = await this.db('clients').where('id', userId).first();
 		return client.password;

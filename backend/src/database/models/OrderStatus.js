@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
 			statusName: {
 				type: DataTypes.STRING,
 				require: true
+			},
+			key: {
+				type: DataTypes.STRING,
+				require: true
 			}
 		},
 		{

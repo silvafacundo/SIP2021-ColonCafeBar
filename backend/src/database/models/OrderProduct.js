@@ -26,6 +26,16 @@ module.exports = (sequelize, DataTypes) => {
 				required: true,
 				defaultValue: 0
 			},
+			pointsPrice: {
+				type: DataTypes.INTEGER,
+				required: true,
+				defaultValue: 0
+			},
+			grantablePoints: {
+				type: DataTypes.INTEGER,
+				required: true,
+				defaultValue: 0
+			},
 			selectedVariants: {
 				type: DataTypes.JSON,
 				required: false,

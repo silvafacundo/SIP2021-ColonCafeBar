@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.BOOLEAN,
 				default: true
 			},
+			availablePoints: DataTypes.INTEGER
 		},
 		{
 			sequelize,

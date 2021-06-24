@@ -81,6 +81,9 @@ export default {
 		},
 		cartItems() {
 			return this.$store.getters['Cart/items'];
+		},
+		points() {
+			return this.user.availablePoints;
 		}
 	},
 	methods: {

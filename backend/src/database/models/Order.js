@@ -75,6 +75,18 @@ module.exports = (sequelize, DataTypes) => {
 					return this._paymentLink = val;
 				}
 			},
+			grantablePoints: {
+				type: DataTypes.VIRTUAL,
+				get() {
+					return this.products.reduce((accumulator, product) => accumulator + product.grantablePoints * product.amount, 0);
+				}
+			},
+			pointsPriceTotal: {
+				type: DataTypes.VIRTUAL,
+				get() {
+					return this.products.reduce((accumulator, product) => accumulator + product.pointsPrice * product.amount, 0);
+				}
+			},
 			total: {
 				type: DataTypes.VIRTUAL,
 				get() {

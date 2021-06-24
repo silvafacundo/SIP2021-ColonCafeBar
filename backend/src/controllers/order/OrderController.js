@@ -45,8 +45,12 @@ module.exports = class OrderController {
 
 	async createOrder({ clientId, withDelivery, paymentMethod, addressId, products }) {
 		if (!clientId) throw Error('clientId is required');
+
 		if (!paymentMethod && typeof paymentMethod !== 'string' ) throw new PublicError('paymentMethod is required');
+		if (!['cash', 'points', 'online'].includes(paymentMethod)) throw new PublicError('paymentMethod is not valid!');
+
 		if (!products || !Array.isArray(products) || products.length < 1) throw new PublicError('products is required');
+
 		if (typeof withDelivery !== 'boolean') throw new PublicError('withDelivery must be a boolean');
 
 		const client = await this.utils.clients.getClient({ clientId });
@@ -77,9 +81,12 @@ module.exports = class OrderController {
 				const productData = productsData.find(p => String(p.id) === String(product.id));
 				if (!productData || (productData && !productData.isActive)) continue;
 				if (productData.variants && !this._isValidVariant(product, productData)) throw new PublicError(`Product ${product.id} variant is wrong`);
+
 				productsToInsert.push({
 					productId: productData.id,
 					price: productData.price,
+					pointsPrice: productData.pointsPrice,
+					grantablePoints: productData.grantablePoints,
 					amount: product.amount,
 					// orderId: order[0],
 					selectedVariants: product.variants,
@@ -90,6 +97,9 @@ module.exports = class OrderController {
 				throw new PublicError('The provided products doesn\'t exist or they are not available');
 			}
 
+			const pointsPrice = productsToInsert.reduce((count, product) => count + product.pointsPrice * product.amount, 0);
+			if (paymentMethod === 'points' && client.availablePoints <= pointsPrice) throw new PublicError('Not enough points to pay');
+
 			const status = await this.utils.orders.getOrderStatus({ key: 'pending' });
 
 			const order = await this.models.Order.create({
@@ -99,11 +109,19 @@ module.exports = class OrderController {
 				addressId,
 				products: productsToInsert,
 				deliveryPrice,
-				statusId: status.id
+				statusId: status.id,
+				isPaid: paymentMethod === 'points'
 			}, { include: ['products', 'address', 'delivery'] });
 
-			const payment = await this.utils.mercadopago.createOrderPayment(order.id);
-			if (payment) order.paymentLink = payment.init_link;
+			if (paymentMethod === 'online') {
+				const payment = await this.utils.mercadopago.createOrderPayment(order.id);
+				if (payment) order.paymentLink = payment.init_link;
+			}
+
+			if (paymentMethod === 'points') {
+				await this.utils.clients.discountPoints(clientId, pointsPrice);
+			}
+
 			return order;
 		} catch (error) {
 			console.error('Failed to create order:', error);
@@ -123,29 +141,32 @@ module.exports = class OrderController {
 	}
 
 	async updateOrder({ orderId, statusId, isPaid, deliveryId }) {
-		if (deliveryId) {
-			const delivery = await this.utils.deliveries.getDelivery(deliveryId);
-			if (!delivery) throw new PublicError('the Delivery doesn\'t exists');
-		}
-
 		const order = await this.models.Order.findByPk(orderId);
 		if (!order) throw new PublicError('The Order doesn\'t exists');
 
+		let status = null;
 		if (statusId) {
-			const status = await this.getOrderStatus({ id: statusId });
+			status = await this.getOrderStatus({ id: statusId });
 			if (!status) throw new PublicError('the status doesn\'t exists');
 			const isValidStatus = this.validateStatus(status.key, order.orderStatus.key);
 			if (!isValidStatus) throw new PublicError(`Can not switch from status "${order.orderStatus.key}" to "${status.key}"`);
+			order.statusId = statusId;
 		}
 
-		if (deliveryId)
-			order.deliveryId = deliveryId;
-		if (typeof isPaid === 'boolean')
-			order.isPaid = isPaid;
-		if (statusId)
-			order.statusId = statusId;
+		let delivery = null;
+		if (deliveryId)	delivery = await this.utils.deliveries.getDelivery(deliveryId);
+		if (deliveryId && !delivery) throw new PublicError('the Delivery doesn\'t exists');
+		if (deliveryId && delivery) order.deliveryId = deliveryId;
+
+		if (typeof isPaid === 'boolean') order.isPaid = isPaid;
 
 		await order.save();
+
+		if (status
+			&& (status.key === 'dispatched' || status.key === 'delivered')
+			&& order.paymentMethod === 'points') {
+			await this.utils.clients.addPoints(order.client.id, order.grantablePoints);
+		}
 
 		return order;
 	}
@@ -162,7 +183,7 @@ module.exports = class OrderController {
 				// UPDATE: Aparentemente no hay manera de hacer un reembolzo con Mp
 				break;
 			case 'points':
-				// TODO: Reembolzar puntos
+				await this.utils.clients.addPoints(Number(order.client.id), order.pointsPriceTotal);
 				break;
 		}
 		order.refunded = true;
