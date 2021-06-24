@@ -21,6 +21,7 @@ const MercadoPagoController = require('./controllers/MercadoPago/MercadoPagoCont
 const MailController = require('./controllers/mail/MailController');
 const Sequelize = require('sequelize');
 const StoreDataController = require('./controllers/store/StoreDataController');
+const { count } = require('console');
 
 module.exports = class Server {
 	constructor() {
@@ -44,6 +45,7 @@ module.exports = class Server {
 		await this.initializeSequelize();
 		await this.initializeControllers();
 		await this.initializeWebServer();
+		// this.seed(); //Si quieren correr el seed descomenten aca
 	}
 
 	/**
@@ -207,34 +209,35 @@ module.exports = class Server {
 		});
 	}
 
-	seed(){
+	async seed(){
 		console.log('[Knex seed] - Running seed');
 		console.log('[Knex seed] - Creating categories');
 
 		//create categories
-		this.utils.categories.createCategory({ name: 'Categoria 1' });
-		this.utils.categories.createCategory({ name: 'Categoria 2' });
-		this.utils.categories.createCategory({ name: 'Categoria 3' });
+		let countCategories = await this.utils.categories.countCategories();
+		let category1 = await this.utils.categories.createCategory({ name: 'Categoria '+ (Number(countCategories[0].count)+Number(1)) });
+		let category2 = await this.utils.categories.createCategory({ name: 'Categoria '+ (Number(countCategories[0].count)+Number(2)) });
+		let category3 = await this.utils.categories.createCategory({ name: 'Categoria '+ (Number(countCategories[0].count)+Number(3)) });
 
 		console.log('[Knex seed] - Creating products');
 		//create products
-		this.utils.products.createProduct({ idCategory: 1, name: 'Producto 1', imageUrl: ''
+		await this.utils.products.createProduct({ idCategory: category1.id, name: 'Producto 1', imageUrl: ''
 			, description: 'Descripcion producto 1', price: 100, variants: {}, pointsPrice: 100, grantablePoints: 100 });
-		this.utils.products.createProduct({ idCategory: 1, name: 'Producto 2', imageUrl: ''
+		await this.utils.products.createProduct({ idCategory: category1.id, name: 'Producto 2', imageUrl: ''
 			, description: 'Descripcion producto 2', price: 100, variants: {}, pointsPrice: 100, grantablePoints: 100 });
-		this.utils.products.createProduct({ idCategory: 1, name: 'Producto 3', imageUrl: ''
+		await this.utils.products.createProduct({ idCategory: category1.id, name: 'Producto 3', imageUrl: ''
 			, description: 'Descripcion producto 3', price: 100, variants: {}, pointsPrice: 100, grantablePoints: 100 });
-		this.utils.products.createProduct({ idCategory: 2, name: 'Producto 4', imageUrl: ''
+		await this.utils.products.createProduct({ idCategory: category2.id, name: 'Producto 4', imageUrl: ''
 			, description: 'Descripcion producto 4', price: 100, variants: {}, pointsPrice: 100, grantablePoints: 100 });
-		this.utils.products.createProduct({ idCategory: 2, name: 'Producto 5', imageUrl: ''
+		await this.utils.products.createProduct({ idCategory: category2.id, name: 'Producto 5', imageUrl: ''
 			, description: 'Descripcion producto 5', price: 100, variants: {}, pointsPrice: 100, grantablePoints: 100 });
-		this.utils.products.createProduct({ idCategory: 2, name: 'Producto 6', imageUrl: ''
+		await this.utils.products.createProduct({ idCategory: category2.id, name: 'Producto 6', imageUrl: ''
 			, description: 'Descripcion producto 6', price: 100, variants: {}, pointsPrice: 100, grantablePoints: 100 });
-		this.utils.products.createProduct({ idCategory: 3, name: 'Producto 7', imageUrl: ''
+		await this.utils.products.createProduct({ idCategory: category3.id, name: 'Producto 7', imageUrl: ''
 			, description: 'Descripcion producto 7', price: 100, variants: {}, pointsPrice: 100, grantablePoints: 100 });
-		this.utils.products.createProduct({ idCategory: 3, name: 'Producto 8', imageUrl: ''
+		await this.utils.products.createProduct({ idCategory: category3.id, name: 'Producto 8', imageUrl: ''
 			, description: 'Descripcion producto 8', price: 100, variants: {}, pointsPrice: 100, grantablePoints: 100 });
-		this.utils.products.createProduct({ idCategory: 3, name: 'Producto 9', imageUrl: ''
+		await this.utils.products.createProduct({ idCategory: category3.id, name: 'Producto 9', imageUrl: ''
 			, description: 'Descripcion producto 9', price: 100, variants: {}, pointsPrice: 100, grantablePoints: 100 });
 
 		console.log('[Knex seed] - Seed run successfully');

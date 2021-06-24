@@ -7,6 +7,9 @@
 					alt="Logo Colón Café Bar"
 				>
 			</router-link>
+			<div class="client-points">
+				<p>{{ points }} <span>ptos.</span></p>
+			</div>
 			<div class="cart-wrapper">
 				<b-button class="cart-button"
 					type="is-text"
@@ -50,7 +53,7 @@
 						label="Mi Cuenta" />
 					<b-menu-item icon="question"
 						tag="router-link"
-						to="/"
+						to="/help"
 						label="Ayuda" />
 				</b-menu-list>
 			</b-menu>
@@ -92,10 +95,10 @@ export default {
 <style scoped lang="scss">
 
 	header {
-		width: 100%;
+		width: 100vw;
 		top: 0;
 		position: sticky;
-		height: 60px;
+		height: 4em;
 		background-color: white;
 		padding: 0 1rem;
 		display: flex;
@@ -106,11 +109,13 @@ export default {
 			height: 100%;
 			padding: 5px;
 		}
-		.cart-wrapper {
-			margin-left: auto;
+		.cart-wrapper, .client-points {
 			align-self: center;
 			justify-content: flex-end;
 			position: relative;
+		}
+		.client-points {
+			margin-left: auto;
 		}
 		.navbar-burger {
 			align-self: center;
