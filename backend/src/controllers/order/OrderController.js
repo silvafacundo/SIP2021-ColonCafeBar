@@ -105,18 +105,33 @@ module.exports = class OrderController {
 		}
 	}
 
+	validateStatus(newStatus, oldStatus) {
+		const finalStatus = ['dispatched', 'delivered', 'cancelled'];
+		if (newStatus === 'cancelled') return true;
+		if (oldStatus === 'canceled' && newStatus !== 'cancelled') return false;
+		if (oldStatus === 'inPreparation' && newStatus === 'awaitingPreparation') return false;
+		if (newStatus === 'pending' && oldStatus !== 'pending') return false;
+		if (oldStatus === 'awaitingWithdrawal' && !finalStatus.includes(newStatus)) return false;
+		if (finalStatus.includes(oldStatus) && newStatus !== oldStatus) return false;
+		return true;
+	}
+
 	async updateOrder({ orderId, statusId, isPaid, deliveryId }) {
 		if (deliveryId) {
 			const delivery = await this.utils.deliveries.getDelivery(deliveryId);
 			if (!delivery) throw new PublicError('the Delivery doesn\'t exists');
 		}
 
+		const order = await this.models.Order.findByPk(orderId);
+		if (!order) throw new PublicError('The Order doesn\'t exists');
+
 		if (statusId) {
-			const status = await this.utils.orders.getOrderStatus({ id: statusId });
+			const status = await this.getOrderStatus({ id: statusId });
 			if (!status) throw new PublicError('the status doesn\'t exists');
+			const isValidStatus = this.validateStatus(status.key, order.orderStatus.key);
+			if (!isValidStatus) throw new PublicError(`Can not switch from status "${order.orderStatus.key}" to "${status.key}"`);
 		}
 
-		const order = await this.models.Order.findByPk(orderId);
 		if (deliveryId)
 			order.deliveryId = deliveryId;
 		if (typeof isPaid === 'boolean')
@@ -127,6 +142,25 @@ module.exports = class OrderController {
 		await order.save();
 
 		return order;
+	}
+
+	async refundOrder(orderId) {
+		const order = await this.models.Order.findByPk(orderId);
+		if (order.orderStatus.key !== 'cancelled' || order.refunded) return;
+
+		const paymentMethod = order.paymentMethod;
+
+		switch (paymentMethod) {
+			case 'online':
+				// TODO: Reembolsar MP
+				// UPDATE: Aparentemente no hay manera de hacer un reembolzo con Mp
+				break;
+			case 'points':
+				// TODO: Reembolzar puntos
+				break;
+		}
+		order.refunded = true;
+		order.save();
 	}
 
 	/**
@@ -144,7 +178,7 @@ module.exports = class OrderController {
 
 	async getOrders({ perPage = 20, page = 1, filters = {}, orderBy = {} }) {
 		if (isNaN(page)) throw new PublicError('page should be a number');
-		if (isNaN(perPage)) throw new PublicError('perPAge should be a number');
+		if (isNaN(perPage)) throw new PublicError('perPage should be a number');
 
 		const order = [];
 		order.push(['createdAt', orderBy.createdAt === 'asc' ? 'ASC' : 'DESC']);

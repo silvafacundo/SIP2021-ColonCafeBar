@@ -1,4 +1,5 @@
-const { Model } = require('sequelize');
+const { Model, Transaction } = require('sequelize');
+const Server = require('../../Server');
 
 module.exports = (sequelize, DataTypes) => {
 	class Order extends Model {
@@ -24,6 +25,18 @@ module.exports = (sequelize, DataTypes) => {
 				as: 'orderStatus'
 			});
 		}
+
+		/**
+		 *
+		 *
+		 * @static
+		 * @param {Server} server
+		 * @memberof Order
+		 */
+		static bindings(server) {
+			/** @type {Server} */
+			Order.prototype.server = server
+		}
 	}
 	Order.prototype._paymentLink = null;
 	Order.init(
@@ -36,6 +49,10 @@ module.exports = (sequelize, DataTypes) => {
 				}
 			},
 			isPaid: {
+				type: DataTypes.BOOLEAN,
+				defaultValue: false
+			},
+			refunded: {
 				type: DataTypes.BOOLEAN,
 				defaultValue: false
 			},
@@ -84,6 +101,17 @@ module.exports = (sequelize, DataTypes) => {
 			updatedAt: false
 		}
 	);
+
+	Order.addHook('afterSave', async (order, option) => {
+		if (!order.orderStatus) return;
+		const oldStatusKey = order.orderStatus.key;
+		await order.reload();
+		const newStatusKey = order.orderStatus.key;
+
+		if (oldStatusKey !== 'cancelled' && newStatusKey === 'cancelled') {
+			await order.server.utils.orders.refundOrder(order.id);
+		}
+	})
 
 	return Order;
 }

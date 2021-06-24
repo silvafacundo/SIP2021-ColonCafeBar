@@ -81,7 +81,4 @@ module.exports = class MercadoPagoController {
 		const data = await this.mercadopago.payment.get(id);
 		return data.body;
 	}
-
-
-
 }
