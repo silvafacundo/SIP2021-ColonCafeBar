@@ -1,5 +1,6 @@
 const PublicError = require('../../errors/PublicError');
 const { Op } = require('sequelize');
+const axios = require('axios');
 module.exports = class OrderController {
 	/**
 	 *Creates an instance of OrderController.
@@ -52,11 +53,15 @@ module.exports = class OrderController {
 		if (!client) throw new PublicError('Client does not exist with that clientId');
 
 		let address;
+		let deliveryPrice = 0;
 		if (withDelivery) {
 			address = await this.utils.addresses.getAddress(addressId);
 			if (!address) throw new PublicError('Address not found!');
 			const isAddressFromClient = await this.utils.addresses.isAddressFromClient(addressId, clientId);
 			if (!isAddressFromClient) throw new PublicError('The provided address is not from the given client');
+
+			deliveryPrice = await this.getDeliveryPrice(address.id);
+			if (deliveryPrice === -1) throw new PublicError('The distance between the given address and the bar address exceeds the max');
 		}
 
 		let productsId = new Set(products.map(product => product.id));
@@ -93,6 +98,7 @@ module.exports = class OrderController {
 				withDelivery,
 				addressId,
 				products: productsToInsert,
+				deliveryPrice,
 				statusId: status.id
 			}, { include: ['products', 'address', 'delivery'] });
 
@@ -105,18 +111,33 @@ module.exports = class OrderController {
 		}
 	}
 
+	validateStatus(newStatus, oldStatus) {
+		const finalStatus = ['dispatched', 'delivered', 'cancelled'];
+		if (newStatus === 'cancelled') return true;
+		if (oldStatus === 'canceled' && newStatus !== 'cancelled') return false;
+		if (oldStatus === 'inPreparation' && newStatus === 'awaitingPreparation') return false;
+		if (newStatus === 'pending' && oldStatus !== 'pending') return false;
+		if (oldStatus === 'awaitingWithdrawal' && !finalStatus.includes(newStatus)) return false;
+		if (finalStatus.includes(oldStatus) && newStatus !== oldStatus) return false;
+		return true;
+	}
+
 	async updateOrder({ orderId, statusId, isPaid, deliveryId }) {
 		if (deliveryId) {
 			const delivery = await this.utils.deliveries.getDelivery(deliveryId);
 			if (!delivery) throw new PublicError('the Delivery doesn\'t exists');
 		}
 
+		const order = await this.models.Order.findByPk(orderId);
+		if (!order) throw new PublicError('The Order doesn\'t exists');
+
 		if (statusId) {
-			const status = await this.utils.orders.getOrderStatus({ id: statusId });
+			const status = await this.getOrderStatus({ id: statusId });
 			if (!status) throw new PublicError('the status doesn\'t exists');
+			const isValidStatus = this.validateStatus(status.key, order.orderStatus.key);
+			if (!isValidStatus) throw new PublicError(`Can not switch from status "${order.orderStatus.key}" to "${status.key}"`);
 		}
 
-		const order = await this.models.Order.findByPk(orderId);
 		if (deliveryId)
 			order.deliveryId = deliveryId;
 		if (typeof isPaid === 'boolean')
@@ -127,6 +148,25 @@ module.exports = class OrderController {
 		await order.save();
 
 		return order;
+	}
+
+	async refundOrder(orderId) {
+		const order = await this.models.Order.findByPk(orderId);
+		if (order.orderStatus.key !== 'cancelled' || order.refunded) return;
+
+		const paymentMethod = order.paymentMethod;
+
+		switch (paymentMethod) {
+			case 'online':
+				// TODO: Reembolsar MP
+				// UPDATE: Aparentemente no hay manera de hacer un reembolzo con Mp
+				break;
+			case 'points':
+				// TODO: Reembolzar puntos
+				break;
+		}
+		order.refunded = true;
+		order.save();
 	}
 
 	/**
@@ -144,7 +184,7 @@ module.exports = class OrderController {
 
 	async getOrders({ perPage = 20, page = 1, filters = {}, orderBy = {} }) {
 		if (isNaN(page)) throw new PublicError('page should be a number');
-		if (isNaN(perPage)) throw new PublicError('perPAge should be a number');
+		if (isNaN(perPage)) throw new PublicError('perPage should be a number');
 
 		const order = [];
 		order.push(['createdAt', orderBy.createdAt === 'asc' ? 'ASC' : 'DESC']);
@@ -181,5 +221,33 @@ module.exports = class OrderController {
 	async getAllOrderStatus() {
 		const status = await this.models.OrderStatus.findAll();
 		return status;
+	}
+
+	async getDeliveryPrice(addressId) {
+		const address = await this.utils.addresses.getAddress(addressId);
+		if (!address) throw new PublicError('the address doesn\'t exists');
+
+		const store = await this.utils.store.getStoreData();
+		const { coordinates: storeCoordinates, minDeliveryPrice, maxDeliveryPrice, deliveryPricePerKm, maxDeliveryKm } = store;
+
+		try {
+			const { data } = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${address.coordinates.replace(';', ',')}&destinations=${storeCoordinates.replace(';', ',')}&key=${process.env.MAPS_APIKEY}`)
+
+			if (!data || !data.rows || !Array.isArray(data.rows) || data.rows.length < 1) throw new PublicError('Failed to retrieve km distance');
+			const distanceRow = data.rows[0];
+			if (!distanceRow || !distanceRow.elements || !Array.isArray(distanceRow.elements) || data.rows.distanceRow < 1
+				|| !distanceRow.elements[0].distance || !distanceRow.elements[0].distance.value) throw new PublicError('Failed to retrieve km distance');
+
+			const distance = Math.floor(distanceRow.elements[0].distance.value/1000);
+
+			if (distance >= maxDeliveryKm) return -1;
+			let deliveryPrice = deliveryPricePerKm * distance;
+
+			if (deliveryPrice < minDeliveryPrice) deliveryPrice = minDeliveryPrice;
+			if (deliveryPrice > maxDeliveryPrice) deliveryPrice = maxDeliveryPrice;
+			return deliveryPrice;
+		} catch (err) {
+			throw new PublicError('Failed to retrieve km distance: ', err);
+		}
 	}
 }

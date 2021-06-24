@@ -59,6 +59,9 @@ module.exports = class Order extends BaseModel{
 	get withDelivery() {
 		return this._orderData.withDelivery;
 	}
+	get deliveryPrice() {
+		return this._orderData.deliveryPrice;
+	}
 
 	/**
 	 * order address

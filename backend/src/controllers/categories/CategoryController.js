@@ -15,7 +15,9 @@ module.exports = class CategoriesController {
 	get models() {
 		return this.server.models;
 	}
-
+	async countCategories(){
+		return await this.db('categories').count();
+	}
 	async createCategory({ name }){
 		//Check if parameters are valid
 		if (!name && typeof name !== 'string') throw new PublicError('name is required');

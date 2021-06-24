@@ -12,6 +12,9 @@ module.exports = class mercadopagoPOST extends Route {
 			const orderId = data.external_reference;
 			await this.utils.mercadopago.endMpOrder(orderId);
 			console.log(`order#${orderId} status:`, data.status);
+			await this.db('orderMercadopago').where({ orderId }).update({
+				paymentId: req.body.data.id
+			});
 			if (data.status === 'approved') {
 				await this.utils.orders.updateOrder({ orderId, isPaid: true });
 			}

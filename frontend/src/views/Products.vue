@@ -2,63 +2,64 @@
 	<div class="container">
 		<div class="filters-container">
 			<div class="filters">
-				<b-collapse class="card" animation="slide" aria-id="contentIdForA11y3">
-						<template #trigger="props">
-							<div
-								class="card-header"
-								role="button"
-								aria-controls="contentIdForA11y3">
-								<p class="card-header-title">
-									<b-icon
+				<b-collapse class="card"
+					animation="slide"
+					aria-id="contentIdForA11y3">
+					<template #trigger="props">
+						<div
+							class="card-header"
+							role="button"
+							aria-controls="contentIdForA11y3">
+							<p class="card-header-title">
+								<b-icon
 									pack="fas"
 									icon="filter"
-									size="is-small">
-									</b-icon>
-									Filtros
-								</p>
-								<a class="card-header-icon">
-									<b-icon
-										:icon="props.open ? 'caret-down' : 'caret-up'">
-									</b-icon>
-								</a>
-							</div>
-						</template>
-
-						<div class="card-content">
-							<div class="content">
-								<h3>Categorías</h3>
-								<b-field v-for="(category, key) in renderProducts"
-									:key="key">
-									<b-checkbox @input="searchCategory(category.idcategory)"
-										v-if="category && category.products && category.products.length > 0"
-									>{{ category.category }}</b-checkbox>
-								</b-field>
-								<h3>Precios</h3>
-								<b-field>
-									<b-input v-model="filters.fromPrice"
-										placeholder="Precio desde"
-										type="number"
-										:loading="isLoading || isSearching"
-										lazy
-										size="is-small"
-										class="price-filter"
-										@input="searchProduct"
-									/>
-								</b-field>
-								<b-field>
-									<b-input v-model="filters.toPrice"
-										placeholder="Precio hasta"
-										type="number"
-										:loading="isLoading || isSearching"
-										lazy
-										size="is-small"
-										class="price-filter"
-										@input="searchProduct"
-									/>
-								</b-field>
-							</div>
+									size="is-small" />
+								Filtros
+							</p>
+							<a class="card-header-icon">
+								<b-icon
+									:icon="props.open ? 'caret-down' : 'caret-up'" />
+							</a>
 						</div>
-					</b-collapse>
+					</template>
+
+					<div class="card-content">
+						<div class="content">
+							<h3>Categorías</h3>
+							<b-field v-for="(category, key) in categories"
+								:key="key">
+								<b-checkbox
+									@input="searchCategory(category.id)">
+									{{ category.name }}
+								</b-checkbox>
+							</b-field>
+							<h3>Precios</h3>
+							<b-field>
+								<b-input v-model="filters.fromPrice"
+									placeholder="Precio desde"
+									type="number"
+									:loading="isLoading || isSearching"
+									lazy
+									size="is-small"
+									class="price-filter"
+									@input="searchProduct"
+								/>
+							</b-field>
+							<b-field>
+								<b-input v-model="filters.toPrice"
+									placeholder="Precio hasta"
+									type="number"
+									:loading="isLoading || isSearching"
+									lazy
+									size="is-small"
+									class="price-filter"
+									@input="searchProduct"
+								/>
+							</b-field>
+						</div>
+					</div>
+				</b-collapse>
 				<!-- <h2><b-icon
 					pack="fas"
 					icon="filter"
@@ -273,7 +274,7 @@ export default {
 		}
 		::v-deep .price-filter input {
 			background-color: transparent;
-			border: none;
+			border-color: rgb(30,30,30);
 			color: black;
 		}
 		::v-deep .price-filter input::placeholder {

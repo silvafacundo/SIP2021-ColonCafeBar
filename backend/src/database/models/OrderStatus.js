@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
 	}
 	OrderStatus.init(
 		{
+			key: {
+				type: DataTypes.STRING,
+				required: true
+			},
 			statusName: {
 				type: DataTypes.STRING,
 				require: true

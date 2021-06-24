@@ -14,6 +14,7 @@ import Profile from '../views/Profile';
 import Products from '../views/Products';
 import Order from '../views/Order';
 import Checkout from '../views/Checkout';
+import Help from '../views/Help';
 
 import EmptyRoute from '../components/EmptyRoute.vue';
 
@@ -37,7 +38,8 @@ const publicRoutes = [
 	'adminLogin',
 	'register',
 	'requestResetPassword',
-	'resetPassword'
+	'resetPassword',
+	'help'
 ]
 
 const routes = [
@@ -50,6 +52,7 @@ const routes = [
 		{ path: 'me', name: 'me', component: Profile },
 		{ path: 'checkout', name: 'checkout', component: Checkout },
 		{ path: 'order/:orderId', props: true, name: 'order', component: Order },
+		{ path: 'help', name: 'help', component: Help }
 	] },
 
 	// ADMIN:
