@@ -60,6 +60,9 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.BOOLEAN,
 				defaultValue: false
 			},
+			deliveryPrice: {
+				type: DataTypes.FLOAT,
+			},
 			paymentMethod: {
 				type: DataTypes.STRING,
 			},

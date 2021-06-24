@@ -68,7 +68,7 @@
 						expanded
 						icon-left="plus"
 						@click="newAddress">
-						Nueva Direccion
+						Nueva Dirección
 					</b-button>
 				</div>
 			</div>

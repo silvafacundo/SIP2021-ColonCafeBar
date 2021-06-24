@@ -1,5 +1,6 @@
 const PublicError = require('../../errors/PublicError');
 const { Op } = require('sequelize');
+const axios = require('axios');
 module.exports = class OrderController {
 	/**
 	 *Creates an instance of OrderController.
@@ -52,11 +53,15 @@ module.exports = class OrderController {
 		if (!client) throw new PublicError('Client does not exist with that clientId');
 
 		let address;
+		let deliveryPrice = 0;
 		if (withDelivery) {
 			address = await this.utils.addresses.getAddress(addressId);
 			if (!address) throw new PublicError('Address not found!');
 			const isAddressFromClient = await this.utils.addresses.isAddressFromClient(addressId, clientId);
 			if (!isAddressFromClient) throw new PublicError('The provided address is not from the given client');
+
+			deliveryPrice = await this.getDeliveryPrice(address.id);
+			if (deliveryPrice === -1) throw new PublicError('The distance between the given address and the bar address exceeds the max');
 		}
 
 		let productsId = new Set(products.map(product => product.id));
@@ -93,6 +98,7 @@ module.exports = class OrderController {
 				withDelivery,
 				addressId,
 				products: productsToInsert,
+				deliveryPrice,
 				statusId: status.id
 			}, { include: ['products', 'address', 'delivery'] });
 
@@ -215,5 +221,33 @@ module.exports = class OrderController {
 	async getAllOrderStatus() {
 		const status = await this.models.OrderStatus.findAll();
 		return status;
+	}
+
+	async getDeliveryPrice(addressId) {
+		const address = await this.utils.addresses.getAddress(addressId);
+		if (!address) throw new PublicError('the address doesn\'t exists');
+
+		const store = await this.utils.store.getStoreData();
+		const { coordinates: storeCoordinates, minDeliveryPrice, maxDeliveryPrice, deliveryPricePerKm, maxDeliveryKm } = store;
+
+		try {
+			const { data } = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${address.coordinates.replace(';', ',')}&destinations=${storeCoordinates.replace(';', ',')}&key=${process.env.MAPS_APIKEY}`)
+
+			if (!data || !data.rows || !Array.isArray(data.rows) || data.rows.length < 1) throw new PublicError('Failed to retrieve km distance');
+			const distanceRow = data.rows[0];
+			if (!distanceRow || !distanceRow.elements || !Array.isArray(distanceRow.elements) || data.rows.distanceRow < 1
+				|| !distanceRow.elements[0].distance || !distanceRow.elements[0].distance.value) throw new PublicError('Failed to retrieve km distance');
+
+			const distance = Math.floor(distanceRow.elements[0].distance.value/1000);
+
+			if (distance >= maxDeliveryKm) return -1;
+			let deliveryPrice = deliveryPricePerKm * distance;
+
+			if (deliveryPrice < minDeliveryPrice) deliveryPrice = minDeliveryPrice;
+			if (deliveryPrice > maxDeliveryPrice) deliveryPrice = maxDeliveryPrice;
+			return deliveryPrice;
+		} catch (err) {
+			throw new PublicError('Failed to retrieve km distance: ', err);
+		}
 	}
 }

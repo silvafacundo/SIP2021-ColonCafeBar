@@ -20,6 +20,7 @@ const OrderController = require('./controllers/order/OrderController');
 const MercadoPagoController = require('./controllers/MercadoPago/MercadoPagoController');
 const MailController = require('./controllers/mail/MailController');
 const Sequelize = require('sequelize');
+const StoreDataController = require('./controllers/store/StoreDataController');
 
 module.exports = class Server {
 	constructor() {
@@ -157,6 +158,7 @@ module.exports = class Server {
 		* @property {OrderController} Utils.orders
 		* @property {MercadoPagoController} Utils.mercadopago
 		* @property {MailController} Utils.mailController
+		* @property {StoreDataController} Utils.store
 		* @property {firebase} Utils.firebase
 		*/
 
@@ -174,6 +176,7 @@ module.exports = class Server {
 			logger: logger,
 			mercadopago: new MercadoPagoController(this),
 			mailController: new MailController(this),
+			store: new StoreDataController(this),
 			firebase
 		}
 		try {
