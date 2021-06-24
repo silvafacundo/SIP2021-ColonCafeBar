@@ -48,6 +48,10 @@
 						tag="router-link"
 						to="/me"
 						label="Mi Cuenta" />
+					<b-menu-item icon="question"
+						tag="router-link"
+						to="/"
+						label="Ayuda" />
 				</b-menu-list>
 			</b-menu>
 		</b-sidebar>

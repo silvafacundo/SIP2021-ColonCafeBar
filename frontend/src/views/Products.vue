@@ -273,9 +273,8 @@ export default {
 		}
 		::v-deep .price-filter input {
 			background-color: transparent;
-			border-radius: 20px;
-			border: 2px solid;
-			color: white;
+			border: none;
+			color: black;
 		}
 		::v-deep .price-filter input::placeholder {
 			color: black;
@@ -336,6 +335,7 @@ export default {
 
 @media (max-width: 900px){
 	div.container{
+		display:block;
 		padding: 0;
 		width: 95%;
 		margin:auto;

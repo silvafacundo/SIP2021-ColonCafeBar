@@ -142,5 +142,9 @@ export default {
 			font-size: 12px;
 			margin-bottom: 8px;
 		}
+		footer{
+			display: flex;
+			gap:3em;
+		}
 	}
 </style>
