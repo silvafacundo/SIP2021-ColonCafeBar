@@ -262,7 +262,6 @@ export default {
 
 <style lang="scss" scoped>
 	div.container {
-		text-align: center;
 		> ::v-deep button {
 			display: flex;
 			margin-left: auto;

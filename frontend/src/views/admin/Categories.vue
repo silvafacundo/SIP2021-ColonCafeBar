@@ -112,16 +112,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-	h3{
-		font-size: 1em;
-		margin-top:1em;
-	}
 	.new-category{
 		margin-top:2em;
-
-		h3{
-			margin-top: 0em;
-		}
 	}
 
 	form{
