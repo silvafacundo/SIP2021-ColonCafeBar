@@ -1,25 +1,12 @@
 <template>
 	<div v-if="order" class="order">
 		<h3>Orden #{{ order.id }}</h3>
-		<div v-for="(product, index) of order.products"
-			:key="index"
-			class="product">
-			<div>
-				<div class="prod">
-					<p class="name">{{ product.product.name }}</p>
-					<p>{{ product.product.category.name }}</p>
-				</div>
-				<div class="amount">
-					<p>Cantidad: {{ product.amount }}</p>
-				</div>
-				<div class="price">
-					<p v-if="hasPaidWithPoints">{{ product.pointsPrice }} ptos.</p>
-					<p v-else>${{ product.price }}</p>
-				</div>
-			</div>
-		</div>
-		<p v-if="hasPaidWithPoints">Total: {{ order.pointsPriceTotal }} ptos.</p>
-		<p v-else>Total: ${{ order.total }}</p>
+		<ul>
+			<li v-for="(product, index) of parsedProducts" :key="index">
+				<cart-product :product="product" />
+			</li>
+		</ul>
+		<p>Total: ${{ order.total }}</p>
 		<p>Estado: {{ order.status }}</p>
 		<p>Método de pago: {{ order.paymentMethod }}</p>
 		<p>Estado del Pago: {{ order.isPaid ? 'Pago': 'Pendiente' }}</p>
@@ -37,8 +24,10 @@
 </template>
 
 <script>
+import CartProduct from '../components/CartProduct.vue';
 export default {
 	name: 'Order',
+	components: { CartProduct },
 	props: {
 		orderId: {
 			type: String,
@@ -59,6 +48,10 @@ export default {
 		},
 		hasGrantablePoints() {
 			return this.order.paymentMethod !== 'points'
+		},
+		parsedProducts () {
+			if (!this.order) return [];
+			return this.order.products.map(product => ({ ...product.product, amount: product.amount, price: product.price }));
 		}
 	},
 	mounted() {
@@ -92,32 +85,6 @@ export default {
 		border-radius: 3em;
 		background-color: #fafafa;
 		text-align: left;
-
-		.product {
-			border-bottom: 1px dotted black;
-			div{
-				display: flex;
-				justify-content: space-between;
-
-				.prod{
-					display: block;
-					width:60%;
-					.name{
-						font-weight: bold;
-					}
-				}
-				.amount{
-					width: 25%;
-					align-items: end;
-				}
-				.price{
-					width: 15%;
-					align-items: end;
-					display: flex;
-					justify-content: space-between;
-				}
-			}
-		}
 		a {
 			background-color: var(--rojo);
 		}
@@ -141,9 +108,6 @@ export default {
 			border-radius: 0px;
 			padding:1em;
 
-			.product{
-				width: 100%;
-			}
 			a{
 				width:100%;
 			}

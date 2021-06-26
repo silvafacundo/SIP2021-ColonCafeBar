@@ -4,6 +4,7 @@
 		<p>Precio: ${{ product.price }}</p>
 		<p>Cantidad: {{ product.amount }}</p>
 		<b-button
+			v-if="hasDelete"
 			class="delete-product"
 			type="is-text"
 			icon-left="trash"
@@ -20,6 +21,11 @@ export default {
 		product: {
 			type: Object,
 			required: true
+		}
+	},
+	computed: {
+		hasDelete() {
+			return !!this.$listeners && typeof this.$listeners.delete === 'function';
 		}
 	},
 	methods: {

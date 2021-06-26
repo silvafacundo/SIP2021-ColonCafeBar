@@ -40,12 +40,19 @@
 						tag="router-link"
 						to="/"
 						label="Inicio" />
+					<b-menu-item v-if="user"
+						icon="clipboard-list"
+						tag="router-link"
+						to="/orders"
+						label="Mis Ordenes"
+					/>
 					<b-menu-item v-if="!user"
 						style="font-size: 0.8rem"
 						icon="user"
 						tag="router-link"
 						to="/login"
 						label="Iniciar Sesión/Registrarse" />
+
 					<b-menu-item v-else
 						icon="user"
 						tag="router-link"
