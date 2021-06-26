@@ -162,12 +162,6 @@ module.exports = class OrderController {
 
 		await order.save();
 
-		if (status
-			&& (status.key === 'dispatched' || status.key === 'delivered')
-			&& order.paymentMethod === 'points') {
-			await this.utils.clients.addPoints(order.client.id, order.grantablePoints);
-		}
-
 		return order;
 	}
 

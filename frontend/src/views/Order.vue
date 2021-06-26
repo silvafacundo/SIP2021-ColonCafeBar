@@ -13,11 +13,13 @@
 					<p>Cantidad: {{ product.amount }}</p>
 				</div>
 				<div class="price">
-					<p>${{ product.price }}</p>
+					<p v-if="hasPaidWithPoints">{{ product.pointsPrice }} ptos.</p>
+					<p v-else>${{ product.price }}</p>
 				</div>
 			</div>
 		</div>
-		<p>Total: ${{ order.total }}</p>
+		<p v-if="hasPaidWithPoints">Total: {{ order.pointsPriceTotal }} ptos.</p>
+		<p v-else>Total: ${{ order.total }}</p>
 		<p>Estado: {{ order.status }}</p>
 		<p>Método de pago: {{ order.paymentMethod }}</p>
 		<p>Estado del Pago: {{ order.isPaid ? 'Pago': 'Pendiente' }}</p>
@@ -26,6 +28,8 @@
 			class="button is-primary"
 			target="_blank"
 			:href="order.paymentLink">Pagar</a>
+		<p v-if="hasGrantablePoints && !hasOrderFinalized">Se te otorgaran {{ order.grantablePoints }} ptos cuando la orden finalice.</p>
+		<p v-if="hasGrantablePoints && hasOrderFinalized">Obtuviste {{ order.grantablePoints }} ptos.</p>
 	</div>
 	<div v-else class="order">
 		<p>Loading...</p>
@@ -46,6 +50,17 @@ export default {
 		order: null,
 		interval: null
 	}),
+	computed: {
+		hasPaidWithPoints() {
+			return this.order.paymentMethod === 'points';
+		},
+		hasOrderFinalized() {
+			return this.order.orderStatus.key === 'delivered' || this.order.orderStatus.key === 'dispatched'
+		},
+		hasGrantablePoints() {
+			return this.order.paymentMethod !== 'points'
+		}
+	},
 	mounted() {
 		this.fetchOrder();
 		this.interval = setInterval(this.fetchOrder, 3 * 1000);

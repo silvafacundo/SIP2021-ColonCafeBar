@@ -126,6 +126,10 @@ module.exports = (sequelize, DataTypes) => {
 		if (oldStatusKey !== 'cancelled' && newStatusKey === 'cancelled') {
 			await order.server.utils.orders.refundOrder(order.id);
 		}
+
+		if (order.paymentMethod !== 'points' && (newStatusKey === 'dispatched' || newStatusKey === 'delivered')) {
+			await order.server.utils.clients.addPoints(order.client.id, order.grantablePoints);
+		}
 	})
 
 	return Order;

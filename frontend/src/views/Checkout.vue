@@ -36,7 +36,8 @@
 				<p v-if="takeAway">Retiro del pedido por el local</p>
 				<p v-else>Su pedido será entregado en <span class="has-text-weight-bold">{{ addressText }}</span>.</p>
 				<h4 v-if="paymentMethod === 'points'">Precio en puntos: {{ totalPointsPrice }}</h4>
-				<h4 v-else>Total: ${{ totalPrice }}</h4>
+				<h4 v-if="paymentMethod !== 'points'">Total: ${{ totalPrice }}</h4>
+				<h4 v-if="paymentMethod !== 'points'">Recibiras {{ grantablePoints }} ptos.</h4>
 			</b-step-item>
 		</b-steps>
 		<footer>
@@ -157,6 +158,9 @@ export default {
 		},
 		totalPointsPrice() {
 			return this.parsedCart.reduce((prevValue, product) => prevValue + (product.pointsPrice * product.amount), 0);
+		},
+		grantablePoints() {
+			return this.parsedCart.reduce((prevValue, product) => prevValue + (product.grantablePoints * product.amount), 0);
 		},
 		user() {
 			return this.$store.getters['Auth/clientUser']
