@@ -76,72 +76,11 @@
 
 		<b-modal :active="!!selectedAddress"
 			@close="closeModal">
-			<div v-if="selectedAddress" class="card selected-address">
-				<b-steps
-					v-model="addressStep"
-					:has-navigation="false">
-					<b-step-item icon="address-card">
-						<b-field label="Alias">
-							<b-input v-model="selectedAddress.alias" />
-						</b-field>
-						<b-field label="Calle*">
-							<b-input v-model="selectedAddress.street" />
-						</b-field>
-						<b-field label="Número*">
-							<b-input v-model="selectedAddress.number" />
-						</b-field>
-						<b-field label="Localidad*">
-							<b-input v-model="selectedAddress.neighborhood" />
-						</b-field>
-						<b-field label="Piso">
-							<b-input v-model="selectedAddress.floor" />
-						</b-field>
-						<b-field label="Entre Calles*">
-							<b-input v-model="selectedAddress.corner" />
-						</b-field>
-						<b-button v-if="selectedAddress.id"
-							type="is-ghost"
-							:disabled="isLoading"
-							expanded
-							@click="deleteAddress">
-							Eliminar dirección
-						</b-button>
-					</b-step-item>
-					<b-step-item icon="map-marker">
-						<b-field v-if="canContinueAddress && hasAddresPosition"
-							class="map-container"
-							label="Confirme la ubicación de la dirección:">
-							<GmapMap
-								:center="initialCenter"
-								:zoom="15"
-								:options="{ streetViewControl: false }"
-								map-type-id="terrain"
-								style="width: 500px; height: 300px"
-								@click="handleMapClick">
-								<GmapMarker
-									:position="addresPosition"
-									:clickable="true"
-									:draggable="false"
-									:title="selectedAddress.alias"
-								/>
-							</GmapMap>
-						</b-field>
-					</b-step-item>
-				</b-steps>
-				<footer>
-					<b-button type="is-danger"
-						:disabled="isLoading"
-						@click="prevStepAddress">
-						{{ cancelAddressStepText }}
-					</b-button>
-					<b-button type="is-success"
-						:loading="isLoading"
-						:disabled="!canContinueAddress || isLoading"
-						@click="nextStepAddress">
-						{{ addressStepText }}
-					</b-button>
-				</footer>
-			</div>
+			<CreateAddress v-model="selectedAddress"
+				:loading="isLoading"
+				@save="saveAddress"
+				@delete="deleteAddress"
+				@loading=" val => isLoading = val" />
 		</b-modal>
 		<b-button type="is-ghost"
 			size="is-small"
@@ -154,9 +93,11 @@
 
 <script>
 import Address from '../components/Address';
+import CreateAddress from '../components/CreateAddress.vue';
 export default {
 	components: {
-		Address
+		Address,
+		CreateAddress
 	},
 	data: () => ({
 		isLoading: false,
@@ -173,45 +114,11 @@ export default {
 		user() {
 			return { ...this.$store.getters['Auth/clientUser'] };
 		},
-		canContinueAddress() {
-			return !!(this.selectedAddress && this.selectedAddress.street && this.selectedAddress.number && this.selectedAddress.neighborhood && this.selectedAddress.corner);
-		},
-		hasAddresPosition() {
-			return !!(this.selectedAddress && this.selectedAddress.coordinates);
-		},
-		addresPosition() {
-			if (!this.selectedAddress || !this.selectedAddress.coordinates) return null;
-			const [lat, lng] = this.selectedAddress.coordinates.split(';');
-			return { lat: Number(lat), lng: Number(lng) };
-		},
-		cancelAddressStepText() {
-			switch (this.addressStep) {
-				case 0:
-					return 'Cancelar'
-				default:
-					return 'Volver'
-			}
-		},
-		addressStepText() {
-			switch (this.addressStep) {
-				case 1:
-					return 'Guardar'
-				default:
-					return 'Continuar'
-			}
-		}
 	},
 	methods: {
 		closeModal() {
 			this.selectedAddress = null;
 			this.addressStep = 0;
-		},
-		handleMapClick(e) {
-			const lat = e.latLng.lat();
-			const lng = e.latLng.lng();
-			const newSelectedAddress = { ...this.selectedAddress };
-			newSelectedAddress.coordinates = `${lat};${lng}`;
-			this.selectedAddress = newSelectedAddress;
 		},
 		newAddress() {
 			this.selectedAddress = {
@@ -225,21 +132,6 @@ export default {
 		// 		this.convertAddresPosition();
 		// 	}
 		// },
-		async convertAddresPosition() {
-			const address = `${this.selectedAddress.street}+${this.selectedAddress.number}+${this.selectedAddress.neighborhood}+${this.selectedAddress.city}`;
-			const axios = this.axios.create();
-			delete axios.defaults.headers.common['Authorization'];
-
-			const { data } = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${address.replace(' ', '')},+AR&key=${process.env.VUE_APP_MAPS_APIKEY}`);
-			if (!data || !data.results) return;
-			const { results } = data;
-			if (results && Array.isArray(results) && results.length > 0 && results[0] && results[0].geometry && results[0].geometry.location);
-
-			const newSelectedAddress = { ...this.selectedAddress };
-			const { lat, lng } = results[0].geometry.location;
-			newSelectedAddress.coordinates = `${lat};${lng}`;
-			this.selectedAddress = newSelectedAddress;
-		},
 		async updateProfile() {
 			try {
 				const data = {
@@ -252,28 +144,6 @@ export default {
 			} catch (err) {
 				this.$showToast('Error al actualizar los datos', true);
 			}
-		},
-		async nextStepAddress() {
-			this.isLoading = true;
-			switch (this.addressStep) {
-				case 0:
-					if (!this.selectedAddress.coordinates) {
-						await this.convertAddresPosition();
-					}
-					this.initialCenter = this.addresPosition;
-					break;
-				case 1:
-					await this.saveAddress()
-					break;
-				default:
-					break;
-			}
-			this.isLoading = false;
-			this.addressStep++;
-		},
-		async prevStepAddress() {
-			if (this.addressStep <= 0) this.closeModal();
-			else this.addressStep--;
 		},
 		async saveAddress() {
 			try {
@@ -336,24 +206,6 @@ export default {
 				margin-left: auto;
 			}
 		}
-	}
-	.selected-address {
-		padding: 20px;
-		footer {
-			display: flex;
-			justify-content: flex-end;
-			align-items: center;
-			gap: 1rem;
-			button:last-child {
-				margin-left: auto;
-			}
-		}
-	}
-	.map-container {
-		width: 100%;
-		flex-flow: column;
-		display: flex;
-		align-items: center;
 	}
 @media (max-width: 900px){
 	div.container{

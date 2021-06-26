@@ -64,7 +64,19 @@
 					:selected="selectedAddress && address.id === selectedAddress.id"
 					:address="address"
 					@click="() => selectAddress(address)" />
+				<b-button type="is-ghost"
+					expanded
+					icon-left="plus"
+					@click="newAddress">
+					Nueva Dirección
+				</b-button>
 			</div>
+		</b-modal>
+		<b-modal v-model="newAddressModal">
+			<CreateAddress v-model="newAddressData"
+				:loading="isLoading"
+				@save="saveAddress"
+				@loading="val => isLoading = val" />
 		</b-modal>
 	</div>
 </template>
@@ -72,11 +84,13 @@
 <script>
 import Address from '../components/Address.vue';
 import CartProduct from '../components/CartProduct.vue';
+import CreateAddress from '../components/CreateAddress'
 export default {
 	name: 'Checkout',
 	components: {
 		Address,
-		CartProduct
+		CartProduct,
+		CreateAddress
 	},
 	data: () => ({
 		isLoading: false,
@@ -87,6 +101,8 @@ export default {
 		selectingAddress: false,
 		payWithCash: false,
 		paymentMethod: 'cash',
+		newAddressData: null,
+		newAddressModal: false,
 		step: 0,
 	}),
 	computed: {
@@ -101,6 +117,7 @@ export default {
 			}
 		},
 		addressText() {
+			if (!this.selectedAddress) return '';
 			const { street, number, floor } = this.selectedAddress;
 			let text = `${street} ${number}`;
 
@@ -139,7 +156,6 @@ export default {
 			return this.parsedCart.reduce((prevValue, product) => prevValue + (product.price * product.amount), 0);
 		},
 		totalPointsPrice() {
-			console.log(this.parsedCart);
 			return this.parsedCart.reduce((prevValue, product) => prevValue + (product.pointsPrice * product.amount), 0);
 		},
 		user() {
@@ -203,7 +219,27 @@ export default {
 		selectAddress(address){
 			this.selectedAddress = address;
 			this.selectingAddress = false;
-		}
+		},
+		newAddress() {
+			this.newAddressData = {
+				city: 'Buenos Aires',
+				neighborhood: 'Chivilcoy',
+				postalCode: 6620
+			};
+			this.newAddressModal = true;
+		},
+		async saveAddress() {
+			try {
+				await this.$store.dispatch('Client/createAddress', { ...this.newAddressData });
+				this.newAddressModal = false;
+				this.$showToast('Dirección guardada correctamente');
+			} catch (err) {
+				let errMessage = err && err.response && err.response.data.message;
+				if (errMessage)  errMessage = `Error: ${errMessage}`;
+				else errMessage = ''
+				this.$showToast('Ocurrió un error al guardar la dirección' + errMessage, true);
+			}
+		},
 	}
 }
 </script>
