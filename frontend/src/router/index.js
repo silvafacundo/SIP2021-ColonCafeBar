@@ -106,10 +106,14 @@ const handleClientRoutes = async (to, from, next) => {
 	if (!isLogedIn) return next({ name: 'login' });
 	return next();
 }
+const handlePublicRoutes = async (to, from, next) => {
+	await checkClientLogin();
+	return next();
+}
 
 router.beforeEach(async (to, from, next) => {
 	const isPublicRoute = publicRoutes.includes(to.name)
-	if (isPublicRoute) return next();
+	if (isPublicRoute) return handlePublicRoutes(to, from, next);
 
 	// Checks if is an admin route
 	if (to.matched.length > 0 && to.matched[0].path === '/admin')

@@ -7,7 +7,7 @@
 					alt="Logo Colón Café Bar"
 				>
 			</router-link>
-			<div class="client-points">
+			<div v-if="user" class="client-points">
 				<p>{{ points }} <span>ptos.</span></p>
 			</div>
 			<div class="cart-wrapper">
@@ -124,7 +124,7 @@ export default {
 			justify-content: flex-end;
 			position: relative;
 		}
-		.client-points {
+		> *:nth-child(2){
 			margin-left: auto;
 		}
 		.navbar-burger {
