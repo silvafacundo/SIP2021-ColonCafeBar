@@ -114,7 +114,7 @@ export default {
 			this.$store.commit('Cart/deleteIndex', index);
 		},
 		goToCheckout() {
-			this.$router.push({ name: 'checkout' })
+			if (this.$route.name !== 'checkout') this.$router.push({ name: 'checkout' })
 			this.$emit('close')
 		},
 		emptyCart(){
