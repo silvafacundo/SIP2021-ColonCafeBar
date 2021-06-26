@@ -15,10 +15,6 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.STRING,
 				require: true
 			},
-			key: {
-				type: DataTypes.STRING,
-				require: true
-			}
 		},
 		{
 			sequelize,
