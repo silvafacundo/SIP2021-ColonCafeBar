@@ -21,6 +21,7 @@ const MercadoPagoController = require('./controllers/MercadoPago/MercadoPagoCont
 const MailController = require('./controllers/mail/MailController');
 const Sequelize = require('sequelize');
 const StoreDataController = require('./controllers/store/StoreDataController');
+const ScheduleController = require('./controllers/schedules/ScheduleController');
 const { count } = require('console');
 
 module.exports = class Server {
@@ -179,6 +180,7 @@ module.exports = class Server {
 			mercadopago: new MercadoPagoController(this),
 			mailController: new MailController(this),
 			store: new StoreDataController(this),
+			schedules: new ScheduleController(this),
 			firebase
 		}
 		try {
