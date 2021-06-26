@@ -28,5 +28,6 @@ services:
             FIREBASE_CID:
             FIREBASE_AUTHCERT:
             FIREBASE_CLIENTCERT:
+            MAPS_APIKEY:
 volumes:
   database-data:
