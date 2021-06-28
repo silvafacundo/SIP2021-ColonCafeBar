@@ -17,15 +17,12 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.STRING,
 				required: true
 			},
-			isDeleted: {
-				type: DataTypes.BOOLEAN,
-				defaultValue: false
-			}
 		},
 		{
 			sequelize,
 			tableName: 'deliveries',
 			modelName: 'Delivery',
+			paranoid: true,
 			updatedAt: false
 		}
 	);

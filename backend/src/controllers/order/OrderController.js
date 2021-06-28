@@ -245,24 +245,20 @@ module.exports = class OrderController {
 		const store = await this.utils.store.getStoreData();
 		const { coordinates: storeCoordinates, minDeliveryPrice, maxDeliveryPrice, deliveryPricePerKm, maxDeliveryKm } = store;
 
-		try {
-			const { data } = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${address.coordinates.replace(';', ',')}&destinations=${storeCoordinates.replace(';', ',')}&key=${process.env.MAPS_APIKEY}`)
+		const { data } = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${address.coordinates.replace(';', ',')}&destinations=${storeCoordinates.replace(';', ',')}&key=${process.env.MAPS_APIKEY}`)
 
-			if (!data || !data.rows || !Array.isArray(data.rows) || data.rows.length < 1) throw new PublicError('Failed to retrieve km distance');
-			const distanceRow = data.rows[0];
-			if (!distanceRow || !distanceRow.elements || !Array.isArray(distanceRow.elements) || data.rows.distanceRow < 1
-				|| !distanceRow.elements[0].distance || !distanceRow.elements[0].distance.value) throw new PublicError('Failed to retrieve km distance');
+		if (!data || !data.rows || !Array.isArray(data.rows) || data.rows.length < 1) throw new PublicError('Failed to retrieve km distance');
+		const distanceRow = data.rows[0];
+		if (!distanceRow || !distanceRow.elements || !Array.isArray(distanceRow.elements) || data.rows.distanceRow < 1
+			|| !distanceRow.elements[0].distance || !distanceRow.elements[0].distance.value) throw new PublicError('Failed to retrieve km distance');
 
-			const distance = Math.floor(distanceRow.elements[0].distance.value/1000);
+		const distance = Math.floor(distanceRow.elements[0].distance.value/1000);
 
-			if (distance >= maxDeliveryKm) return -1;
-			let deliveryPrice = deliveryPricePerKm * distance;
+		if (distance >= maxDeliveryKm) return -1;
+		let deliveryPrice = deliveryPricePerKm * distance;
 
-			if (deliveryPrice < minDeliveryPrice) deliveryPrice = minDeliveryPrice;
-			if (deliveryPrice > maxDeliveryPrice) deliveryPrice = maxDeliveryPrice;
-			return deliveryPrice;
-		} catch (err) {
-			throw new PublicError('Failed to retrieve km distance: ', err);
-		}
+		if (deliveryPrice < minDeliveryPrice) deliveryPrice = minDeliveryPrice;
+		if (deliveryPrice > maxDeliveryPrice) deliveryPrice = maxDeliveryPrice;
+		return deliveryPrice;
 	}
 }

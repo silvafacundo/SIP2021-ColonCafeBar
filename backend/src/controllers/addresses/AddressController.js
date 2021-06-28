@@ -1,5 +1,3 @@
-const UserController = require('../users/UserController');
-const Address = require('../../models/clients/Address');
 const PublicError = require('../../errors/PublicError');
 /** @typedef {import('../../Server')} Server */
 
@@ -81,17 +79,15 @@ module.exports = class AddressController {
 
 	async getAddress(id, fetchDeleted = false) {
 		const whereQuery = {};
-		if (!fetchDeleted)  whereQuery.isDeleted = false;
 
-		const address = await this.models.Address.findByPk(id, { where: whereQuery });
+		const address = await this.models.Address.findByPk(id, { where: whereQuery, paranoid: !fetchDeleted });
 		return address;
 	}
 
 	async deleteAddress(addressId) {
 		const address = await this.getAddress(addressId);
 		if (!address) return true;
-		address.isDeleted = true;
-		await address.save();
+		await address.destroy();
 		return true;
 	}
 

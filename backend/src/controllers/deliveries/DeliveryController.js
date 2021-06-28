@@ -1,5 +1,4 @@
 const PublicError = require('../../errors/PublicError');
-const Delivery = require('../../models/deliveries/delivery');
 
 module.exports = class DeliveryController {
 	constructor(server) {
@@ -35,19 +34,15 @@ module.exports = class DeliveryController {
 
 	//Get specific delivery
 	async getDelivery(id, fetchDeleted = false) {
-		const whereQuery = { id };
-		if (!fetchDeleted) whereQuery.isDeleted = false;
-
-		const delivery = await this.models.Delivery.findByPk(id);
+		const delivery = await this.models.Delivery.findByPk(id, { paranoid: !fetchDeleted });
 		return delivery;
 	}
 
 	//Get all deliveries loaded
 	async getAllDeliveries(fetchDeleted = false) {
 		const where = {}
-		if (!fetchDeleted) where.isDeleted = false;
 		const deliveries = await this.models.Delivery.findAll({
-			where
+			paranoid: !fetchDeleted
 		});
 		return deliveries;
 	}
@@ -55,8 +50,8 @@ module.exports = class DeliveryController {
 	//Delete specific Delivery
 	async deleteDelivery(id) {
 		const delivery = await this.models.Delivery.findByPk(id);
-		delivery.isDeleted = true;
-		await delivery.save();
+		if (!delivery) return;
+		await delivery.destroy();
 		return (true);
 	}
 

@@ -1,5 +1,4 @@
 const PublicError = require('../../errors/PublicError');
-const User = require('../../models/admin/User');
 module.exports = class UserController {
 	constructor(server) {
 		this.server = server;
@@ -12,6 +11,9 @@ module.exports = class UserController {
 	get utils() {
 		return this.server.utils;
 	}
+	get models() {
+		return this.server.models;
+	}
 
 	async createUser({ username, password, name, isAdmin = false }) {
 		if (!username) throw Error('username is required!');
@@ -22,22 +24,20 @@ module.exports = class UserController {
 		if (username && typeof username !== 'string') throw new PublicError('username must be a string!');
 		if (password && typeof password !== 'string') throw new PublicError('password must be a string!');
 
-		const exists = await this.db('users').where({ username }).first();
+		const exists = await this.getUser({ username });
 		if (exists) throw new PublicError('An user with that username already exists');
 
 		const hash = await this.utils.auth.encryptPassword(password);
 
-		const newUser = await this.db('users')
-			.insert({
-				username,
-				password: hash,
-				name,
-				isAdmin
-			})
-			.returning('*');
+		const user = await this.models.User.create({
+			username,
+			password: hash,
+			name,
+			isAdmin
+		})
 
-		// TODO: Ojo con esto que le saqué el await para que no crashee en caso de que no funcione
-		await this.utils.firebase.auth().createUser({ uid: newUser.id });
+		await this.utils.firebase.auth().createUser({ uid: user.id });
+		return user;
 	}
 
 	async getUserHashPassword(userId) {
@@ -67,7 +67,11 @@ module.exports = class UserController {
 
 		if (Object.keys(toUpdate).length < 1) throw Error('At least one param is required!');
 
-		await this.db('users').where({ id: userId }).update(toUpdate);
+		for (const key in toUpdate) {
+			user[key] = toUpdate[key];
+		}
+		await user.save()
+		return user;
 	}
 
 	async getUser({ userId, username, onlyPublic = false, ignoreInactive = false }) {
@@ -75,18 +79,16 @@ module.exports = class UserController {
 
 		const userSelect = [];
 
-		if (onlyPublic) userSelect.push('users.id', 'users.username', 'users.name', 'users.isAdmin');
-		else userSelect.push('users.*');
+		const where = {};
+		if (!ignoreInactive) where.isActive = true;
+		if (userId) where.id = userId;
+		if (username) where.username = username;
 
-		const user = await this.db('users')
-			.select(userSelect)
-			.where(builder => {
-				if (!ignoreInactive) builder.where({ isActive: true });
+		const scopes = ['defaultScope'];
+		if (!onlyPublic) scopes.push('sensitive');
 
-				if (userId) builder.where({ id: userId });
-				if (username) builder.where({ username });
-			})
-			.first();
+		const user = await this.models.User.scope(scopes).findOne({ where });
+		if (!user) return null;
 
 		let firebaseToken = '';
 		try {
@@ -94,8 +96,9 @@ module.exports = class UserController {
 		} catch (err) {
 			console.error('Failed to obtain custom firebase token', err);
 		}
-		if (!user) return null;
-		return new User(this.server, user, firebaseToken);
+
+		user.firebaseToken = firebaseToken;
+		return user;
 	}
 
 	async getUserLogin({ email, password }) {
@@ -122,14 +125,7 @@ module.exports = class UserController {
 	}
 
 	async getAllUsers({ withRoles = true } = {}) {
-		const users = await this.db('users').orderBy('users.id');
-
-		if (withRoles) {
-			for (const user of users) {
-				user.roles = await this.utils.roles.getUserRoles(user.id);
-			}
-		}
-
+		const users = await this.models.User.findAll();
 		return users;
 	}
 };

@@ -38,20 +38,12 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.STRING,
 				required: true
 			},
-			isDeleted: {
-				type: DataTypes.BOOLEAN,
-				defaultValue: false
-			},
 			floor: DataTypes.STRING,
 			postalCode: DataTypes.STRING,
 		},
 		{
 			sequelize,
-			defaultScope: {
-				where: {
-					isDeleted: false
-				}
-			},
+			paranoid: true,
 			tableName: 'addresses',
 			modelName: 'Address',
 			updatedAt: false

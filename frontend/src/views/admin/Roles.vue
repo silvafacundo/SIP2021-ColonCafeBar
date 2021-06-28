@@ -88,7 +88,7 @@ export default {
 			return this.$store.getters['User/permissions'];
 		},
 		selectedRolePermissions() {
-			if (!this.selectedRole) return [];
+			if (!this.selectedRole || !Array.isArray(this.selectedRole.permissions)) return [];
 			return this.selectedRole.permissions.map(perm => perm.id);
 		}
 	},

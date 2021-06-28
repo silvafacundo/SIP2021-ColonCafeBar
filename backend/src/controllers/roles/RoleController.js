@@ -12,15 +12,17 @@ module.exports = class UserController {
 		return this.server.utils;
 	}
 
+	get models() {
+		return this.server.models;
+	}
 	async createRole({ name, description, isActive = true }) {
 		if (!name) throw Error('name is required!');
 		if (!description) throw Error('description is required!');
 
-		await this.db('roles').insert({
+		await this.models.Role.create({
 			name,
-			description,
-			isActive
-		});
+			description
+		})
 	}
 
 	async updateRole({ roleId, name, description }) {
@@ -31,7 +33,15 @@ module.exports = class UserController {
 		if (typeof description === 'string') toUpdate.description = description;
 		if (Object.keys(toUpdate).length < 1) throw new PublicError('At least one param is required!');
 
-		await this.db('roles').where({ id: roleId }).update(toUpdate);
+		const role = await this.getRole(roleId);
+		if (!role) throw new PublicError('The role doesn\'t exists');
+
+		for (const key in toUpdate) {
+			role[key] = toUpdate[key];
+		}
+
+		await role.save();
+		return role;
 	}
 
 	async deleteRole({ roleId, forced = false }) {
@@ -42,50 +52,20 @@ module.exports = class UserController {
 			if (usersWithRole.length > 0) throw new new PublicError('The role cannot be deleted due one or more user has this role')
 		}
 
-		const deleteTransaction = await this.db.transaction();
+		const role = await this.getRole(roleId);
+		if (!role) return;
 
-		try {
-			await this.db('roles')
-				.where({ id: roleId })
-				.update({ isActive: false })
-				.transacting(deleteTransaction);
-			await this.db('usersRoles')
-				.where({ roleId })
-				.del()
-				.transacting(deleteTransaction);
-
-			await deleteTransaction.commit();
-		} catch (error) {
-			deleteTransaction.rollback();
-			throw error;
-		}
+		await role.destroy()
 	}
 
 	async getRole(roleId) {
 		if (!roleId) throw Error('roleId is required!');
-
-		const role = await this.db('roles').where({ id: roleId, isActive: true }).first();
-		if (!role) return null;
-		const permissions = await this.getRolePermissions(role.id);
-
-		return { ...role, permissions };
+		const role = await this.models.Role.findByPk(roleId);
+		return role
 	}
 
 	async getRoles() {
-		const roles = await this.db('roles').where({ isActive: true });
-		const rolePermissions = await this.db('permissionsRoles')
-			.select(['permissionsRoles.roleId', 'permissions.*'])
-			.innerJoin('permissions', 'permissionsRoles.permissionId', 'permissions.id');
-
-		roles.forEach(role => {
-			const permissions = rolePermissions.filter(rp => rp.roleId === role.id);
-			role.permissions = permissions.map(permission => ({
-				...permission,
-				roleId: undefined,
-				permissionId: undefined
-			}))
-		})
-
+		const roles = await this.models.Role.findAll();
 		return roles;
 	}
 
@@ -119,14 +99,8 @@ module.exports = class UserController {
 
 	async getRolePermissions(roleId) {
 		if (!roleId) throw Error('RoleId is required!');
-
-		const permissions = await this.db('permissionsRoles')
-			.select('permissions.*')
-			.innerJoin('permissions', 'permissionsRoles.permissionId', 'permissions.id')
-			.where('permissionsRoles.roleId', roleId)
-			.where('permissions.isActive', true)
-
-		return permissions;
+		const role = await this.getRole(roleId);
+		return role.permissions;
 	}
 
 	async addPermissionIntoRole(roleId, permissionId) {
@@ -147,14 +121,12 @@ module.exports = class UserController {
 		if (!permissionId && !permissionKey) throw Error('permissionId or permissionKey is required!');
 
 		try {
-			const permission = await this.db('permissions')
-				.where(builder => {
-					builder.where({ isActive: true });
-					if (permissionId) builder.where({ id: permissionId });
-					if (permissionKey) builder.where({ key: permissionKey });
-				})
-				.first();
-
+			const where = {};
+			if (typeof permissionId !== 'undefined' && permissionId !== null) where.id = permissionId;
+			if (permissionKey) where.key = permissionKey
+			const permission = await this.models.Permission.findOne({
+				where
+			});
 			return permission;
 		} catch (error) {
 			console.error(error);
@@ -163,7 +135,7 @@ module.exports = class UserController {
 	}
 
 	async getPermissions() {
-		const permissions = await this.db('permissions').where({ isActive: true });
+		const permissions = await this.models.Permission.findAll();
 		return permissions;
 	}
 
@@ -172,28 +144,24 @@ module.exports = class UserController {
 		if (!key) throw Error('key is required!');
 
 		// check for alredy existing permission
-		const exists = await this.db('permissions').where({ key }).first();
-		if (exists && exists.isActive) throw Error('Permission already exists');
+		const exists = await this.models.Permission.findOne({
+			where: { key },
+			paranoid: false
+		});
+		if (exists && !exists.deletedAt) throw Error('Permission already exists');
 
-		const newData = { name, key, isActive: true };
-
-		if (!exists) {
-			const newPermission = await this.db('permissions')
-				.insert(newData)
-				.returning('*');
-
-			return newPermission[0];
+		if (exists) {
+			await exists.restore();
+			exists.name = name;
+			await exists.save();
+			return exists;
 		}
 
-		const updatePermission = await this.db('permissions')
-			.where({ id: exists.id })
-			.update({
-				...newData,
-				isActive: true
-			})
-			.returning('*');
-
-		return updatePermission[0];
+		const permission = await this.models.Permission.create({
+			name,
+			key
+		});
+		return permission;
 	}
 
 	async updatePermission({ permissionId, name }) {
@@ -203,29 +171,24 @@ module.exports = class UserController {
 		if (typeof name === 'string') toUpdate.name = name;
 		if (Object.keys(toUpdate).length < 1) throw Error('at least one param is required!');
 
-		await this.db('permissions').where({ id: permissionId }).update(toUpdate);
+		const permission = await this.models.Permission.findByPk(permissionId);
+		if (!permission) throw new PublicError('Permission doesn\'t exists');
+
+		for (const key in toUpdate){
+			permission[key] = toUpdate[key];
+		}
+
+		await permission.save();
+
+		return permission;
 	}
 
 	async deletePermission(permissionId) {
 		if (typeof permissionId === 'undefined' || permissionId == null) throw new Error('permission doesn\'t exists');
 
-		const deleteTransaction = await this.db.transaction();
-
-		try {
-			await this.db('permissions')
-				.where('id', permissionId)
-				.update({ isActive: false })
-				.transacting(deleteTransaction);
-			await this.db('permissionsRoles')
-				.where({ permissionId })
-				.del()
-				.transacting(deleteTransaction);
-
-			await deleteTransaction.commit();
-		} catch (error) {
-			deleteTransaction.rollback();
-			throw error;
-		}
+		const permission = await this.models.Permission.findByPk(permissionId);
+		if (!permission) return;
+		await permission.destroy();
 	}
 
 	async assignRoleIntoUser(userId, roleId) {

@@ -1,4 +1,3 @@
-const Category = require('../../models/products/Category');
 const PublicError = require('../../errors/PublicError');
 module.exports = class CategoriesController {
 	constructor(server) {
@@ -40,10 +39,9 @@ module.exports = class CategoriesController {
 
 	//Delete specific category
 	async deleteCategory(id){
-		// TODO: Rework
-		await this.db('categories')
-			.where({ id })
-			.del();
+		const category = await this.getCategory(id);
+		if (!category) return true;
+		await category.destroy();
 		return (true);
 	}
 

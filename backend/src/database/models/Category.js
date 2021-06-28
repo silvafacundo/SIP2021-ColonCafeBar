@@ -9,14 +9,10 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.STRING,
 				required: true
 			},
-			isActive: {
-				type: DataTypes.BOOLEAN,
-				required: false,
-				defaultValue: true
-			}
 		},
 		{
 			sequelize,
+			paranoid: true,
 			tableName: 'categories',
 			modelName: 'Category',
 			updatedAt: false

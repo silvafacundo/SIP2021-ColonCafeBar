@@ -61,6 +61,7 @@ module.exports = (sequelize, DataTypes) => {
 					'pointsData'
 				]
 			},
+			paranoid: true,
 			tableName: 'products',
 			modelName: 'Product',
 			updatedAt: false

@@ -1,5 +1,3 @@
-const Product = require('../../models/products/Product');
-const Category = require('../../models/products/Category');
 const PublicError = require('../../errors/PublicError');
 const { Op } = require('sequelize');
 /** @typedef {import('../../Server')} Server */

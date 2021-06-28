@@ -35,6 +35,11 @@ module.exports = (sequelize, DataTypes) => {
 					association: 'addresses'
 				}]
 			},
+			scopes: {
+				sensitive: {
+					attributes: { include: 'password' }
+				}
+			},
 			tableName: 'clients',
 			modelName: 'Client',
 			updatedAt: false
