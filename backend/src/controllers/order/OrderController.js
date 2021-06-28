@@ -173,8 +173,12 @@ module.exports = class OrderController {
 
 		switch (paymentMethod) {
 			case 'online':
-				// TODO: Reembolsar MP
-				// UPDATE: Aparentemente no hay manera de hacer un reembolzo con Mp
+				if (order.isPaid) {
+					// TODO: Reembolsar MP
+					// UPDATE: Aparentemente no hay manera de hacer un reembolzo con Mp
+				} else {
+					await this.utils.mercadopago.endMpOrder(order.id);
+				}
 				break;
 			case 'points':
 				await this.utils.clients.addPoints(Number(order.client.id), order.pointsPriceTotal);
