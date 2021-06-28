@@ -30,3 +30,19 @@ if (process.env.NODE_ENV === 'production') {
 		}
 	})
 }
+
+//Probar en produccion en okteto
+window.onload = (e) => {
+	let deferredPrompt;
+	window.addEventListener('beforeinstallprompt', (e) => {
+		e.preventDefault();
+		deferredPrompt = e;
+	});
+
+	deferredPrompt.prompt();
+	deferredPrompt.userChoice
+		.then((choiceResult) => {
+			(choiceResult==='accepted')?console.log('User accepted the A2HS prompt'):console.log('User dismissed the A2HS prompt')
+			deferredPrompt = null;
+		});
+}
