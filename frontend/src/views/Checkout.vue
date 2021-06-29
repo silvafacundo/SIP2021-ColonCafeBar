@@ -21,7 +21,7 @@
 						:address="selectedAddress"
 						@click="openSelectAddress" />
 					<b-button v-else @click="openSelectAddress">Seleccionar Dirección</b-button>
-					<p :style="`color: ${deliveryPrice >= 0 ? 'red' : 'default'}`">{{ deliveryPrice >= 0 ? `Envio: $${deliveryPrice}` : 'La distancia entre la tienda y la dirección seleccionada excede la máxima' }}</p>
+					<p :style="`color: ${deliveryPrice < 0 ? 'red' : 'black'}`">{{ deliveryPrice >= 0 ? `Envio: $${deliveryPrice}` : 'La distancia entre la tienda y la dirección seleccionada excede la máxima' }}</p>
 				</div>
 				<p>Subtotal: ${{ subTotalPrice }}</p>
 				<h4 v-if="deliveryPrice >= 0">Total: ${{ totalPrice }}</h4>
