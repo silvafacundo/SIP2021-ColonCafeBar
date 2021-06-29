@@ -49,17 +49,12 @@ exports.seed = async knex => {
 		])
 
 	// store data
-	await knex('storeData')
+	await knex('storeConfig')
 		.insert({
 			minDeliveryPrice: 0,
 			maxDeliveryPrice: 0,
 			deliveryPricePerKm: 20,
 			maxDeliveryKm: 10,
-			street: 'Vicente López',
-			city: 'Buenos Aires',
-			neighborhood: 'Chivilcoy',
-			number: '170',
-			postalCode: '6620',
 			coordinates: '-34.8921894;-60.01899949999999'
 		})
 };

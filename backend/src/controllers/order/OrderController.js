@@ -246,7 +246,7 @@ module.exports = class OrderController {
 		const address = await this.utils.addresses.getAddress(addressId);
 		if (!address) throw new PublicError('the address doesn\'t exists');
 
-		const store = await this.utils.store.getStoreData();
+		const store = await this.utils.store.getStoreConfig();
 		const { coordinates: storeCoordinates, minDeliveryPrice, maxDeliveryPrice, deliveryPricePerKm, maxDeliveryKm } = store;
 
 		const { data } = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${address.coordinates.replace(';', ',')}&destinations=${storeCoordinates.replace(';', ',')}&key=${process.env.MAPS_APIKEY}`)

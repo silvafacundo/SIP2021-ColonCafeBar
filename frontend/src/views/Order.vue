@@ -6,7 +6,7 @@
 				<cart-product :product="product" />
 			</li>
 		</ul>
-		<p>Total: ${{ order.total }}</p>
+		<p>Total: ${{ order.total + order.deliveryPrice }}</p>
 		<p>Estado: {{ order.status }}</p>
 		<p>Método de pago: {{ order.paymentMethod }}</p>
 		<p>Estado del Pago: {{ order.isPaid ? 'Pago': 'Pendiente' }}</p>

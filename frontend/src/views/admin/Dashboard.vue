@@ -57,16 +57,16 @@
 						label="Productos" />
 					<b-menu-item icon="store-alt"
 						tag="router-link"
-						to="#"
+						to="/admin/store"
 						label="Tienda" />
 					<b-menu-item icon="clock"
 						tag="router-link"
 						to="/admin/schedules"
 						label="Horarios" />
 					<b-menu-item icon="sign-out-alt"
-					@click="logout"
-					label="Cerrar sesión"
-					class="logout"/>
+						label="Cerrar sesión"
+						class="logout"
+						@click="logout" />
 				</b-menu-list>
 			</b-menu>
 		</b-sidebar>

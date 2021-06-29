@@ -7,7 +7,7 @@
 					:key="index"
 					:product="product"
 					@delete="e => deleteProduct(index)" />
-				<h4>Subtotal: ${{ totalPrice }}</h4>
+				<h4>Subtotal: ${{ subTotalPrice }}</h4>
 				<h5>Precio en puntos: {{ totalPointsPrice }}</h5>
 			</b-step-item>
 			<b-step-item icon="bicycle">
@@ -21,9 +21,10 @@
 						:address="selectedAddress"
 						@click="openSelectAddress" />
 					<b-button v-else @click="openSelectAddress">Seleccionar Dirección</b-button>
-					<p>Envio: $0</p>
+					<p :style="`color: ${deliveryPrice >= 0 ? 'red' : 'default'}`">{{ deliveryPrice >= 0 ? `Envio: $${deliveryPrice}` : 'La distancia entre la tienda y la dirección seleccionada excede la máxima' }}</p>
 				</div>
-				<h4>Subtotal: ${{ totalPrice }}</h4>
+				<p>Subtotal: ${{ subTotalPrice }}</p>
+				<h4 v-if="deliveryPrice >= 0">Total: ${{ totalPrice }}</h4>
 			</b-step-item>
 			<b-step-item icon="clipboard-check">
 				<b-field label="Método de pago:" class="mb-2">
@@ -104,6 +105,7 @@ export default {
 		paymentMethod: 'cash',
 		newAddressData: null,
 		newAddressModal: false,
+		deliveryPrice: 0,
 		step: 0,
 	}),
 	computed: {
@@ -128,6 +130,7 @@ export default {
 		},
 		canContinue() {
 			if (this.step >= 1 && !this.takeAway && !this.selectedAddress) return false;
+			if (this.step >= 1 && this.deliveryPrice < 0) return false;
 			return true;
 		},
 		cart() {
@@ -153,8 +156,11 @@ export default {
 			if (!this.takeAway && !this.selectAddress) return false;
 			return true;
 		},
+		subTotalPrice() {
+			return this.parsedCart.reduce((prevValue, product) => prevValue + (product.price * product.amount), 0)
+		},
 		totalPrice() {
-			return this.parsedCart.reduce((prevValue, product) => prevValue + (product.price * product.amount), 0);
+			return this.subTotalPrice + this.deliveryPrice;
 		},
 		totalPointsPrice() {
 			return this.parsedCart.reduce((prevValue, product) => prevValue + (product.pointsPrice * product.amount), 0);
@@ -170,11 +176,21 @@ export default {
 			return this.user.addresses
 		}
 	},
+	watch: {
+		selectedAddress() {
+			this.updateDeliveryPrice();
+		},
+		takeAway() {
+			this.updateDeliveryPrice();
+		}
+	},
 	mounted() {
 		if (this.products.length <= 0)
 			this.$store.dispatch('Products/fetchProducts');
 		if (this.userAddresses.length > 0)
 			this.selectedAddress = this.userAddresses[0];
+		if (this.selectedAddress)
+			this.updateDeliveryPrice();
 	},
 	methods: {
 		updateCart(productId, newAmount) {
@@ -244,6 +260,16 @@ export default {
 				this.$showToast('Ocurrió un error al guardar la dirección' + errMessage, true);
 			}
 		},
+		async updateDeliveryPrice() {
+			try {
+				if (this.takeAway)
+					this.deliveryPrice = 0;
+				else
+					this.deliveryPrice = await this.$store.dispatch('Delivery/fetchDeliveryPrice', { addressId: this.selectedAddress.id });
+			} catch (err) {
+				this.$showToast('Ocurrió un error al obtener el precio del delivery', true);
+			}
+		}
 	}
 }
 </script>

@@ -20,8 +20,8 @@ const OrderController = require('./controllers/order/OrderController');
 const MercadoPagoController = require('./controllers/MercadoPago/MercadoPagoController');
 const MailController = require('./controllers/mail/MailController');
 const Sequelize = require('sequelize');
-const StoreDataController = require('./controllers/store/StoreDataController');
 const ScheduleController = require('./controllers/schedules/ScheduleController');
+const StoreConfigController = require('./controllers/store/StoreConfigController');
 const { count } = require('console');
 
 module.exports = class Server {
@@ -46,7 +46,7 @@ module.exports = class Server {
 		await this.initializeSequelize();
 		await this.initializeControllers();
 		await this.initializeWebServer();
-		// this.seed(); //Si quieren correr el seed descomenten aca
+		// await this.seed(); //Si quieren correr el seed descomenten aca
 	}
 
 	/**
@@ -161,7 +161,7 @@ module.exports = class Server {
 		* @property {OrderController} Utils.orders
 		* @property {MercadoPagoController} Utils.mercadopago
 		* @property {MailController} Utils.mailController
-		* @property {StoreDataController} Utils.store
+		* @property {StoreConfigController} Utils.store
 		* @property {firebase} Utils.firebase
 		*/
 
@@ -179,8 +179,8 @@ module.exports = class Server {
 			logger: logger,
 			mercadopago: new MercadoPagoController(this),
 			mailController: new MailController(this),
-			store: new StoreDataController(this),
 			schedules: new ScheduleController(this),
+			store: new StoreConfigController(this),
 			firebase
 		}
 		try {
