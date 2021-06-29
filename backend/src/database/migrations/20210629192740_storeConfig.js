@@ -12,6 +12,15 @@ exports.up = async function(knex) {
 		table.string('coordinates').notNullable();
 		table.timestamp('createdAt').defaultTo(knex.fn.now());
 	});
+
+	await knex('storeConfig')
+		.insert({
+			minDeliveryPrice: 0,
+			maxDeliveryPrice: 0,
+			deliveryPricePerKm: 20,
+			maxDeliveryKm: 10,
+			coordinates: '-34.8921894;-60.01899949999999'
+		});
 };
 
 exports.down = async function(knex) {
