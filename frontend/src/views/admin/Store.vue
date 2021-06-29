@@ -14,6 +14,9 @@
 			<b-field label="Distancia máxima de delivery (Kilómetros)">
 				<b-input v-model="store.maxDeliveryKm" type="number" />
 			</b-field>
+			<b-field label="Tiempo de expiracion de las ordenes (Minutos)">
+				<b-input v-model="store.orderTimeoutMinutes" type="number" />
+			</b-field>
 			<b-field label="Dirección">
 				<div v-if="storeCoordinates" class="address-container">
 					<GmapAutocomplete class="input" @place_changed="addressInput" />
@@ -74,6 +77,7 @@ export default {
 		},
 		async updateStoreConfig() {
 			this.isLoading = true;
+			console.log(this.store);
 			try {
 				await this.$store.dispatch('Store/updateConfig', {
 					...this.store,

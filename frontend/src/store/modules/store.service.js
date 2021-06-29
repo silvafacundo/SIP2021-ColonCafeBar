@@ -25,9 +25,9 @@ const actions = {
 			throw err;
 		}
 	},
-	async updateConfig({ dispatch }, { minDeliveryPrice, maxDeliveryPrice, deliverPricePerKm, maxDeliveryKm, coordinates }) {
+	async updateConfig({ dispatch }, { minDeliveryPrice, maxDeliveryPrice, deliverPricePerKm, maxDeliveryKm, coordinates, orderTimeoutMinutes }) {
 		try {
-			await Vue.axios.put('/admin/store', { minDeliveryPrice, maxDeliveryPrice, deliverPricePerKm, maxDeliveryKm, coordinates });
+			await Vue.axios.put('/admin/store', { minDeliveryPrice, maxDeliveryPrice, deliverPricePerKm, maxDeliveryKm, coordinates, orderTimeoutMinutes });
 			await dispatch('fetchConfig');
 		} catch (err) {
 			console.error('Failed to update store config', err);

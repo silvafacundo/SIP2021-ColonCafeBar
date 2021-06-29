@@ -2,6 +2,7 @@ const express = require('express');
 const logger = require('./utils/logger');
 const jetpack = require('fs-jetpack');
 const path = require('path');
+const cron = require('node-cron');
 
 const cors = require('cors');
 
@@ -31,6 +32,7 @@ module.exports = class Server {
 		this.utils = {};
 		this.models = {};
 		this.sequelize = null;
+		this.cronjobs = [];
 	}
 
 	get port() {
@@ -45,6 +47,7 @@ module.exports = class Server {
 		await this.initializeDatabase();
 		await this.initializeSequelize();
 		await this.initializeControllers();
+		await this.initializeCronjobs();
 		await this.initializeWebServer();
 		// await this.seed(); //Si quieren correr el seed descomenten aca
 	}
@@ -85,6 +88,24 @@ module.exports = class Server {
 
 	handleUnknownEndpoint(req, res) {
 		return res.status(400).json({ message: 'Route not found' });
+	}
+
+	async initializeCronjobs() {
+		try {
+			const folder = `${__dirname}/cronjobs`;
+			jetpack.find(folder, { matching: '*.js' }).forEach(cronjobFilePath => {
+				const cronjobFile = require(path.join('..', cronjobFilePath));
+
+				const cronjob = cron.schedule(cronjobFile.schedulePattern, () => {
+					cronjobFile.run(this);
+				});
+
+				this.cronjobs.push(cronjob)
+			});
+		} catch (error) {
+			console.error('fallo aca');
+			console.error(error);
+		}
 	}
 
 	/**

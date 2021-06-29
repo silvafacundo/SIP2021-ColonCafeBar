@@ -6,10 +6,10 @@ module.exports = class StoreConfigPUT extends Route {
 	}
 
 	async run(req, res, user) {
-		const { minDeliveryPrice, maxDeliveryPrice, deliverPricePerKm, maxDeliveryKm, coordinates } = req.body;
+		const { minDeliveryPrice, maxDeliveryPrice, deliverPricePerKm, maxDeliveryKm, coordinates, orderTimeoutMinutes } = req.body;
 
 		try {
-			await this.utils.store.updateStoreConfig({ minDeliveryPrice, maxDeliveryPrice, deliverPricePerKm, maxDeliveryKm, coordinates });
+			await this.utils.store.updateStoreConfig({ minDeliveryPrice, maxDeliveryPrice, deliverPricePerKm, maxDeliveryKm, coordinates, orderTimeoutMinutes });
 
 			return res.json({ message: 'Store data successfully updated' })
 		} catch (err) {
