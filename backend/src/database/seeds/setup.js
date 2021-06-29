@@ -22,6 +22,16 @@ exports.seed = async knex => {
 		isActive: true
 	});
 
+	// store config
+	await knex('storeConfig')
+		.insert({
+			minDeliveryPrice: 0,
+			maxDeliveryPrice: 0,
+			deliveryPricePerKm: 20,
+			maxDeliveryKm: 10,
+			coordinates: '-34.8921894;-60.01899949999999'
+		})
+
 	// permissions
 	const permissions = await knex('permissions')
 		.insert([
@@ -47,14 +57,4 @@ exports.seed = async knex => {
 			{ roleId: role[0].id, permissionId: permissions[2].id },
 			{ roleId: role[0].id, permissionId: permissions[3].id },
 		])
-
-	// store data
-	await knex('storeConfig')
-		.insert({
-			minDeliveryPrice: 0,
-			maxDeliveryPrice: 0,
-			deliveryPricePerKm: 20,
-			maxDeliveryKm: 10,
-			coordinates: '-34.8921894;-60.01899949999999'
-		})
 };
