@@ -91,6 +91,14 @@ export default {
 		},
 		points() {
 			return this.user && this.user.availablePoints ? this.user.availablePoints : 0;
+		},
+		route() {
+			return this.$route.path
+		}
+	},
+	watch: {
+		route() {
+			this.isMenuOpen = false;
 		}
 	},
 	methods: {

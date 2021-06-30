@@ -15,6 +15,21 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.STRING,
 				require: true
 			},
+			priorityService: {
+				type: DataTypes.VIRTUAL,
+				get() {
+					switch (this.key) {
+						case 'pending':
+							return 10;
+						case 'awaitingPreparation':
+							return 9;
+						case 'inPreparation':
+							return 8
+						default:
+							return 7
+					}
+				}
+			}
 		},
 		{
 			sequelize,

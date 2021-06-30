@@ -1,5 +1,5 @@
 const PublicError = require('../../errors/PublicError');
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const axios = require('axios');
 module.exports = class OrderController {
 	/**
@@ -205,20 +205,23 @@ module.exports = class OrderController {
 		if (isNaN(page)) throw new PublicError('page should be a number');
 		if (isNaN(perPage)) throw new PublicError('perPage should be a number');
 
+		const Sequelize = this.sequelize.Sequelize;
 		const order = [];
 		order.push(['createdAt', orderBy.createdAt === 'asc' ? 'ASC' : 'DESC']);
+
 		const whereQuery = {}
-		const { fromDate, toDate, clientsId, deliveriesId } = filters || {};
+		const { fromDate, toDate, clientsId, statusesId, deliveriesId } = filters || {};
 		if (fromDate) whereQuery.createdAt = { [Op.gte]: fromDate };
-		if (toDate) whereQuery.createAt = { ...whereQuery.createdAt, [Op.lte]: toDate };
-		if (Array.isArray(clientsId)) whereQuery.clientId = { [Op.in]: clientsId };
-		if (Array.isArray(deliveriesId)) whereQuery.deliveryId = { [Op.in]: deliveriesId };
+		if (toDate) whereQuery.createdAt = { ...whereQuery.createdAt, [Op.lte]: toDate };
+		if (Array.isArray(clientsId) && clientsId.length > 0) whereQuery.clientId = { [Op.in]: clientsId };
+		if (Array.isArray(deliveriesId) && deliveriesId.length > 0) whereQuery.deliveryId = { [Op.in]: deliveriesId };
+		if (Array.isArray(statusesId) && statusesId.length > 0) whereQuery.statusId = { [Op.in]: statusesId }
 
 		const { count: total, rows: orders }= await this.models.Order.findAndCountAll({
 			where: whereQuery,
 			offset: (page - 1) * perPage,
 			limit: perPage,
-			order
+			order,
 		});
 
 		return { orders, pagination: { page, perPage, total } }

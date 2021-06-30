@@ -15,8 +15,9 @@ module.exports = class ClientOrdersGET extends Route {
 			filters.clientsId = [user.id];
 
 			const { orders, pagination } = await this.utils.orders.getOrders({ perPage, page, filters, orderBy });
+			const status = await this.utils.orders.getAllOrderStatus();
 
-			return res.json({ message: 'Orders succesffully retrieved', orders, pagination });
+			return res.json({ message: 'Orders succesffully retrieved', orders, pagination, status });
 		} catch (error) {
 			return super.error(res, error)
 		}

@@ -1,108 +1,83 @@
 <template>
 	<div class="container">
 		<h3>Ordenes</h3>
-		<div v-for="(order, key) in orders"
-			:key="key"
-			class="orders-container">
-			<b-collapse class="card"
-				animation="slide"
-				aria-id="contentIdForA11y3"
-				:open="false">
-				<template #trigger="props">
-					<div
-						class="card-header"
-						role="button"
-						aria-controls="contentIdForA11y3">
-						<p class="card-header-title">
-							{{ `Orden N°${order.id} - ${order.status}` }}
-						</p>
-						<a class="card-header-icon">
-							<b-icon
-								:icon="props.open ? 'caret-down' : 'caret-up'" />
-						</a>
-					</div>
-				</template>
-
-				<div class="card-content">
-					<div class="content">
-						<b-table :data="order.products"
-							striped>
-							<b-table-column v-slot="props" label="Producto">
-								{{ props.row.product.name }}
-							</b-table-column>
-							<b-table-column v-slot="props" label="Cantidad">
-								{{ props.row.amount }}
-							</b-table-column>
-							<b-table-column v-slot="props" label="Precio unitario">
-								${{ props.row.price }}
-							</b-table-column>
-							<b-table-column v-slot="props" label="Total">
-								<p style="text-align: right;">${{ props.row.price * props.row.amount }}</p>
-							</b-table-column>
-						</b-table>
-					</div>
-					<div style="text-align: right;">
-						<p>Precio delivery: $0</p>
-						<p>Total: ${{ order.total }}</p>
-					</div>
-					<br>
-					<p>Cliente: {{ order.client.firstName }}</p>
-					<br>
-					<p>Pagado: {{ order.isPaid ? 'Si' : 'No' }}</p>
-					<br>
-					<p>Delivery: {{ order.withDelivery ? 'Si' : 'No' }}</p>
-					<br>
-					<p>Método de pago: {{ order.paymentMethod }}</p>
-					<br>
-					<b-field v-if="order.withDelivery && order.delivery">
-						<b-select v-model="order.delivery.id"
-							placeholder="Delivery"
-							icon="motorcycle"
-							icon-pack="fas"
-							@input="value => { updateDelivery(order, value) }">
-							<option
-								v-for="delivery in deliveries"
-								:key="delivery.id"
-								:value="delivery.id">
-								{{ delivery.name }}
-							</option>
-						</b-select>
-					</b-field>
-					<b-field>
-						<b-select :value="order.statusId"
-							placeholder="Estado de la orden"
-							@input="value => { updateStatus(order, value) }">
-							<option
-								v-for="status in ordersPossibleStatus"
-								:key="status.id"
-								:value="status.id">
-								{{ status.statusName }}
-							</option>
-						</b-select>
-					</b-field>
-				</div>
-			</b-collapse>
-		</div>
+		<b-tabs v-model="selectedTab"
+			expanded
+			type="is-toggle">
+			<b-tab-item label="Tiempo Real">
+				<!-- <OrderFilters v-model="filters" /> -->
+				<h3 v-if="!parsedLiveOrders|| parsedLiveOrders.length <= 0">No se han enconrtado ordenes</h3>
+				<Order v-for="(order, index) of parsedLiveOrders"
+					:key="index"
+					:order="order"
+					@updateStatus="statusId => updateStatus(order, statusId)"
+					@updateDelivery="deliveryId => updateDelivery(order, deliveryId)" />
+			</b-tab-item>
+			<b-tab-item label="Histórico">
+				<OrderFilters v-model="filters"
+					@input="fetchOrders" />
+				<loading-bar :loading="isLoading" />
+				<h3 v-if="!orders || orders.length <= 0">No se han enconrtado ordenes</h3>
+				<Order v-for="(order, index) of orders"
+					:key="index"
+					:order="order"
+					@updateStatus="statusId => updateStatus(order, statusId)"
+					@updateDelivery="deliveryId => updateDelivery(order, deliveryId)" />
+			</b-tab-item>
+		</b-tabs>
 	</div>
 </template>
 
 <script>
+import LoadingBar from '../../components/LoadingBar';
+import Order from '../../components/Order';
+import OrderFilters from '../../components/OrderFilters';
 export default {
 	name: 'Orders',
+	components: {
+		Order,
+		OrderFilters,
+		LoadingBar
+	},
 	data: () => ({
 		isLoading: true,
 		fromDate: null,
 		toDate: null,
+		liveOrders: [],
+		liveInterval: null,
+		selectedTab: 0,
+		orders: [],
+		filters: {
+
+		},
+		pagination: {
+			page: 1,
+			perPage: 20
+		}
 	}),
 	computed: {
-		orders() {
-			return this.$store.getters['Orders/orders'];
-		},
 		ordersPossibleStatus() {
 			return this.$store.getters['Orders/possibleStatus'];
 		},
 		deliveries() {
 			return this.$store.getters['Delivery/deliveries'];
+		},
+		nonFinalStatusIds() {
+			const finalStatus = ['cancelled', 'delivered', 'dispatched']
+			const statuses = this.ordersPossibleStatus.filter(status => !finalStatus.includes(status.key))
+
+			return statuses.map(status => status.id);
+		},
+		parsedLiveOrders() {
+			const ordered = [...this.liveOrders];
+
+
+			return ordered.sort((a, b) => {
+				const { priorityService: aVal } = a.orderStatus;
+				const { priorityService: bVal } = b.orderStatus;
+				if (aVal == bVal) return a.id > b.id ? -1 : 1;
+				return aVal > bVal ? -1 : 1;
+			});
 		}
 		/*getFromDate() {
 			return this.fromDate;
@@ -114,16 +89,53 @@ export default {
 	mounted() {
 		this.fetchOrders();
 		this.fetchDeliveries();
+		this.liveInterval = setInterval(this.fetchLiveOrders.bind(this), 500);
+		window.addEventListener('scroll', this.handleScroll.bind(this))
+	},
+	beforeDestroy() {
+		window.removeEventListener('scroll', this.handleScroll.bind(this));
+		clearInterval(this.liveInterval);
 	},
 	methods: {
-		async fetchOrders() {
+		async fetchLiveOrders() {
+			if (this.selectedTab !== 0) return;
+			this.isLoadingLive = true;
+			try {
+				const { orders } = await this.$store.dispatch('Orders/fetchOrders', {
+					page: 1,
+					perPage: 1000,
+					filters: {
+						statusesId: this.nonFinalStatusIds
+					},
+					orderBy: {
+						servicePriority: 'asc'
+					}
+				});
+
+				this.liveOrders = orders;
+			} catch (err) {
+				this.$showToast('Error al cargar las ordenes en vivo', true);
+			}
+			this.isLoadingLive = false;
+		},
+		async fetchOrders(fromFilters) {
+			if (fromFilters) {
+				this.pagination = {
+					...this.pagination,
+					page: 1
+				}
+				this.orders = [];
+			}
 			try {
 				this.isLoading = true;
-				await this.$store.dispatch('Orders/fetchOrders', {
+				const { orders, pagination } = await this.$store.dispatch('Orders/fetchOrders', {
 					page: 1,
+					filters: this.filters,
+					...this.pagination,
 					perPage: 50,
-					filters: null,
 				});
+				this.orders = [...this.orders, ...orders];
+				this.pagination = { ...pagination };
 				this.isLoading = false;
 			} catch (err) {
 				this.$showToast('Error al recuperar las órdenes', true);
@@ -157,7 +169,17 @@ export default {
 				});
 				this.$showToast('Estado de la orden modificado');
 			} catch (err) {
-				this.$showToast('Error al modificar el delivery', true);
+				this.$showToast('Error al modificar el estado de la orden', true);
+			}
+		},
+		handleScroll() {
+			if (this.selectedTab !== 1) return;
+			const element = this.$el;
+			const isLastPage = this.page >= Math.ceil(this.pagination.total / this.pagination.perPage);
+			if (this.pagination.lastPage < this.pagination.perPage || isLastPage) return;
+			if ( element.getBoundingClientRect().bottom <= window.innerHeight && !this.isLoading) {
+				this.pagination = { ...this.pagination, page: this.pagination.page + 1 };
+				this.fetchOrders()
 			}
 		}
 	}
@@ -165,6 +187,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
+::v-deep .b-tabs > nav {
+	> ul > li:not(.is-active) > a {
+		background-color:white;
+	}
+}
 div.orders-container {
 	background-color: white;
 	display: flex;

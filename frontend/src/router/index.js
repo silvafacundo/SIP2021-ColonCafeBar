@@ -64,7 +64,7 @@ const routes = [
 		{ path: 'users', name: 'adminUsers', component: Users },
 		{ path: 'roles', name: 'adminRoles', component: Roles },
 		{ path: 'permissions', name: 'adminPermissions', component: Permissions },
-		{ path: 'ordenes', name: 'adminOrders', component: Orders },
+		{ path: 'orders', name: 'adminOrders', component: Orders },
 		{ path: 'deliveries', name: 'adminDeliveries', component: Deliveries },
 		{ path: 'categories', name: 'adminCategories', component: Categories },
 		{ path: 'products', name: 'adminProducts', component: AdminProducts },
