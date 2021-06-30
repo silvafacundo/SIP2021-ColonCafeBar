@@ -7,7 +7,7 @@
 				<div class="card-header"
 					role="button">
 					<p class="card-header-title">
-						Orden N° {{ order.id }} - {{ order.status }}
+						Orden N° {{ order.id }} - {{ order.status }} <span class="header-time">{{ orderFromNow }}</span>
 					</p>
 					<p class="icons">
 						<b-tooltip v-if="order.isPaid"
@@ -55,7 +55,7 @@
 					</b-table>
 				</div>
 				<div style="text-align: right;">
-					<p>Precio delivery: $0</p>
+					<p v-if="order.withDelivery">Precio delivery: ${{ order.deliveryPrice || 0 }} </p>
 					<p>Total: ${{ order.total }}</p>
 				</div>
 				<div class="order-info">
@@ -88,6 +88,10 @@
 					</div>
 					<div class="order-data">
 						<p class="title">Orden:</p>
+						<p>
+							<b-icon icon="clock" />
+							{{ orderDate }}
+						</p>
 						<p v-if="order.isPaid">
 							<b-icon type="is-success" icon="check-circle" />
 							La orden ya está paga
@@ -135,6 +139,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 export default {
 	name: 'Order',
 	props: {
@@ -151,7 +156,7 @@ export default {
 			required: false,
 			type: Array,
 			default: () => ([])
-		}
+		},
 	},
 	computed: {
 		localDeliveries() {
@@ -159,6 +164,12 @@ export default {
 		},
 		localStatuses() {
 			return this.statuses.length <= 0 ? this.$store.getters['Orders/possibleStatus']: this.statuses;
+		},
+		orderFromNow() {
+			return moment(this.order.createdAt).locale('es').fromNow();
+		},
+		orderDate() {
+			return moment(this.order.createdAt).format('DD/MM/YYYY HH:mm[hs]');
 		},
 		paymentMethodIcon() {
 			switch (this.order.paymentMethod) {
@@ -205,6 +216,12 @@ export default {
 		display: flex;
 		flex-direction: column;
 		padding: .2rem 0;
+		.header-time {
+			font-size: .7rem;
+			font-weight: normal;
+			margin-left: .5rem;
+			color: gray;
+		}
 		.icons {
 			display: flex;
 			&> * {
