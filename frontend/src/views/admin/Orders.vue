@@ -6,7 +6,7 @@
 			type="is-toggle">
 			<b-tab-item value="real-time" label="Tiempo Real">
 				<!-- <OrderFilters v-model="filters" /> -->
-				<h3 v-if="!isLoadingLive && (!parsedLiveOrders|| parsedLiveOrders.length <= 0)">No se han enconrtado ordenes</h3>
+				<h3 v-if="(!parsedLiveOrders|| parsedLiveOrders.length <= 0)">No se han encontado ordenes</h3>
 				<Order v-for="(order, index) of parsedLiveOrders"
 					:key="index"
 					:order="order"
@@ -46,7 +46,7 @@ export default {
 		toDate: null,
 		liveOrders: [],
 		liveInterval: null,
-		selectedTab: 'realTime',
+		selectedTab: 'real-time',
 		orders: [],
 		filters: {
 
