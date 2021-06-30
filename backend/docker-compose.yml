@@ -4,7 +4,7 @@ services:
         container_name: db_postgres
         restart: 'always'
         environment:
-            POSTGRES_PASSWORD:
+            POSTGRES_PASSWORD: 'admin'
             POSTGRES_DB: 'coloncafebar'
         volumes:
           - database-data:/var/lib/postgresql/data/
@@ -17,8 +17,9 @@ services:
             DATABASE_HOST: postgres
             DATABASE_PORT: 5432
             DATABASE_DB: coloncafebar
-            DATABASE_USER:
-            DATABASE_PASSWORD:
+            DATABASE_USER: postgres
+            DATABASE_PASSWORD: admin
+            MAPS_APIKEY:
             MP_TOKEN:
             NODE_ENV: production
             FIREBASE_PID:
@@ -28,6 +29,11 @@ services:
             FIREBASE_CID:
             FIREBASE_AUTHCERT:
             FIREBASE_CLIENTCERT:
-            MAPS_APIKEY:
+            EMAIL_HOST:
+            EMAIL_PORT:
+            EMAIL_USER:
+            EMAIL_PASS:
+            FRONT_URL: https://backend-silvafacundo.cloud.okteto.net
+            BACK_URL: https://backend-silvafacundo.cloud.okteto.net/api
 volumes:
   database-data:
