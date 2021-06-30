@@ -29,6 +29,7 @@ import Orders from '../views/admin/Orders';
 import Deliveries from '../views/admin/Deliveries';
 import Categories from '../views/admin/Categories';
 import AdminProducts from '../views/admin/Products';
+import Schedule from '../views/admin/Schedule';
 import AdminStore from '../views/admin/Store';
 import AdminClients from '../views/admin/Clients';
 //
