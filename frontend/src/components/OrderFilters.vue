@@ -71,6 +71,26 @@
 				</b-dropdown-item>
 			</b-dropdown>
 		</b-field>
+		<b-field v-if="!ignoreFields.includes('clients')"
+			label="Cliente"
+			custom-class="is-small">
+			<b-autocomplete v-model="clientText"
+				size="is-small"
+				field="email"
+				placeholder="Busque un cliente..."
+				open-on-focus
+				clearable
+				:loading="autocompleteLoading"
+				:data="clientsAutocomplete"
+				@select="val => updateFilter('clientsId', val && [val.id])"
+				@focus="fetchClients"
+				@typing="clientTyping">
+				<template v-slot="props">
+					<p class="autocomplete-name"> {{ props.option.firstName }} {{ props.option.lastName }} </p>
+					<p class="autocomplete-email"> {{ props.option.email }} </p>
+				</template>
+			</b-autocomplete>
+		</b-field>
 	</div>
 </template>
 
@@ -86,20 +106,40 @@ export default {
 			type: Array,
 			required: false,
 			default: () => ([])
+		},
+		queryClient: {
+			type: Object,
+			required: false,
+			default: null
+		},
+		status: {
+			type: Array,
+			required: false,
+			default: null
 		}
 	},
 	data: () => ({
-
+		clientsAutocomplete: [],
+		clientText: '',
+		clientTimeout: null,
+		autocompleteLoading: false
 	}),
 	computed: {
 		filters() {
 			return this.value;
 		},
 		localStatus() {
+			if (this.status) return this.status;
 			return this.$store.getters['Orders/possibleStatus'];
 		},
 		localDeliveries() {
 			return this.$store.getters['Delivery/deliveries'];
+		},
+	},
+	mounted() {
+		if (this.queryClient) {
+			this.$emit('input', { ...this.filters, clientsId: [this.queryClient.id] })
+			this.clientText = this.queryClient.email;
 		}
 	},
 	methods: {
@@ -107,6 +147,23 @@ export default {
 			const newFilter = { ...this.filters };
 			newFilter[key] = value;
 			this.$emit('input', newFilter);
+		},
+		async fetchClients() {
+			this.autocompleteLoading = true;
+			try {
+				const { clients } = await this.$store.dispatch('Client/fetchClients', { filters: { query: this.clientText } })
+				this.clientsAutocomplete = clients;
+			} catch (err) {
+				this.$showToast('Error al cargar los clientes', false);
+			}
+			this.autocompleteLoading = false;
+		},
+		clientTyping() {
+			this.autocompleteLoading = true;
+			clearTimeout(this.clientTimeout);
+			this.clientTimeout = setTimeout(()=> {
+				this.fetchClients();
+			}, 1000)
 		}
 	}
 }
@@ -117,5 +174,11 @@ export default {
 		padding: 1rem;
 		display: flex;
 		gap: .5rem;
+	}
+	.autocomplete-name {
+		font-weight: bold;
+	}
+	.autocomplete-email {
+		font-size: .7rem;
 	}
 </style>

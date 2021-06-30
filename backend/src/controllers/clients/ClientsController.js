@@ -55,6 +55,9 @@ module.exports = class ClientController {
 		const where = {};
 		if (typeof userId !== 'undefined' && userId !== null) where.id = userId;
 		if (typeof email !== 'undefined' && email !== null) where.email = email;
+
+		if (Object.keys(where).length <= 0) throw new Error('At least one parameter is required');
+
 		const user = await this.models.Client.findOne({
 			where,
 			attributes: clientsSelect
@@ -92,7 +95,7 @@ module.exports = class ClientController {
 	}
 
 	async invalidateTokens(clientId) {
-		const client = await this.getClient(clientId);
+		const client = await this.getClient({ userId: clientId });
 		if (!client) throw new PublicError('Client doesn\'t exists');
 
 		client.sessionValidDate = new Date();

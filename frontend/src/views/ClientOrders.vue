@@ -3,7 +3,7 @@
 	<div class="client-orders">
 		<h3>Mis Ordenes</h3>
 		<OrderFilters v-model="filters"
-			:ignore-fields="['delivery']"
+			:ignore-fields="['delivery', 'clientsId']"
 			@input="fetchClientOrders" />
 		<loading-bar :loading="isLoading" />
 		<ul>

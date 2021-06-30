@@ -55,6 +55,40 @@ const actions = {
 			console.error('Failed to update client', err);
 			throw err;
 		}
+	},
+	async fetchClients({ dispatch }, { page, perPage, filters }) {
+		try {
+			const response = await Vue.axios.post('/admin/clients', { page, perPage, filters });
+			return response.data
+		} catch (err) {
+			console.error('Failed to fetch clients')
+			throw err;
+		}
+	},
+	async updatePoints(ctx, { clientId, points }) {
+		try {
+			const response = await Vue.axios.put(`/admin/client/${clientId}/points`, { points });
+			return response.data;
+		} catch (err) {
+			console.error('failed to update client points');
+			throw err;
+		}
+	},
+	async adminUpdateClient(ctx, { clientId, ...values }) {
+		try {
+			const response = await Vue.axios.put(`/admin/client/${clientId}`);
+		} catch (err) {
+			console.error('failed to update client');
+			throw err;
+		}
+	},
+	async revokeTokenAccess(ctx, { clientId }) {
+		try {
+			const response = await Vue.axios.delete(`/admin/client/${clientId}/token`);
+		} catch (err) {
+			console.error('Failed to revoke client tokens');
+			throw err;
+		}
 	}
 };
 

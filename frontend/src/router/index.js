@@ -30,6 +30,7 @@ import Deliveries from '../views/admin/Deliveries';
 import Categories from '../views/admin/Categories';
 import AdminProducts from '../views/admin/Products';
 import AdminStore from '../views/admin/Store';
+import AdminClients from '../views/admin/Clients';
 //
 
 Vue.use(VueRouter)
@@ -64,11 +65,12 @@ const routes = [
 		{ path: 'users', name: 'adminUsers', component: Users },
 		{ path: 'roles', name: 'adminRoles', component: Roles },
 		{ path: 'permissions', name: 'adminPermissions', component: Permissions },
-		{ path: 'orders', name: 'adminOrders', component: Orders },
+		{ path: 'orders', name: 'adminOrders', props: true, component: Orders },
 		{ path: 'deliveries', name: 'adminDeliveries', component: Deliveries },
 		{ path: 'categories', name: 'adminCategories', component: Categories },
 		{ path: 'products', name: 'adminProducts', component: AdminProducts },
-		{ path: 'store', name: 'adminStore', component: AdminStore }
+		{ path: 'store', name: 'adminStore', component: AdminStore },
+		{ path: 'clients', name: 'adminClients', component: AdminClients }
 	] }
 ]
 

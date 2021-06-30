@@ -23,43 +23,68 @@
 			fullheight
 			overlay>
 			<b-menu>
-				<b-menu-list label="menú">
-					<b-menu-item icon="user"
+				<b-menu-list label="BAR">
+					<b-menu-item icon="home"
 						tag="router-link"
-						to="/admin/users"
-						label="Usuarios" />
-					<b-menu-item icon="user-tag"
-						tag="router-link"
-						to="/admin/roles"
-						label="Roles" />
-					<b-menu-item icon="exclamation-triangle"
-						tag="router-link"
-						to="/admin/permissions"
-						label="Permisos" />
-					<b-menu-item icon="clipboard-list"
-						tag="router-link"
-						to="/admin/orders"
-						label="Ordenes" />
-					<b-menu-item icon="motorcycle"
-						tag="router-link"
-						to="/admin/deliveries"
-						label="Delivery" />
-					<b-menu-item icon="tags"
-						tag="router-link"
-						to="/admin/categories"
-						label="Categorias" />
-					<b-menu-item icon="hamburger"
-						tag="router-link"
-						to="/admin/products"
-						label="Productos" />
+						to="/admin"
+						label="Home" />
+
 					<b-menu-item icon="store-alt"
 						tag="router-link"
 						to="/admin/store"
-						label="Tienda" />
+						label="Configuración" />
+
 					<b-menu-item icon="clock"
 						tag="router-link"
 						to="/admin/schedules"
 						label="Horarios" />
+
+					<b-menu-item icon="clipboard-list"
+						tag="router-link"
+						to="/admin/orders"
+						label="Ordenes" />
+
+					<b-menu-item icon="user"
+						tag="router-link"
+						to="/admin/clients"
+						label="Clientes"
+					/>
+				</b-menu-list>
+
+				<b-menu-list label="Productos">
+					<b-menu-item icon="hamburger"
+						tag="router-link"
+						to="/admin/products"
+						label="Productos" />
+
+					<b-menu-item icon="tags"
+						tag="router-link"
+						to="/admin/categories"
+						label="Categorias" />
+				</b-menu-list>
+
+				<b-menu-list label="Administración">
+					<b-menu-item icon="user"
+						tag="router-link"
+						to="/admin/users"
+						label="Usuarios" />
+
+					<b-menu-item icon="motorcycle"
+						tag="router-link"
+						to="/admin/deliveries"
+						label="Delivery" />
+
+					<b-menu-item icon="user-tag"
+						tag="router-link"
+						to="/admin/roles"
+						label="Roles" />
+
+					<b-menu-item icon="exclamation-triangle"
+						tag="router-link"
+						to="/admin/permissions"
+						label="Permisos" />
+				</b-menu-list>
+				<b-menu-list label="Acciones">
 					<b-menu-item icon="sign-out-alt"
 						label="Cerrar sesión"
 						class="logout"
@@ -133,16 +158,13 @@ export default {
 		height: 100%;
 		display: flex;
 		flex-flow: column;
-		.menu-list{
-			height: 100%;
+
+		> .menu-label:nth-last-child(2) {
+			margin-top: auto;
+		}
+		.menu-list {
 			display:flex;
 			flex-flow: column;
-
-			.logout {
-				margin-top:auto;
-				margin-bottom: 1em;
-				width:100%;
-			}
 		}
 	}
 }

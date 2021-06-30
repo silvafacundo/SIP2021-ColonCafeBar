@@ -5,7 +5,10 @@
 			expanded
 			type="is-toggle">
 			<b-tab-item value="real-time" label="Tiempo Real">
-				<!-- <OrderFilters v-model="filters" /> -->
+				<OrderFilters v-model="liveFilters"
+					:status="nonFinalStatus"
+					:query-client="queryClient"
+					@input="fetchLiveOrders" />
 				<h3 v-if="(!parsedLiveOrders|| parsedLiveOrders.length <= 0)">No se han encontado ordenes</h3>
 				<Order v-for="(order, index) of parsedLiveOrders"
 					:key="index"
@@ -15,6 +18,7 @@
 			</b-tab-item>
 			<b-tab-item value="history" label="Histórico">
 				<OrderFilters v-model="filters"
+					:query-client="queryClient"
 					@input="fetchOrders" />
 				<loading-bar :loading="isLoading" />
 				<h3 v-if="!isLoading && (!orders || orders.length <= 0)">No se han encontado ordenes</h3>
@@ -39,6 +43,13 @@ export default {
 		OrderFilters,
 		LoadingBar
 	},
+	props: {
+		queryClient: {
+			type: Object,
+			required: false,
+			default: null
+		}
+	},
 	data: () => ({
 		isLoading: true,
 		isLoadingLive: false,
@@ -49,6 +60,9 @@ export default {
 		selectedTab: 'real-time',
 		orders: [],
 		filters: {
+
+		},
+		liveFilters: {
 
 		},
 		pagination: {
@@ -63,11 +77,13 @@ export default {
 		deliveries() {
 			return this.$store.getters['Delivery/deliveries'];
 		},
-		nonFinalStatusIds() {
+		nonFinalStatus() {
 			const finalStatus = ['cancelled', 'delivered', 'dispatched']
 			const statuses = this.ordersPossibleStatus.filter(status => !finalStatus.includes(status.key))
-
-			return statuses.map(status => status.id);
+			return statuses;
+		},
+		nonFinalStatusIds() {
+			return this.nonFinalStatus.map(status => status.id);
 		},
 		parsedLiveOrders() {
 			const ordered = [...this.liveOrders];
@@ -99,7 +115,6 @@ export default {
 		window.addEventListener('scroll', this.handleScroll.bind(this))
 		const hash = window.location.hash.replace('#', '');
 		if (hash) this.selectedTab = hash;
-
 	},
 	beforeDestroy() {
 		window.removeEventListener('scroll', this.handleScroll.bind(this));
@@ -110,12 +125,16 @@ export default {
 			if (this.selectedTab !== 'real-time') return;
 			this.isLoadingLive = true;
 			try {
+				const liveFilters = {
+					...this.liveFilters,
+				}
+				if (!Array.isArray(this.liveFilters.statusesId) || this.liveFilters.statusesId.length <= 0)
+					liveFilters.statusesId = this.nonFinalStatusIds
+
 				const { orders } = await this.$store.dispatch('Orders/fetchOrders', {
 					page: 1,
 					perPage: 1000,
-					filters: {
-						statusesId: this.nonFinalStatusIds
-					},
+					filters: liveFilters,
 					orderBy: {
 						servicePriority: 'asc'
 					}
