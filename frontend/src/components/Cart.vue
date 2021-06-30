@@ -3,7 +3,8 @@
 		<h4>Mi Compra <span>({{ items }})</span></h4>
 		<CartProduct v-for="(product, index) of products"
 			:key="index"
-			:product="product" />
+			:product="product"
+			@delete="(val, e) => deleteProduct(e, index)" />
 
 		<!-- <div v-for="(product, index) of products"
 			:key="index"
