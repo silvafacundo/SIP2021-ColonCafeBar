@@ -62,8 +62,7 @@
 									rounded
 									placeholder="Click para seleccionar"
 									icon="clock"
-									:hour-format="format">
-								</b-clockpicker>
+									:hour-format="format" />
 							</b-field>
 						</section>
 						<section>
@@ -75,8 +74,7 @@
 									rounded
 									placeholder="Click para seleccionar"
 									icon="clock"
-									:hour-format="format">
-								</b-clockpicker>
+									:hour-format="format" />
 							</b-field>
 						</section>
 						<b-field label="Día de la semana">

@@ -91,7 +91,7 @@ module.exports = class ReportController
 		return products;
 	}
 
-	async createReportAmountOfTotalSalesByPeriods(dateFrom,dateTo) {
+	async createReportAmountOfTotalSalesByPeriods(dateFrom, dateTo) {
 		// const count = await this.db('orders')
 		// .select(COUNT('order.id'))
 		// .where('orders.createdAt'>=dateFrom && 'orders.createdAt'<=dateTo);
@@ -99,7 +99,7 @@ module.exports = class ReportController
 	}
 
 	//condition = >'orders.paymentMethod'==='' or 'orders.paymentMethod'==='' or 'orders.paymentMethod'===''
-	async createReportQuantityOfOrdersByTypeOfDelivery(dateFrom,dateTo,condition) {
+	async createReportQuantityOfOrdersByTypeOfDelivery(dateFrom, dateTo, condition) {
 		// const count = await this.db('orders')
 		// .select(COUNT('order.id'))
 		// .where(('orders.createdAt'>=dateFrom && 'orders.createdAt'<=dateTo) && condition);

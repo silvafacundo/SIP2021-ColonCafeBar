@@ -2,9 +2,11 @@
 	<div class="help-container">
 		<h2>Ayuda</h2>
 		<div class="question-container">
-		<b-collapse class="card card-container" animation="slide" aria-id="contentIdForA11y3"
-			v-for="(item, key) in items"
-			:key="key" >
+			<b-collapse v-for="(item, key) in items"
+				:key="key"
+				class="card card-container"
+				animation="slide"
+				aria-id="contentIdForA11y3">
 				<template #trigger="props">
 					<div
 						class="card-header"
@@ -15,18 +17,17 @@
 						</p>
 						<a class="card-header-icon">
 							<b-icon
-								:icon="props.open ? 'caret-down' : 'caret-up'">
-							</b-icon>
+								:icon="props.open ? 'caret-down' : 'caret-up'" />
 						</a>
 					</div>
 				</template>
 
-			<div class="card-content">
-				<div class="content">
-					{{ item.answer }}
+				<div class="card-content">
+					<div class="content">
+						{{ item.answer }}
+					</div>
 				</div>
-			</div>
-		</b-collapse>
+			</b-collapse>
 		</div>
 	</div>
 </template>
