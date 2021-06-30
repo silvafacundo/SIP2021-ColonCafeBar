@@ -29,6 +29,7 @@ import Orders from '../views/admin/Orders';
 import Deliveries from '../views/admin/Deliveries';
 import Categories from '../views/admin/Categories';
 import AdminProducts from '../views/admin/Products';
+import Schedule from '../views/admin/Schedule';
 //
 
 Vue.use(VueRouter)
@@ -63,10 +64,11 @@ const routes = [
 		{ path: 'users', name: 'adminUsers', component: Users },
 		{ path: 'roles', name: 'adminRoles', component: Roles },
 		{ path: 'permissions', name: 'adminPermissions', component: Permissions },
-		{ path: 'ordenes', name: 'adminOrders', component: Orders },
+		{ path: 'orders', name: 'adminOrders', component: Orders },
 		{ path: 'deliveries', name: 'adminDeliveries', component: Deliveries },
 		{ path: 'categories', name: 'adminCategories', component: Categories },
-		{ path: 'products', name: 'adminProducts', component: AdminProducts }
+		{ path: 'products', name: 'adminProducts', component: AdminProducts },
+		{ path: 'schedules', name: 'adminSchedules', component: Schedule }
 	] }
 ]
 

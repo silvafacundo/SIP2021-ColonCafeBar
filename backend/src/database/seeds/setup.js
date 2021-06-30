@@ -25,18 +25,17 @@ exports.seed = async knex => {
 	// permissions
 	const permissions = await knex('permissions')
 		.insert([
-			{ name: 'Gestion de usuarios', key: 'users', isActive: true },
-			{ name: 'Gestion de ordenes', key: 'orders', isActive: true },
-			{ name: 'Gestion del menu', key: 'menu', isActive: true },
-			{ name: 'Gestion del clientes', key: 'clients', isActive: true }
+			{ name: 'Gestion de usuarios', key: 'users' },
+			{ name: 'Gestion de ordenes', key: 'orders' },
+			{ name: 'Gestion del menu', key: 'menu' },
+			{ name: 'Gestion del clientes', key: 'clients' }
 		])
 		.returning('*');
 
 	const role = await knex('roles')
 		.insert({
 			name: 'Super admin',
-			description: 'Este rol tiene acceso a todos los modulos del sistema',
-			isActive: true
+			description: 'Este rol tiene acceso a todos los modulos del sistema'
 		})
 		.returning('*');
 
