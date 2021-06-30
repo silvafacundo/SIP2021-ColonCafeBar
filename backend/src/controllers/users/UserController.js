@@ -60,7 +60,7 @@ module.exports = class UserController {
 		if (name) toUpdate.name  = name;
 		if (username) toUpdate.username = username;
 		if (password) toUpdate.password = await this.utils.auth.encryptPassword(password);
-		if (password) toUpdate.sessionValidDate = this.db.fn.now();
+		if (password) toUpdate.sessionValidDate = new Date();
 		if (typeof isActive === 'boolean') toUpdate.isActive = isActive;
 
 		if (user.isAdmin && isActive) delete toUpdate.isActive;

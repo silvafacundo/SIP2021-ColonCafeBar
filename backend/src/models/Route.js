@@ -62,6 +62,8 @@ class Route {
 			if (!user) return res.status(401).json({ message: 'Invalid authorization token' });
 			delete user.password;
 
+			// if (!user.isActive) return res.status(401).json({ message: 'Account disabled' });
+
 			let isExpired = isAdmin && (Date.now() - iat) > (30 * 24 * 60 * 60 * 1000) // 30 días
 			if ((user.sessionValidDate && new Date(user.sessionValidDate) > iat) || isExpired){
 				return res.status(401).json({ message: 'Token expired' });
