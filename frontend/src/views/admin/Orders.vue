@@ -41,6 +41,7 @@ export default {
 	},
 	data: () => ({
 		isLoading: true,
+		isLoadingLive: false,
 		fromDate: null,
 		toDate: null,
 		liveOrders: [],
@@ -143,7 +144,7 @@ export default {
 					perPage: 50,
 				});
 				this.orders = [...this.orders, ...orders];
-				this.pagination = { ...pagination };
+				this.pagination = { ...pagination, lastPage: orders.length };
 				this.isLoading = false;
 			} catch (err) {
 				this.$showToast('Error al recuperar las ordenes', true);
