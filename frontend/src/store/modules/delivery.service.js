@@ -59,6 +59,17 @@ const actions = {
 			console.error('Falied to delete delivery', err);
 			throw err;
 		}
+	},
+	async fetchDeliveryPrice(_, { addressId }) {
+		try {
+			const response = await Vue.axios.get('/delivery/price', {
+				params: { addressId }
+			});
+			return response.data.deliveryPrice;
+		} catch (err) {
+			console.error('Falied to get delivery price', err);
+			throw err;
+		}
 	}
 };
 

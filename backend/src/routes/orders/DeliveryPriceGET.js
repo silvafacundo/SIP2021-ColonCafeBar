@@ -11,8 +11,6 @@ module.exports = class DeliveryPriceGET extends Route {
 		if (!addressId) return res.json('addressId is required');
 		try {
 			const deliveryPrice = await this.utils.orders.getDeliveryPrice(addressId);
-			/*if (!storeData) return res.json('Could not find store data');
-			delete storeData.id;*/
 
 			return res.json({
 				message: 'Store data successfully retrieved',

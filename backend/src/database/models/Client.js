@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
 			lastName: DataTypes.STRING,
 			phoneNumber: DataTypes.STRING,
 			password: DataTypes.STRING,
+			sessionValidDate: DataTypes.DATE,
 			isActive: {
 				type: DataTypes.BOOLEAN,
 				default: true

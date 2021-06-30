@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.BOOLEAN,
 				defaultValue: true
 			},
+			sessionValidDate: DataTypes.DATE,
 			firebaseToken: {
 				type: DataTypes.VIRTUAL,
 				get() {

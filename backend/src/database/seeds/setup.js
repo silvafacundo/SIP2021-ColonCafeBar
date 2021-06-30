@@ -46,19 +46,4 @@ exports.seed = async knex => {
 			{ roleId: role[0].id, permissionId: permissions[2].id },
 			{ roleId: role[0].id, permissionId: permissions[3].id },
 		])
-
-	// store data
-	await knex('storeData')
-		.insert({
-			minDeliveryPrice: 0,
-			maxDeliveryPrice: 0,
-			deliveryPricePerKm: 20,
-			maxDeliveryKm: 10,
-			street: 'Vicente López',
-			city: 'Buenos Aires',
-			neighborhood: 'Chivilcoy',
-			number: '170',
-			postalCode: '6620',
-			coordinates: '-34.8921894;-60.01899949999999'
-		})
 };

@@ -2,6 +2,7 @@ const express = require('express');
 const logger = require('./utils/logger');
 const jetpack = require('fs-jetpack');
 const path = require('path');
+const cron = require('node-cron');
 
 const cors = require('cors');
 
@@ -20,8 +21,8 @@ const OrderController = require('./controllers/order/OrderController');
 const MercadoPagoController = require('./controllers/MercadoPago/MercadoPagoController');
 const MailController = require('./controllers/mail/MailController');
 const Sequelize = require('sequelize');
-const StoreDataController = require('./controllers/store/StoreDataController');
 const ScheduleController = require('./controllers/schedules/ScheduleController');
+const StoreConfigController = require('./controllers/store/StoreConfigController');
 const { count } = require('console');
 
 module.exports = class Server {
@@ -31,6 +32,7 @@ module.exports = class Server {
 		this.utils = {};
 		this.models = {};
 		this.sequelize = null;
+		this.cronjobs = [];
 	}
 
 	get port() {
@@ -45,8 +47,9 @@ module.exports = class Server {
 		await this.initializeDatabase();
 		await this.initializeSequelize();
 		await this.initializeControllers();
+		await this.initializeCronjobs();
 		await this.initializeWebServer();
-		// this.seed(); //Si quieren correr el seed descomenten aca
+		// await this.seed(); //Si quieren correr el seed descomenten aca
 	}
 
 	/**
@@ -85,6 +88,24 @@ module.exports = class Server {
 
 	handleUnknownEndpoint(req, res) {
 		return res.status(400).json({ message: 'Route not found' });
+	}
+
+	async initializeCronjobs() {
+		try {
+			const folder = `${__dirname}/cronjobs`;
+			jetpack.find(folder, { matching: '*.js' }).forEach(cronjobFilePath => {
+				const cronjobFile = require(path.join('..', cronjobFilePath));
+
+				const cronjob = cron.schedule(cronjobFile.schedulePattern, () => {
+					cronjobFile.run(this);
+				});
+
+				this.cronjobs.push(cronjob)
+			});
+		} catch (error) {
+			console.error('fallo aca');
+			console.error(error);
+		}
 	}
 
 	/**
@@ -161,7 +182,7 @@ module.exports = class Server {
 		* @property {OrderController} Utils.orders
 		* @property {MercadoPagoController} Utils.mercadopago
 		* @property {MailController} Utils.mailController
-		* @property {StoreDataController} Utils.store
+		* @property {StoreConfigController} Utils.store
 		* @property {firebase} Utils.firebase
 		*/
 
@@ -179,8 +200,8 @@ module.exports = class Server {
 			logger: logger,
 			mercadopago: new MercadoPagoController(this),
 			mailController: new MailController(this),
-			store: new StoreDataController(this),
 			schedules: new ScheduleController(this),
+			store: new StoreConfigController(this),
 			firebase
 		}
 		try {

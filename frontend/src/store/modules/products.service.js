@@ -92,7 +92,6 @@ const actions = {
 		}
 	},
 	async updateProduct({ dispatch }, { productId, ...values }) {
-		console.log({ ...values });
 		try {
 			const response = await Vue.axios.put(`/admin/product`, {
 				productId,

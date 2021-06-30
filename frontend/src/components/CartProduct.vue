@@ -29,8 +29,8 @@ export default {
 		}
 	},
 	methods: {
-		deleteProduct() {
-			this.$emit(this.product);
+		deleteProduct(e) {
+			this.$emit('delete', this.product, e);
 		}
 	}
 }

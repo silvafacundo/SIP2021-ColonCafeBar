@@ -48,6 +48,7 @@
 									:hour-format="format"
 									v-model="openingTime"
 								/>
+									:hour-format="format" />
 							</b-field>
 						</section>
 						<section>
@@ -61,6 +62,7 @@
 									:closingTime="closingTime"
 									>
 								</b-clockpicker>
+									:hour-format="format" />
 							</b-field>
 						</section>
 						<b-field label="Día de la semana">

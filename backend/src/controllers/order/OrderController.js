@@ -1,5 +1,5 @@
 const PublicError = require('../../errors/PublicError');
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const axios = require('axios');
 module.exports = class OrderController {
 	/**
@@ -205,20 +205,23 @@ module.exports = class OrderController {
 		if (isNaN(page)) throw new PublicError('page should be a number');
 		if (isNaN(perPage)) throw new PublicError('perPage should be a number');
 
+		const Sequelize = this.sequelize.Sequelize;
 		const order = [];
 		order.push(['createdAt', orderBy.createdAt === 'asc' ? 'ASC' : 'DESC']);
+
 		const whereQuery = {}
-		const { fromDate, toDate, clientsId, deliveriesId } = filters || {};
+		const { fromDate, toDate, clientsId, statusesId, deliveriesId } = filters || {};
 		if (fromDate) whereQuery.createdAt = { [Op.gte]: fromDate };
-		if (toDate) whereQuery.createAt = { ...whereQuery.createdAt, [Op.lte]: toDate };
-		if (Array.isArray(clientsId)) whereQuery.clientId = { [Op.in]: clientsId };
-		if (Array.isArray(deliveriesId)) whereQuery.deliveryId = { [Op.in]: deliveriesId };
+		if (toDate) whereQuery.createdAt = { ...whereQuery.createdAt, [Op.lte]: toDate };
+		if (Array.isArray(clientsId) && clientsId.length > 0) whereQuery.clientId = { [Op.in]: clientsId };
+		if (Array.isArray(deliveriesId) && deliveriesId.length > 0) whereQuery.deliveryId = { [Op.in]: deliveriesId };
+		if (Array.isArray(statusesId) && statusesId.length > 0) whereQuery.statusId = { [Op.in]: statusesId }
 
 		const { count: total, rows: orders }= await this.models.Order.findAndCountAll({
 			where: whereQuery,
 			offset: (page - 1) * perPage,
 			limit: perPage,
-			order
+			order,
 		});
 
 		return { orders, pagination: { page, perPage, total } }
@@ -246,7 +249,7 @@ module.exports = class OrderController {
 		const address = await this.utils.addresses.getAddress(addressId);
 		if (!address) throw new PublicError('the address doesn\'t exists');
 
-		const store = await this.utils.store.getStoreData();
+		const store = await this.utils.store.getStoreConfig();
 		const { coordinates: storeCoordinates, minDeliveryPrice, maxDeliveryPrice, deliveryPricePerKm, maxDeliveryKm } = store;
 
 		const { data } = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${address.coordinates.replace(';', ',')}&destinations=${storeCoordinates.replace(';', ',')}&key=${process.env.MAPS_APIKEY}`)

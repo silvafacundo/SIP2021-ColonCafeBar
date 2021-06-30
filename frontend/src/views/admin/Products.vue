@@ -155,7 +155,6 @@ export default {
 			try {
 				await this.$store.dispatch('Products/fetchAdminProducts') || [];
 			} catch (err) {
-				console.log(err);
 				this.$showToast('Error al traer los productos', true);
 			}
 		},

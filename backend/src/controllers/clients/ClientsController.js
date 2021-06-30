@@ -1,6 +1,7 @@
 const PublicError = require('../../errors/PublicError');
 const Server = require('../../Server');
 
+const { Op } = require('sequelize');
 module.exports = class ClientController {
 	/**
 	 *Creates an instance of ClientController.
@@ -78,7 +79,7 @@ module.exports = class ClientController {
 		if (lastName) toUpdate.lastName = lastName;
 		if (phoneNumber) toUpdate.phoneNumber = phoneNumber;
 		if (password) toUpdate.password = await this.utils.auth.encryptPassword(password);
-		if (password) toUpdate.sessionValidDate = this.db.fn.now();
+		if (password) toUpdate.sessionValidDate = new Date();
 		if (typeof isActive === 'boolean') toUpdate.isActive = isActive;
 
 		if (Object.keys(toUpdate).length < 1) throw PublicError('At least one param is required!');
@@ -90,6 +91,47 @@ module.exports = class ClientController {
 		return client;
 	}
 
+	async invalidateTokens(clientId) {
+		const client = await this.getClient(clientId);
+		if (!client) throw new PublicError('Client doesn\'t exists');
+
+		client.sessionValidDate = new Date();
+		await client.save();
+	}
+
+	async getClients({ page = 1, perPage = 20, filters = {}, orderBy = {} } = {}) {
+		if (isNaN(page)) throw new PublicError('page should be a number');
+		if (isNaN(perPage)) throw new PublicError('perPage should be a number');
+
+		const order = [];
+		order.push(['createdAt', orderBy.createdAt === 'asc' ? 'ASC' : 'DESC']);
+
+		const Sequelize = this.server.sequelize.Sequelize;
+
+		let { query } = filters;
+		const whereAnd = [];
+		if (query) {
+			query = `%${query.toLowerCase()}%`;
+			whereAnd.push({
+				[Op.or]: [
+					{ 'email': { [Op.iLike]: query } },
+					{ 'phoneNumber': { [Op.iLike]: query } },
+					Sequelize.where(Sequelize.literal(`"firstName" || ' ' ||"lastName"`), { [Op.iLike]: query })
+				]
+			});
+		}
+		const { count: total, rows: clients } = await this.models.Client.findAndCountAll({
+			where: {
+				[Op.and]: whereAnd
+			},
+			order,
+			offset: (page - 1) * perPage,
+			limit: perPage
+		});
+
+		return { clients, pagination: { page, perPage, total } };
+	}
+
 	async addPoints(clientId, pointsToAdd) {
 		const client = await this.getClient({ usersId: Number(clientId) });
 		client.availablePoints = client.availablePoints + Number(pointsToAdd);
@@ -99,6 +141,14 @@ module.exports = class ClientController {
 	async discountPoints(clientId, pointsToDiscount) {
 		const client = await this.getClient({ usersId: clientId });
 		client.availablePoints = client.availablePoints - pointsToDiscount;
+		await client.save();
+	}
+
+	async setPoints(clientId, points) {
+		const client = await this.getClient({ userId: clientId });
+		if (!client) throw new PublicError('Client doesn\'t exists');
+		if (typeof points !== 'number' || isNaN(points) || points < 0 || points % 1 !== 0) throw new PublicError('points should be a positive integer');
+		client.availablePoints = Number(points);
 		await client.save();
 	}
 

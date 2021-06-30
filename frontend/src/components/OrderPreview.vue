@@ -55,7 +55,7 @@ export default {
 			return text;
 		},
 		total() {
-			return this.order.total;
+			return this.order.total + this.order.deliveryPrice;
 		}
 	}
 }

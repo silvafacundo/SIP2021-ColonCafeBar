@@ -2,9 +2,9 @@
 	<div class="container">
 		<div class="filters-container">
 			<div class="filters">
-				<b-collapse class="card"
-					animation="slide"
-					aria-id="contentIdForA11y3">
+				<b-collapse v-model="openFilters"
+					class="card"
+					animation="slide">
 					<template #trigger="props">
 						<div
 							class="card-header"
@@ -163,6 +163,7 @@ export default {
 		isLoading: true,
 		isSearching: false,
 		selectedProduct: null,
+		openFilters: true,
 		filters: {
 			query: '',
 			categoriesId: [],
@@ -203,8 +204,19 @@ export default {
 	},
 	mounted() {
 		this.fecthProducts();
+		window.addEventListener('resize', this.handleResize.bind(this));
+		this.handleResize();
+	},
+	beforeDestroy() {
+		window.removeEventListener('resize', this.handleResize.bind(this));
 	},
 	methods: {
+		handleResize() {
+			const width = window.innerWidth;
+			if (width <= 900) {
+				this.openFilters = false;
+			}
+		},
 		async fecthProducts() {
 			try {
 				this.isLoading = true;

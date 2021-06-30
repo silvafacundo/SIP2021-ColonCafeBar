@@ -30,6 +30,7 @@ import Deliveries from '../views/admin/Deliveries';
 import Categories from '../views/admin/Categories';
 import AdminProducts from '../views/admin/Products';
 import Schedule from '../views/admin/Schedule';
+import AdminStore from '../views/admin/Store';
 //
 
 Vue.use(VueRouter)
@@ -68,7 +69,7 @@ const routes = [
 		{ path: 'deliveries', name: 'adminDeliveries', component: Deliveries },
 		{ path: 'categories', name: 'adminCategories', component: Categories },
 		{ path: 'products', name: 'adminProducts', component: AdminProducts },
-		{ path: 'schedules', name: 'adminSchedules', component: Schedule }
+		{ path: 'store', name: 'adminStore', component: AdminStore }
 	] }
 ]
 

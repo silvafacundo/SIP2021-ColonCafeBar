@@ -23,10 +23,10 @@ const actions = {
 	async fetchOrders({ commit }, { page, perPage, filters, orderBy } ) {
 		try {
 			const response = await Vue.axios.post('/admin/orders', { page, perPage, filters, orderBy });
-			const { orders, status } = response.data;
+			const { orders, status, pagination } = response.data;
 			commit('setOrders', orders);
 			commit('setPossibleStatus', status);
-			return orders;
+			return { orders, pagination };
 		} catch (err) {
 			console.error('Failed to fetch orders', err);
 			throw err;
@@ -44,7 +44,8 @@ const actions = {
 	async fetchClientOrders({ commit }, { page, perPage, filters, orderBy } = {}) {
 		try {
 			const response = await Vue.axios.post('/client/orders', { page, perPage, filters, orderBy });
-			const { orders = [], pagination = {} } = response.data || {};
+			const { orders = [], pagination = {}, status } = response.data || {};
+			commit('setPossibleStatus', status);
 			commit('setOrders', orders);
 			return { orders, pagination };
 		} catch (err) {
