@@ -4,20 +4,20 @@
 		<b-tabs v-model="selectedTab"
 			expanded
 			type="is-toggle">
-			<b-tab-item label="Tiempo Real">
+			<b-tab-item value="real-time" label="Tiempo Real">
 				<!-- <OrderFilters v-model="filters" /> -->
-				<h3 v-if="!parsedLiveOrders|| parsedLiveOrders.length <= 0">No se han enconrtado ordenes</h3>
+				<h3 v-if="!isLoadingLive && (!parsedLiveOrders|| parsedLiveOrders.length <= 0)">No se han enconrtado ordenes</h3>
 				<Order v-for="(order, index) of parsedLiveOrders"
 					:key="index"
 					:order="order"
 					@updateStatus="statusId => updateStatus(order, statusId)"
 					@updateDelivery="deliveryId => updateDelivery(order, deliveryId)" />
 			</b-tab-item>
-			<b-tab-item label="Histórico">
+			<b-tab-item value="history" label="Histórico">
 				<OrderFilters v-model="filters"
 					@input="fetchOrders" />
 				<loading-bar :loading="isLoading" />
-				<h3 v-if="!orders || orders.length <= 0">No se han enconrtado ordenes</h3>
+				<h3 v-if="!isLoading && (!orders || orders.length <= 0)">No se han encontado ordenes</h3>
 				<Order v-for="(order, index) of orders"
 					:key="index"
 					:order="order"
@@ -45,7 +45,7 @@ export default {
 		toDate: null,
 		liveOrders: [],
 		liveInterval: null,
-		selectedTab: 0,
+		selectedTab: 'realTime',
 		orders: [],
 		filters: {
 
@@ -86,11 +86,19 @@ export default {
 			return this.toDate;
 		}*/
 	},
+	watch: {
+		selectedTab(newVal) {
+			window.location.hash = newVal;
+		}
+	},
 	mounted() {
 		this.fetchOrders();
 		this.fetchDeliveries();
 		this.liveInterval = setInterval(this.fetchLiveOrders.bind(this), 500);
 		window.addEventListener('scroll', this.handleScroll.bind(this))
+		const hash = window.location.hash.replace('#', '');
+		if (hash) this.selectedTab = hash;
+
 	},
 	beforeDestroy() {
 		window.removeEventListener('scroll', this.handleScroll.bind(this));
@@ -98,7 +106,7 @@ export default {
 	},
 	methods: {
 		async fetchLiveOrders() {
-			if (this.selectedTab !== 0) return;
+			if (this.selectedTab !== 'real-time') return;
 			this.isLoadingLive = true;
 			try {
 				const { orders } = await this.$store.dispatch('Orders/fetchOrders', {
@@ -138,7 +146,7 @@ export default {
 				this.pagination = { ...pagination };
 				this.isLoading = false;
 			} catch (err) {
-				this.$showToast('Error al recuperar las órdenes', true);
+				this.$showToast('Error al recuperar las ordenes', true);
 			}
 		},
 		async fetchDeliveries() {
@@ -173,7 +181,7 @@ export default {
 			}
 		},
 		handleScroll() {
-			if (this.selectedTab !== 1) return;
+			if (this.selectedTab !== 'history') return;
 			const element = this.$el;
 			const isLastPage = this.page >= Math.ceil(this.pagination.total / this.pagination.perPage);
 			if (this.pagination.lastPage < this.pagination.perPage || isLastPage) return;

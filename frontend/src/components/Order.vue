@@ -204,7 +204,7 @@ export default {
 	div.order-container {
 		display: flex;
 		flex-direction: column;
-		padding: .2rem 1rem;
+		padding: .2rem 0;
 		.icons {
 			display: flex;
 			&> * {
