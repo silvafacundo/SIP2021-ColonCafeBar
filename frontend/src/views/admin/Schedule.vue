@@ -83,7 +83,7 @@ export default {
 		return {
 			selectedSchedule: null,
 			error: '',
-			days: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']
+			days: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
 		}
 	},
 	computed: {
