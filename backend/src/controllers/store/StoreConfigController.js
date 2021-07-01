@@ -18,6 +18,11 @@ module.exports = class StoreConfigController {
 		return storeConfig;
 	}
 
+	async getTimeZone() {
+		const { timeZone } = await this.getStoreConfig();
+		return timeZone;
+	}
+
 	async updateStoreConfig({ minDeliveryPrice, maxDeliveryPrice, deliverPricePerKm, maxDeliveryKm, coordinates, orderTimeoutMinutes }) {
 		if (typeof minDeliveryPrice !== 'undefined') {
 			minDeliveryPrice = Number(minDeliveryPrice);

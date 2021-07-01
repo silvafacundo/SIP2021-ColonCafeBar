@@ -23,7 +23,6 @@ const MailController = require('./controllers/mail/MailController');
 const Sequelize = require('sequelize');
 const ScheduleController = require('./controllers/schedules/ScheduleController');
 const StoreConfigController = require('./controllers/store/StoreConfigController');
-const { count } = require('console');
 
 module.exports = class Server {
 	constructor() {
@@ -182,6 +181,7 @@ module.exports = class Server {
 		* @property {OrderController} Utils.orders
 		* @property {MercadoPagoController} Utils.mercadopago
 		* @property {MailController} Utils.mailController
+		* @property {ScheduleController} Utils.schedules
 		* @property {StoreConfigController} Utils.store
 		* @property {firebase} Utils.firebase
 		*/

@@ -1,4 +1,5 @@
 const PublicError = require('../../errors/PublicError');
+const moment = require('moment');
 module.exports = class ScheduleController {
 	constructor(server) {
 		this.server = server;
@@ -53,7 +54,9 @@ module.exports = class ScheduleController {
 
 	async getScheduleFromDay(dayOfWeek) {
 		if (!dayOfWeek) {
-			dayOfWeek = (new Date()).getDay();
+			const timeZone = await this.utils.store.getTimeZone();
+			const date = moment().utcOffset(timeZone);
+			dayOfWeek = date.isoWeekday();
 		}
 		const schedules = await this.db('schedules')
 			.where({ dayOfWeek })
@@ -128,16 +131,16 @@ module.exports = class ScheduleController {
 	}
 
 	async isOpen() {
-		// TODO: add timezone
-		const date = new Date();
+		const timeZone = await this.utils.store.getTimeZone();
+		const date = moment().utcOffset(timeZone);
 
-		let hours = date.getHours();
-		let minutes = date.getMinutes();
+		let hours = date.hour();
+		let minutes = date.minute();
 		if (hours < 10) hours = `0${hours}`;
 		if (minutes < 10) minutes = `0${minutes}`;
 
 		const time = `${hours}:${minutes}`;
-		const dayOfWeek = date.getDay();
+		const dayOfWeek = date.isoWeekday();
 
 		const isOpen = await this.insideTime(dayOfWeek, time);
 		return isOpen;
