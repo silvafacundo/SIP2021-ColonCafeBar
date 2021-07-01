@@ -32,14 +32,14 @@
 					<b-field label="Teléfono">
 						<b-input v-model="user.phoneNumber" />
 					</b-field>
+					<footer>
+						<b-button type="is-success"
+							outlined
+							@click="updateProfile">
+							Guardar
+						</b-button>
+					</footer>
 				</div>
-				<footer class="card-footer">
-					<b-button type="is-success"
-						outlined
-						@click="updateProfile">
-						Guardar
-					</b-button>
-				</footer>
 			</div>
 		</b-collapse>
 		<b-collapse class="card"

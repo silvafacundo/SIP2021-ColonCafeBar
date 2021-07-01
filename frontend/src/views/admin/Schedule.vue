@@ -1,85 +1,72 @@
 <template>
-	<div class="schedule-container">
+	<div class="container schedule-container">
 		<h3>Horarios</h3>
-		<b-table>
-			<b-table-column label="#">
-				asd
+		<b-table :data="schedules">
+			<template #empty>
+				<div class="empty">
+					<h4>No hay horarios</h4>
+					<b-button type="is-success" @click="newSchedule">Agregar Horario</b-button>
+				</div>
+			</template>
+			<b-table-column v-slot="props" label="Día de la semana">
+				{{ days[props.row.dayOfWeek - 1] }}
 			</b-table-column>
-			<b-table-column label="Horario de apertura">
-				asd
+			<b-table-column v-slot="props" label="Horario de apertura">
+				{{ props.row.openingTime }}
 			</b-table-column>
-			<b-table-column label="Horario de cierre">
-				asd
+			<b-table-column v-slot="props" label="Horario de cierre">
+				{{ props.row.closingTime }}
 			</b-table-column>
-			<b-table-column label="Dia de la semana">
-				eh
-			</b-table-column>
-			<b-table-column>
+			<b-table-column v-slot="props">
+				<b-button size="is-small" @click="() => selectedSchedule = { ...props.row }">Modificar</b-button>
 				<b-button type="is-danger"
-					size="is-small">
+					size="is-small"
+					@click="() => deleteSchedule(props.row.id)">
 					Eliminar
 				</b-button>
 			</b-table-column>
 		</b-table>
 		<b-button
+			v-if="schedules.length > 0"
 			label="Crear horario"
 			type="is-success"
 			size="default"
 			class="register-button"
-			@click="() => createModalActive = true" />
-		<b-modal v-model="createModalActive" has-modal-card>
-			<div class="modal-card" style="margin: auto">
+			@click="newSchedule" />
+		<b-modal :active="!!selectedSchedule"
+			has-modal-card
+			@close="closeModal">
+			<div v-if="selectedSchedule"
+				class="modal-card"
+				style="margin: auto">
 				<header class="modal-card-head">
 					<p class="modal-card-title">Registrar Horario</p>
 				</header>
 				<section class="modal-card-body">
-					<form @submit.prevent="createSchedule">
-						<section>
-							<b-field label="Alias">
-								<b-input :value="value.alias" />
-							</b-field>
-						</section>
-						<section>
-							<b-field label="Horario apertura">
-								<b-clockpicker
-									rounded
-									placeholder="Click para seleccionar"
-									icon="clock"
-									:hour-format="format"
-									v-model="openingTime"
-								/>
-									:hour-format="format" />
-							</b-field>
-						</section>
-						<section>
-							<b-field label="Horario cierre">
-								<b-clockpicker
-									rounded
-									placeholder="Click para seleccionar"
-									icon="clock"
-									v-model="closingTime"
-									:hour-format="format"
-									:closingTime="closingTime"
-									>
-								</b-clockpicker>
-									:hour-format="format" />
-							</b-field>
-						</section>
-						<b-field label="Día de la semana">
-							<b-select placeholder="Seleccionar día de semana"
-								v-model="dayOfWeek">
-								<option
-									v-for="day in days"
-									:key="day.id"
-									:value="day.id"
-									>
-									{{ day.name }}
-								</option>
-							</b-select>
-						</b-field>
-						<p class="error my-1 has-text-centered">{{ error && 'Error: ' + error }}</p>
-						<button>Crear horario</button>
-					</form>
+					<b-field label="Dia de la semana">
+						<b-select v-model="selectedSchedule.dayOfWeek">
+							<option v-for="(day, index) in days"
+								:key="index"
+								:value="index + 1">
+								{{ day }}
+							</option>
+						</b-select>
+					</b-field>
+					<b-field label="Horario de Apertura" :type="isValid ? '' : 'is-danger'">
+						<b-input v-model="selectedSchedule.openingTime" type="time" />
+					</b-field>
+					<b-field label="Horario de cierre" :type="isValid ? '' : 'is-danger'">
+						<b-input v-model="selectedSchedule.closingTime" type="time" />
+					</b-field>
+					<p v-if="!isValid" class="my-5 has-text-centered has-text-danger">El horario de apertura debe ser menor al de cierre</p>
+					<footer class="card-footer">
+						<b-button type="is-danger" @click="closeModal">Cancelar</b-button>
+						<b-button type="is-success"
+							:disabled="!isValid"
+							@click="saveSchedule">
+							Guardar
+						</b-button>
+					</footer>
 				</section>
 			</div>
 		</b-modal>
@@ -94,34 +81,33 @@ export default {
 	},
 	data() {
 		return {
-			createModalActive: false,
-			openingTime: '',
-			closingTime: '',
-			dayOfWeek: 1,
+			selectedSchedule: null,
 			error: '',
-			days: [
-				{ id: 1, name: 'Lunes' },
-				{ id: 2, name: 'Martes' },
-				{ id: 3, name: 'Miercoles' },
-				{ id: 4, name: 'Jueves' },
-				{ id: 5, name: 'Viernes' },
-				{ id: 6, name: 'Sabado' },
-				{ id: 7, name: 'Domingo' }
-			],
+			days: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']
 		}
 	},
 	computed: {
 		schedules() {
 			return this.$store.getters['Schedules/schedules'];
 		},
-		format() {
-			return this.isAmPm ? '12' : '24'
-		},
+		isValid() {
+			if (!this.selectedSchedule) return false;
+			const { openingTime, closingTime } = this.selectedSchedule;
+			const openingMinutes = this.timeToMinutes(openingTime);
+			const closingMinutes = this.timeToMinutes(closingTime);
+			return openingMinutes < closingMinutes;
+		}
 	},
 	mounted() {
 		this.fetchAdminSchedules();
 	},
 	methods: {
+		timeToMinutes(time) {
+			let [hs, mins] = time.split(':');
+			hs = Number(hs);
+			mins = Number(mins);
+			return (hs * 60) + mins;
+		},
 		async fetchAdminSchedules() {
 			try {
 				await this.$store.dispatch('Schedules/fetchAdminSchedules');
@@ -129,46 +115,33 @@ export default {
 				this.$showToast('Error al cargar los horarios', true);
 			}
 		},
-		async createSchedule() {
-			this.error = '';
-			const openingTime = this.openingTime.toString().split(' ')[4];
-			const closingTime = this.closingTime.toString().split(' ')[4];
-			const dayOfWeek= this.dayOfWeek;
-			this.openingTime = '';
-			this.closingTime = '';
-			this.dayOfWeek = 1;
+		async saveSchedule() {
 			try {
-				await this.$store.dispatch('Schedules/createSchedule', { openingTime, closingTime, dayOfWeek });
-				this.createModalActive = false;
+				if (this.selectedSchedule.id)
+					await this.$store.dispatch('Schedules/updateSchedule', { ...this.selectedSchedule });
+				else
+					await this.$store.dispatch('Schedules/createSchedule', { ...this.selectedSchedule });
 				await this.fetchAdminSchedules();
+				this.closeModal();
 				this.$showToast('Horario creado con éxito');
 			} catch (err) {
 				console.error('Failed to register', err);
 				if (err && err.response && err.response.data) this.error = err.response.data.message;
 				else this.error = 'Ocurrió un error';
+				this.$showToast(this.error, true);
 			}
 		},
-		async updateSchedule(){
-			this.error = '';
-			const id = 1;
-			const openingTime = this.openingTime.toString().split(' ')[4];
-			const closingTime = this.closingTime.toString().split(' ')[4];
-			const dayOfWeek= this.selected;
-			this.openingTime = '';
-			this.closingTime = '';
-			this.dayOfWeek = 1;
-			try {
-				await this.$store.dispatch('Schedules/updateSchedule', { id, openingTime, closingTime, dayOfWeek });
-				this.createModalActive = false;
-				await this.fetchSchedule();
-				this.$showToast('Horario actualizado con éxito');
-			} catch (err) {
-				console.error('Failed to update', err);
-				if (err && err.response && err.response.data) this.error = err.response.data.message;
-				else this.error = 'Ocurrió un error';
+		async newSchedule() {
+			this.selectedSchedule = {
+				dayOfWeek: 1,
+				openingTime: '08:00',
+				closingTime: '12:00'
 			}
 		},
-		async deleteSchedule(){
+		async closeModal() {
+			this.selectedSchedule = null
+		},
+		async deleteSchedule(scheduleId){
 			this.$buefy.dialog.confirm({
 				title: 'Eliminado un horario',
 				message: '<b>¿Seguro que desea eliminar a este horario?</b>',
@@ -176,26 +149,35 @@ export default {
 				cancelText: 'Cancelar',
 				type: 'is-danger',
 				hasIcon: true,
-				onConfirm: () => this._deleteCategory(),
+				onConfirm: () => this._deleteSchedule(scheduleId),
 			});
 		},
-		async _deleteSchedule(){
-			this.error = '';
+		async _deleteSchedule(scheduleId){
 			try {
-				const id=1;
-				await this.$store.dispatch(`Schedules/deleteSchedule?id=${id}`);
+				await this.$store.dispatch(`Schedules/deleteSchedule`, { scheduleId });
 				await this.fetchSchedule();
 				this.$showToast('Horario eliminado con éxito');
 			} catch (err) {
-				console.error('Failed to delete', err);
-				if (err && err.response && err.response.data) this.error = err.response.data.message;
-				else this.error = 'Ocurrió un error';
+				this.$showToast('Error al eliminar el horario');
 			}
 		}
 	}
 }
 </script>
 
-<style>
-
+<style lang="scss" scoped>
+	.modal-card-body footer {
+		padding: .5rem;
+		padding-bottom: 0;
+		display: flex;
+		justify-content: space-between;
+	}
+	.empty {
+		display: flex;
+		padding: 1rem;
+		flex-flow:column;
+		gap: .5rem;
+		justify-content: center;
+		align-items: center;
+	}
 </style>

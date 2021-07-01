@@ -37,7 +37,7 @@ const actions = {
 	async createSchedule({ dispatch }, { openingTime, closingTime, dayOfWeek }){
 		try {
 			await Vue.axios.post('/admin/schedule', { openingTime, closingTime, dayOfWeek });
-			dispatch('fetchAdminSchedules');
+			await dispatch('fetchAdminSchedules');
 		} catch (err) {
 			console.error('Failed to create schedule', err)
 			throw err;
@@ -45,17 +45,17 @@ const actions = {
 	},
 	async updateSchedule({ dispatch }, { id, openingTime, closingTime, dayOfWeek }){
 		try {
-			await Vue.axios.put('/admin/schedules', { id, openingTime, closingTime, dayOfWeek });
-			dispatch('fetchAdminSchedules');
+			await Vue.axios.put('/admin/schedule', { id, openingTime, closingTime, dayOfWeek });
+			await dispatch('fetchAdminSchedules');
 		} catch (err) {
 			console.error('Failed to update schedule', err)
 			throw err;
 		}
 	},
-	async deleteSchedule({ dispatch }, { id }){
+	async deleteSchedule({ dispatch }, { scheduleId }){
 		try {
-			await Vue.axios.delete(`/admin/schedule?id?=${id}`);
-			dispatch('fetchaAdminSchedules');
+			await Vue.axios.delete(`/admin/schedule?id=${scheduleId}`);
+			await dispatch('fetchAdminSchedules');
 		} catch (err) {
 			console.error('Failed to create schedule', err)
 			throw err;
