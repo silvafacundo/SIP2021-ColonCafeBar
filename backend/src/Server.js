@@ -23,6 +23,7 @@ const MailController = require('./controllers/mail/MailController');
 const Sequelize = require('sequelize');
 const ScheduleController = require('./controllers/schedules/ScheduleController');
 const StoreConfigController = require('./controllers/store/StoreConfigController');
+const ReportController = require('./controllers/report/ReportController');
 
 module.exports = class Server {
 	constructor() {
@@ -202,6 +203,7 @@ module.exports = class Server {
 			mailController: new MailController(this),
 			schedules: new ScheduleController(this),
 			store: new StoreConfigController(this),
+			report: new ReportController(this),
 			firebase
 		}
 		try {

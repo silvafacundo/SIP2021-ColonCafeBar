@@ -46,21 +46,18 @@ module.exports = class ClientController {
 		return user;
 	}
 
-	async getClient({ userId, email, onlyPublic = false }) {
-		let clientsSelect = null;
-		if (onlyPublic) {
-			clientsSelect = ['clients.email', 'clients.firstName', 'clients.lastName', 'clients.phoneNumber'];
-		}
-
+	async getClient({ userId, email, onlyPublic = true }) {
 		const where = {};
 		if (typeof userId !== 'undefined' && userId !== null) where.id = userId;
 		if (typeof email !== 'undefined' && email !== null) where.email = email;
 
 		if (Object.keys(where).length <= 0) throw new Error('At least one parameter is required');
 
-		const user = await this.models.Client.findOne({
+		const scopes = ['defaultScope'];
+		if (!onlyPublic) scopes.push('sensitive');
+
+		const user = await this.models.Client.scope(scopes).findOne({
 			where,
-			attributes: clientsSelect
 		});
 		return user;
 	}

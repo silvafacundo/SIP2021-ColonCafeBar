@@ -74,10 +74,8 @@ module.exports = class UserController {
 		return user;
 	}
 
-	async getUser({ userId, username, onlyPublic = false, ignoreInactive = false }) {
+	async getUser({ userId, username, onlyPublic = true, ignoreInactive = false }) {
 		if (!userId && !username) throw Error('userId or username is required!');
-
-		const userSelect = [];
 
 		const where = {};
 		if (!ignoreInactive) where.isActive = true;

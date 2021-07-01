@@ -15,7 +15,7 @@ export default {
 		product: {
 			type: Object,
 			required: true
-		}
+		},
 	},
 	computed: {
 		shortedDescription() {
