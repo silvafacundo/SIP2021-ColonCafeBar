@@ -81,6 +81,9 @@ export default {
 	data: () => ({
 		isMenuOpen: false,
 		cartActive: false,
+		isOpenTimeout: null,
+		isCloseNotificationOpen: false,
+		closeNotification: null
 	}),
 	computed: {
 		user() {
@@ -94,14 +97,50 @@ export default {
 		},
 		route() {
 			return this.$route.path
+		},
+		isOpen() {
+			return this.$store.getters['Schedules/isOpen']
 		}
 	},
 	watch: {
 		route() {
 			this.isMenuOpen = false;
+			if (['home', 'checkout'].includes(this.$route.name))
+				this.showCloseNotification();
+		},
+		isOpen(newVal, oldVal) {
+			if (newVal !== oldVal)
+				if (!newVal) this.showCloseNotification()
+				else this.hideCloseNotification();
 		}
 	},
+	mounted() {
+		this.isOpenInterval = setInterval(this.fetchIsOpen.bind(this), 5 * 60 * 1000)
+		this.fetchIsOpen();
+	},
+	beforeDestroy() {
+		clearInterval(this.isOpenInterval)
+	},
 	methods: {
+		fetchIsOpen() {
+			this.$store.dispatch('Schedules/fetchStoreStatus');
+		},
+		showCloseNotification() {
+			if (!this.isOpen && !this.isCloseNotificationOpen) {
+				this.isCloseNotificationOpen = true;
+				this.closeNotification = this.$buefy.notification.open({
+					message: `El negocio actualmente se encuentra cerrado. ¡Lamentamos las molestias!`,
+					type: 'is-warning',
+					position: 'is-bottom',
+					hasIcon: true,
+					indefinite: true
+				});
+				this.closeNotification.$on('close', () => this.isCloseNotificationOpen = false)
+			}
+		},
+		hideCloseNotification() {
+			if (this.closeNotification) this.closeNotification.close();
+		},
 		goToCart() {
 			this.cartActive = !this.cartActive;
 			// this.$router.push({ name: 'cart' })

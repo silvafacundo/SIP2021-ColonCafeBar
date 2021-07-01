@@ -10,7 +10,11 @@ import Vue from 'vue';
 export default {
 	name: 'App',
 	components: { },
-	mounted() {
+	data: () =>({
+	}),
+	computed: {
+	},
+	watch: {
 	},
 	created() {
 		Vue.prototype.$showToast = (...args) => {

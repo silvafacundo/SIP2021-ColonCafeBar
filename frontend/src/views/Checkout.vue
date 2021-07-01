@@ -129,6 +129,7 @@ export default {
 			return text;
 		},
 		canContinue() {
+			if (!this.$store.getters['Schedules/isOpen']) return false;
 			if (this.step >= 1 && !this.takeAway && !this.selectedAddress) return false;
 			if (this.step >= 1 && this.deliveryPrice < 0) return false;
 			return true;
@@ -226,7 +227,9 @@ export default {
 				this.$store.commit('Cart/emptyCart');
 				this.$router.push({ name: 'order', params: { orderId: order.id } });
 			} catch (err) {
-				this.$showToast('Error al crear la orden', true);
+				let errMessage = 'Error al crear la orden';
+				if (err && err.response && err.response.data && err.response.data.message) errMessage += `: ${err.response.data.message}`
+				this.$showToast(errMessage, true);
 			}
 			this.isLoading = false;
 		},

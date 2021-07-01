@@ -3,14 +3,24 @@ import router from '../../router';
 
 const state = () => ({
 	schedules: [],
+	isOpen: null,
+	daySchedule: []
 });
 
 const getters = {
 	schedules: state => state.schedules,
+	isOpen: state => state.isOpen,
+	daySchedule: state => state.daySchedule || []
 };
 const mutations = {
 	setSchedules(state, schedules) {
 		state.schedules = schedules || [];
+	},
+	setIsOpen(state, isOpen) {
+		state.isOpen = isOpen;
+	},
+	setDaySchedule(state, schedule) {
+		state.daySchedule = schedule || [];
 	}
 };
 const actions = {
@@ -58,6 +68,17 @@ const actions = {
 			await dispatch('fetchAdminSchedules');
 		} catch (err) {
 			console.error('Failed to create schedule', err)
+			throw err;
+		}
+	},
+	async fetchStoreStatus({ commit }) {
+		try {
+			const response = await Vue.axios.get('/isopen');
+			const { isOpen, schedules } = response.data || {};
+			commit('setDaySchedule', schedules)
+			commit('setIsOpen', isOpen);
+		} catch (err) {
+			console.error('Failed to fetch isOpen', err);
 			throw err;
 		}
 	}

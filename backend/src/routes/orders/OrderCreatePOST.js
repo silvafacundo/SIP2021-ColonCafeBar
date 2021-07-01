@@ -9,6 +9,9 @@ module.exports = class orderCreatePOST extends Route {
 		try {
 			const { withDelivery, paymentMethod, addressId, products } = req.body;
 
+			const isOpen = await this.utils.schedules.isOpen();
+			if (!isOpen) return res.status(400).json({ message: 'El negocio actualmente se encuentra cerrado' });
+
 			const clientId = user.id;
 			const order = await this.utils.orders.createOrder({
 				clientId,

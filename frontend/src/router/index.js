@@ -72,7 +72,7 @@ const routes = [
 		{ path: 'products', name: 'adminProducts', component: AdminProducts },
 		{ path: 'store', name: 'adminStore', component: AdminStore },
 		{ path: 'clients', name: 'adminClients', component: AdminClients },
-		{ path: 'schedule', name: 'adminSchedule', component: Schedule }
+		{ path: 'schedules', name: 'adminSchedule', component: Schedule }
 	] }
 ]
 

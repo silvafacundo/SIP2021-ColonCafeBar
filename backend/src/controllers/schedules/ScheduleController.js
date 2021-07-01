@@ -45,10 +45,23 @@ module.exports = class ScheduleController {
 	}
 
 	//Get specific schedule
-	async getSchedule({ id }){
+	async getSchedule({ id } = {}){
 		return await this.db('schedules')
 			.where({ id })
 			.first();
+	}
+
+	async getScheduleFromDay(dayOfWeek) {
+		if (!dayOfWeek) {
+			dayOfWeek = (new Date()).getDay();
+		}
+		const schedules = await this.db('schedules')
+			.where({ dayOfWeek })
+			.orderBy([
+				{ column: 'dayOfWeek' },
+				{ column: 'openingTime' }
+			]);
+		return schedules;
 	}
 
 	//Get all schedule loaded
@@ -58,7 +71,6 @@ module.exports = class ScheduleController {
 				{ column: 'dayOfWeek' },
 				{ column: 'openingTime' }
 			])
-			.select();
 		return schedules;
 	}
 
@@ -113,6 +125,22 @@ module.exports = class ScheduleController {
 
 		const result = await query.first();
 		return !!result
+	}
+
+	async isOpen() {
+		// TODO: add timezone
+		const date = new Date();
+
+		let hours = date.getHours();
+		let minutes = date.getMinutes();
+		if (hours < 10) hours = `0${hours}`;
+		if (minutes < 10) minutes = `0${minutes}`;
+
+		const time = `${hours}:${minutes}`;
+		const dayOfWeek = date.getDay();
+
+		const isOpen = await this.insideTime(dayOfWeek, time);
+		return isOpen;
 	}
 
 }
