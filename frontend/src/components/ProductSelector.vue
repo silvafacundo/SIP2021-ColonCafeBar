@@ -24,7 +24,8 @@
 			</b-dropdown>
 		</b-field>
 		<b-field label="Unidades">
-			<b-numberinput :min="1"
+			<b-numberinput :editable="false"
+				:min="1"
 				controls-rounded
 				controls-position="compact"
 				:value="productConfiguration.amount"
