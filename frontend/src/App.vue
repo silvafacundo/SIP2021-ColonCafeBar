@@ -27,6 +27,7 @@ export default {
 				duration: duration,
 				message: text,
 				position: 'is-bottom',
+				queue: false,
 				type: isError ? 'is-danger' : 'is-success'
 			})
 		}

@@ -133,7 +133,8 @@ export default {
 					type: 'is-warning',
 					position: 'is-bottom',
 					hasIcon: true,
-					indefinite: true
+					indefinite: true,
+					queue: false
 				});
 				this.closeNotification.$on('close', () => this.isCloseNotificationOpen = false)
 			}

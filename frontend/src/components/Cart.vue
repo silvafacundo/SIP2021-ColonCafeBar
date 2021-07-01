@@ -1,10 +1,14 @@
 <template>
 	<div class="cart-container" :class="{ active }">
 		<h4>Mi Compra <span>({{ items }})</span></h4>
-		<CartProduct v-for="(product, index) of products"
-			:key="index"
-			:product="product"
-			@delete="(val, e) => deleteProduct(e, index)" />
+
+		<div class="products-container">
+			<CartProduct v-for="(product, index) of products"
+				:key="index"
+				:product="product"
+				@delete="(val, e) => deleteProduct(e, index)" />
+		</div>
+
 
 		<!-- <div v-for="(product, index) of products"
 			:key="index"
@@ -139,6 +143,10 @@ export default {
 <style scoped lang="scss">
 	.cart-container {
 		display: none;
+		.products-container {
+			max-height: 50vh;
+			overflow-y: auto;
+		}
 		.empty {
 			margin: 1.5rem 0;
 			text-align:center;

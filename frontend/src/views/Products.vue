@@ -1,5 +1,5 @@
 <template>
-	<div class="container">
+	<div class="main-container">
 		<div class="filters-container">
 			<div class="filters">
 				<b-collapse v-model="openFilters"
@@ -257,19 +257,19 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.container {
-	margin: 0;
-	display: flex;
+.main-container {
+	position: relative;
+	display: grid;
+	grid-template-columns: 350px 1fr;
 	flex-wrap: wrap;
 	padding: 2rem 0;
+	min-height: 100vh;
 }
 .filters-container {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
 	color: white;
 	.filters {
-		padding: 0 4rem;
+		padding: 0 1rem;
+		width: 100%;
 
 		h2 {
 			margin-bottom: 1rem;
@@ -295,7 +295,10 @@ export default {
 	}
 }
 .products-container {
-	flex: 2;
+	width: 100%;
+	max-width: 750px;
+	justify-self: center;
+	align-self: center;
 }
 .categories-container{
 	border: none;
@@ -347,7 +350,7 @@ export default {
 }
 
 @media (max-width: 900px){
-	div.container{
+	div.main-container{
 		display:block;
 		padding: 0;
 		width: 95%;
