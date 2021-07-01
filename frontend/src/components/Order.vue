@@ -172,26 +172,16 @@ export default {
 			return moment(this.order.createdAt).format('DD/MM/YYYY HH:mm[hs]');
 		},
 		paymentMethodIcon() {
-			switch (this.order.paymentMethod) {
-				case 'points': return 'parking';
-				case 'online': return 'credit-card';
-				default: return 'money-bill';
-			}
+			return this.$getPaymentMethod(this.order.paymentMethod).icon
 		},
 		paymentMethodText() {
-			let pm = 'efectivo';
-			if (this.order.paymentMethod === 'online') pm = 'MercadoPago';
-			else if ( this.order.paymentMethod === 'points') pm = 'Puntos'
+			const pm = this.$getPaymentMethod(this.order.paymentMethod).name;
 			let text = `El usuario utilizará ${pm} para pagar el pedido`;
 			return text;
 		},
 		deliveryAddress() {
 			if (!this.order.withDelivery || !this.order.address) return '';
-			const { street, number, floor } = this.order.address;
-			let text = `${street} ${number}`;
-
-			if (typeof floor !== 'undefined' && floor !== null) text += ` - ${floor}`;
-			return text;
+			return this.$parseAddress(this.order.address);
 		},
 		deliveryMapsLink() {
 			if (!this.order.withDelivery || !this.order.address) return '';

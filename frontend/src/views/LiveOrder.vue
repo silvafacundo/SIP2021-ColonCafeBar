@@ -84,7 +84,7 @@ export default {
 		},
 		address() {
 			if ( !this.order.withDelivery || !this.order.address) return;
-			return 'Parana hacer 566 1c la dirección';
+			return this.$parseAddress(this.order.address);
 		},
 		parsedProducts () {
 			if (!this.order) return [];
