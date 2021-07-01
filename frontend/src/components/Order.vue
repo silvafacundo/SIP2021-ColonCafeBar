@@ -268,5 +268,10 @@ export default {
 				grid-column: 1/-1;
 			}
 		}
+		@media screen and (max-width: 500px) {
+			.order-info {
+				grid-template-columns: 1fr;
+			}
+		}
 	}
 </style>

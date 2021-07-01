@@ -11,7 +11,13 @@
 			<b-loading :is-full-page="false"
 				:active="loading" />
 		</div>
-		<img :src="src" :alt="alt">
+		<img v-show="src"
+			:src="src"
+			:alt="alt">
+		<div v-if="!src" class="no-image">
+			<p>Selecciona una imágen</p>
+			<b-icon icon="camera" />
+		</div>
 		<input ref="input"
 			type="file"
 			@input="updateFile">
@@ -88,6 +94,20 @@ export default {
 <style scoped lang="scss">
 	.editable-imagen {
 		position: relative;
+		min-height: 150px;
+		border: 1px solid rgba(0,0,0,0.1);
+		justify-content: center;
+		display: flex;
+		align-items: center;
+		.no-image {
+			text-align: center;
+			font-weight: bold;
+			::v-deep > .icon {
+				margin: .3rem;
+				font-size: 5rem;
+				color:gray;
+			}
+		}
 		.overlay {
 			position: absolute;
 			width: 100%;

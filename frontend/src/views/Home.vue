@@ -160,7 +160,7 @@ export default {
 		padding: 0 1rem;
 		display: flex;
 		gap: 1rem;
-		z-index: 1000;
+		z-index: 39;
 		margin-bottom: 1rem;
 		img {
 			height: 100%;
@@ -180,7 +180,11 @@ export default {
 			margin-left: 0;
 		}
 	}
+	.sidebar ::v-deep .sidebar-background {
+		z-index: 30;
+	}
 	.sidebar ::v-deep .sidebar-content {
+		z-index: 35;
 		padding: 1rem;
 		padding-top: 80px;
 	}

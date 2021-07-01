@@ -1,8 +1,22 @@
 <template>
 	<div class="container">
 		<h3>Productos</h3>
+		<b-input v-model="filters.query"
+			class="mb-2"
+			type="search"
+			icon="search"
+			:loading="isLoading"
+			placeholder="Buscar productos..."
+			@input="typingSearch" />
+
 		<b-table hoverable
+			backend-pagination
+			paginated
 			:data="products"
+			:per-page="pagination.perPage"
+			:current-page="pagination.page"
+			:total="pagination.total"
+			@page-change="pageChange"
 			@click="row => selectedProduct = { ...row }">
 			<!-- <b-table-column>
 				<img src="https://http.cat/420.jpg"
@@ -25,10 +39,12 @@
 					:value="props.row.isActive"
 					@click.native.prevent="() => saveProduct(props.row.id, 'isActive', !props.row.isActive)" />
 			</b-table-column>
+			<template #bottom-left>
+				<b-button type="is-success" @click="newProduct">
+					Nuevo Producto
+				</b-button>
+			</template>
 		</b-table>
-		<b-button type="is-success" @click="newProduct">
-			Nuevo Producto
-		</b-button>
 		<b-modal :active="!!selectedProduct" @close="closeModal">
 			<div v-if="selectedProduct" class="card selected-product">
 				<EditableImage class="test"
@@ -136,7 +152,15 @@ export default {
 	data: () => ({
 		isLoading: false,
 		selectedProduct: null,
-		uploadingImage: false
+		uploadingImage: false,
+		searchTimeout: null,
+		pagination: {
+			page: 1,
+			perPage: 20,
+		},
+		filters: {
+			query: ''
+		}
 	}),
 	computed: {
 		products() {
@@ -151,12 +175,18 @@ export default {
 		this.$store.dispatch('Products/fetchCategories');
 	},
 	methods: {
-		async fetchProducts() {
+		async fetchProducts(fromFilters) {
+			this.isLoading = true;
+			if (fromFilters) {
+				this.pagination.page = 1
+			}
 			try {
-				await this.$store.dispatch('Products/fetchAdminProducts') || [];
+				const { pagination } = await this.$store.dispatch('Products/fetchAdminProducts', { ...this.pagination, filters: this.filters });
+				this.pagination = { ...this.pagination, ...pagination };
 			} catch (err) {
 				this.$showToast('Error al traer los productos', true);
 			}
+			this.isLoading = false;
 		},
 		async updateProductValue(productId, key, value) {
 			try {
@@ -254,12 +284,24 @@ export default {
 				}
 			}
 			this.selectedProduct = newSelectedProduct;
+		},
+		typingSearch(val) {
+			this.isLoading = true;
+			clearTimeout(this.searchTimeout);
+			this.searchTimeout = setTimeout(() => this.fetchProducts(true), 1000);
+		},
+		pageChange(page) {
+			this.pagination.page = page;
+			this.fetchProducts();
 		}
 	}
 }
 </script>
 
 <style lang="scss" scoped>
+	::v-deep .pagination-link:not(.is-current) {
+		background-color: white;
+	}
 	div.container {
 		> ::v-deep button {
 			display: flex;

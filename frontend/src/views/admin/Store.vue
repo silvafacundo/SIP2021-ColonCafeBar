@@ -25,7 +25,7 @@
 						:zoom="15"
 						:options="{ streetViewControl: false }"
 						map-type-id="terrain"
-						style="width: 100vh; height: 50vh; display: flex; margin: auto">
+						style="width: 100%; height: 50vh; display: flex; margin: auto">
 						<GmapMarker
 							:position="storeCoordinates"
 							:clickable="true"
@@ -112,10 +112,10 @@ div.address-container {
 	flex-direction: column;
 	gap: .5rem;
 }
-@media (max-width: 900px){
-		div.store-container{
-			padding: 0;
-			width: 95%;
-		}
-	}
+// @media (max-width: 900px){
+// 		div.store-container{
+// 			padding: 0;
+// 			width: 95%;
+// 		}
+// 	}
 </style>

@@ -174,6 +174,7 @@ export default {
 		padding: 1rem;
 		display: flex;
 		gap: .5rem;
+		overflow-y: auto;
 	}
 	.autocomplete-name {
 		font-weight: bold;

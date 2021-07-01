@@ -31,12 +31,12 @@ const actions = {
 			throw err;
 		}
 	},
-	async fetchAdminProducts({ commit }, { filter, page, perPage, orderBy } = {}) {
+	async fetchAdminProducts({ commit }, { filters, page, perPage, orderBy } = {}) {
 		try {
-			const response = await Vue.axios.post('/admin/products', { filter, page, perPage, orderBy });
-			const products = response.data.products;
+			const response = await Vue.axios.post('/admin/products', { filters, page, perPage, orderBy });
+			const { products = [], pagination = {} } = response.data;
 			commit('setProducts', products);
-			return products;
+			return { products, pagination };
 		} catch (err) {
 			console.error('Failed to fetch admin products', err);
 			throw err;

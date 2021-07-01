@@ -133,7 +133,7 @@ export default {
 		padding: 0 1rem;
 		display: flex;
 		gap: 1rem;
-		z-index: 1000;
+		z-index: 39;
 		margin-bottom: 1rem;
 		img {
 			height: 100%;
@@ -148,12 +148,16 @@ export default {
 		}
 	}
 
+.sidebar ::v-deep .sidebar-background {
+	z-index: 30;
+}
 .sidebar ::v-deep .sidebar-content {
 	padding: 1rem;
 	padding: 1rem;
 	padding-top: 80px;
 	height: 100%;
 	overflow-y: hidden;
+	z-index: 35;
 	.menu{
 		height: 100%;
 		display: flex;
