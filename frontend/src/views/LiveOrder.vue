@@ -22,14 +22,14 @@
 			<p class="title">Estado</p>
 			<order-status :order="order" />
 		</div>
-		<div class="points" v-if="hasGrantablePoints">
+		<div v-if="hasGrantablePoints" class="points">
 			<p class="title">Puntos</p>
 			<p v-if=" !hasOrderFinalized">Se te otorgaran {{ order.grantablePoints }} ptos cuando la orden finalice.</p>
 			<p v-else>Obtuviste {{ order.grantablePoints }} ptos.</p>
 		</div>
 		<div class="payment-metehod">
 			<p class="title">Método de pago</p>
-			<p>{{ order.paymentMethod }}</p>
+			<p>{{ paymentMethodData.name }}</p>
 		</div>
 		<div class="client">
 			<p class="title">Entrega a</p>
@@ -85,6 +85,9 @@ export default {
 		address() {
 			if ( !this.order.withDelivery || !this.order.address) return;
 			return this.$parseAddress(this.order.address);
+		},
+		paymentMethodData() {
+			return this.$getPaymentMethod(this.order.paymentMethod)
 		},
 		parsedProducts () {
 			if (!this.order) return [];
