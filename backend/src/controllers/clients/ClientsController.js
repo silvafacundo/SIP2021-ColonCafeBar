@@ -142,7 +142,7 @@ module.exports = class ClientController {
 	}
 
 	async discountPoints(clientId, pointsToDiscount) {
-		const client = await this.getClient({ usersId: clientId });
+		const client = await this.getClient({ userId: clientId });
 		client.availablePoints = client.availablePoints - pointsToDiscount;
 		await client.save();
 	}

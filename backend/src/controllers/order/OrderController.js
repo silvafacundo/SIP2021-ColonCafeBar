@@ -53,7 +53,7 @@ module.exports = class OrderController {
 
 		if (typeof withDelivery !== 'boolean') throw new PublicError('withDelivery must be a boolean');
 
-		const client = await this.utils.clients.getClient({ clientId });
+		const client = await this.utils.clients.getClient({ userId: clientId });
 		if (!client) throw new PublicError('Client does not exist with that clientId');
 
 		let address;
