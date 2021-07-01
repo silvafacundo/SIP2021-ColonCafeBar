@@ -77,7 +77,6 @@ export default {
 		},
 		async updateStoreConfig() {
 			this.isLoading = true;
-			console.log(this.store);
 			try {
 				await this.$store.dispatch('Store/updateConfig', {
 					...this.store,
