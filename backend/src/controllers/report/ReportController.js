@@ -34,6 +34,15 @@ module.exports = class ReportController
 		return this.server.models;
 	}
 
+	filters(knex, options = {}) {
+		if (options.fromDate) knex.where('orders.createdAt', '>=', new Date(options.fromDate));
+		if (options.toDate) knex.where('orders.createdAt', '<=', new Date(options.toDate));
+
+		knex.where('orders.refunded', false);
+		knex.where('orders.isPaid', true);
+		if (options.statusId) knex.whereIn('orders.statusId', options.statusId);
+		if (options.paymentMethod) knex.where('orders.paymentMethod', options.paymentMethod);
+	}
 
 	async productsPriceHistory() {
 		const productsPricesHistory = await this.db('productPrices')
@@ -59,75 +68,138 @@ module.exports = class ReportController
 		return finalProducts;
 	}
 
-	async incomeByPeriod(dateFrom, dateTo) {
+	async totalSells(options = {}) {
 		const dispatchedStatus = await this.utils.orders.getOrderStatus({ key: 'dispatched' });
 		const deliveredStatus = await this.utils.orders.getOrderStatus({ key: 'delivered' });
+		options.statusId = [dispatchedStatus.id, deliveredStatus.id];
 
-		const orders = await this.db('orders')
-			.whereNot('paymentMethod', 'points')
-			.whereIn('statusId', [dispatchedStatus.id, deliveredStatus.id])
-			.where(builder =>{
-				if (dateFrom) builder.where('createAt', '>=', new Date(dateFrom))
-				if (dateTo) builder.where('createAt', '<', new Date(dateTo))
-			})
+		const { totalSells } = await this.db('orders')
+			.select(this.db.raw(`SUM("orderProducts".price * "orderProducts".amount) AS "totalSells"`))
+			.innerJoin('orderProducts', 'orders.id', 'orderProducts.orderId')
+			.whereNot('orders.paymentMethod', 'points')
+			.modify(knex => this.filters(knex, options))
+			.first();
 
-		return orders;
+		return totalSells;
 	}
 
 
-	async mostSelledProducts(dateFrom, dateTo) {
-		const products = await this.db('orderProducts')
+	async mostSelledProducts(options = {}) {
+		const productsQuery = await this.db('orderProducts')
 			.select([
 				'orderProducts.productId',
 				this.db.raw(`SUM("orderProducts".amount) AS "totalSells"`)
 			])
 			.innerJoin('orders', 'orderProducts.orderId', 'orders.id')
+			.innerJoin('products', 'products.id', 'orderProducts.productId')
+			.modify(knex => this.filters(knex, options))
+			.groupBy('productId')
+			.orderBy('totalSells', 'desc')
+			.limit(5);
+
+		const productsIds = [];
+		for (const product of productsQuery) {
+			productsIds.push(product.productId);
+		}
+		if (!productsIds || !Array.isArray(productsIds) || productsIds.length <= 0) return [];
+		const mostSelledProducts = await this.utils.products.getProducts(productsIds);
+		for (const mostSelledProduct of mostSelledProducts) {
+			for (const product of productsQuery) {
+				if (product.productId == mostSelledProduct.id) {
+					product.product = mostSelledProduct;
+					break;
+				}
+			}
+		}
+
+		return productsQuery;
+	}
+
+	/*async createReportAmountOfTotalSalesByPeriods(fromDate,toDate) {
+		const count = await this.db('orders')
+			.count('orders.id')
 			.where(builder => {
-				if (dateFrom) builder('orders.createdAt', '>=', new Date(dateFrom));
-				if (dateTo) builder('orders.createdAt', '>=', new Date(dateTo));
+				if (fromDate) builder.where('orders.createdAt', '>=', new Date(fromDate));
+				if (toDate) builder.where('orders.createdAt', '<=', new Date(toDate));
 			})
-			.orderBy('totalSells', 'desc');
 
-		return products;
+		return count;
+	}*/
+
+	async amountOfOrdersByTypeOfDelivery(options = {}) {
+		const countOrdersByDeliveryType = await this.db('orders')
+			.select('withDelivery')
+			.count('orders.id')
+			.modify(knex => this.filters(knex, options))
+			.groupBy('withDelivery');
+
+		return countOrdersByDeliveryType;
 	}
 
-	async createReportAmountOfTotalSalesByPeriods(dateFrom, dateTo) {
-		// const count = await this.db('orders')
-		// .select(COUNT('order.id'))
-		// .where('orders.createdAt'>=dateFrom && 'orders.createdAt'<=dateTo);
-		// return {count};
+	async amountOfOrdersByTypeOfPayment(options = {}) {
+		const countOrdersByPayment = await this.db('orders')
+			.select('paymentMethod')
+			.count('orders.id')
+			.modify(knex => this.filters(knex, options))
+			.groupBy('paymentMethod');
+
+		return countOrdersByPayment;
 	}
 
-	//condition = >'orders.paymentMethod'==='' or 'orders.paymentMethod'==='' or 'orders.paymentMethod'===''
-	async createReportQuantityOfOrdersByTypeOfDelivery(dateFrom, dateTo, condition) {
-		// const count = await this.db('orders')
-		// .select(COUNT('order.id'))
-		// .where(('orders.createdAt'>=dateFrom && 'orders.createdAt'<=dateTo) && condition);
-		// return {count};
+	async customersWhoMadeTheMostPurchases(options = {}) {
+		const dispatchedStatus = await this.utils.orders.getOrderStatus({ key: 'dispatched' });
+		const deliveredStatus = await this.utils.orders.getOrderStatus({ key: 'delivered' });
+		options.statusId = [dispatchedStatus.id, deliveredStatus.id];
+
+		const clientWithMostOrders = await this.db('orders')
+			.select([
+				'orders.clientId',
+				this.db.raw(`COUNT("orders".id) AS "totalOrders"`)
+			])
+			.modify(knex => this.filters(knex, options))
+			.groupBy('clientId')
+			.orderBy('totalOrders', 'desc')
+			.first();
+
+		const clientSpentTheMost = await this.db('orders')
+			.select([
+				'orders.clientId',
+				this.db.raw(`SUM("orderProducts".price * "orderProducts".amount) AS "totalSpent"`)
+			])
+			.innerJoin('orderProducts', 'orders.id', 'orderProducts.orderId')
+			.modify(knex => this.filters(knex, options))
+			.groupBy('clientId')
+			.orderBy('totalSpent', 'desc')
+			.first();
+
+		if (!clientWithMostOrders && !clientSpentTheMost) return {};
+
+		if (clientWithMostOrders && clientWithMostOrders.clientId) clientWithMostOrders.client = await this.utils.clients.getClient({ userId: clientWithMostOrders.clientId, onlyPublic: true });
+		if (clientSpentTheMost && clientSpentTheMost.clientId) clientSpentTheMost.client = await this.utils.clients.getClient({ userId: clientSpentTheMost.clientId, onlyPublic: true });
+
+		return { clientWithMostOrders, clientSpentTheMost };
 	}
 
-	//condition = >'orders.withDelivery'===true or 'orders.withDelivery'===false
-	async createReportNumberOfOrdersByTypeOfPayment(dateFrom, dateTo, condition) {
-		// const count = await this.db('orders')
-		// .select(COUNT('order.id'))
-		// .where(('orders.createdAt'>=dateFrom && 'orders.createdAt'<=dateTo) && condition);
-		// return {count};
-	}
+	async avgSalesPerDayOfTheWeek(options = {}) {
+		const dispatchedStatus = await this.utils.orders.getOrderStatus({ key: 'dispatched' });
+		const deliveredStatus = await this.utils.orders.getOrderStatus({ key: 'delivered' });
+		options.statusId = [dispatchedStatus.id, deliveredStatus.id];
 
-	async createReportCustomerWhoMadeTheMostPurchases(dateFrom, dateTo) {
-		// const clients = await this.db('orders')
-		// .select('orders.clientId',COUNT('orderProducts.amount'))
-		// .innerJoin('orderProducts','orderProducts.orderId','orders.id')
-		// .innerJoin('product','product.id','orderProducts.productId')
-		// .groupBy('orders.clientId')
-		// .where((('orders.createdAt'>=dateFrom) && ('orders.createdAt'<=dateTo)));
+		const subquery = this.db('orders')
+			.select([
+				this.db.raw(`extract(isodow from "createdAt") as dow`),
+				this.db.raw(`extract(week from "createdAt") as week`),
+				this.db.raw(`count(id) as count`)
+			])
+			.where(builder => this.filters(builder, options))
+			.groupBy(['dow', 'week'])
+			.as('perDay');
 
-		// const client = await this.db('clients')
-		// .select('*')
-		// .innerJoin(clients, function(){
-		// 	this.on('clients.clientId', 'clients.id')})
-		// .where( 'clients.count'===(MAX('clients.count'))).first();;
 
-		// return {client};
+		const result = await this.db(subquery).select([
+			'dow',
+			this.db.raw(`avg(count)`)
+		]).groupBy('dow');
+		return result;
 	}
 }

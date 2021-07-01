@@ -49,6 +49,11 @@
 						to="/admin/clients"
 						label="Clientes"
 					/>
+
+					<b-menu-item icon="chart-bar"
+						tag="router-link"
+						to="/admin/metrics"
+						label="Métricas" />
 				</b-menu-list>
 
 				<b-menu-list label="Productos">
