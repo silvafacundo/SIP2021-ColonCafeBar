@@ -12,7 +12,7 @@ import Profile from '../views/Profile';
 
 
 import Products from '../views/Products';
-import Order from '../views/Order';
+import LiveOrder from '../views/LiveOrder';
 import Checkout from '../views/Checkout';
 import ClientOrders from '../views/ClientOrders';
 import Help from '../views/Help';
@@ -57,7 +57,7 @@ const routes = [
 		{ path: 'me', name: 'me', component: Profile },
 		{ path: 'checkout', name: 'checkout', component: Checkout },
 		{ path: 'orders', name: 'orders', component: ClientOrders },
-		{ path: 'order/:orderId', props: true, name: 'order', component: Order },
+		{ path: 'order/:orderId', props: true, name: 'order', component: LiveOrder },
 		{ path: 'help', name: 'help', component: Help }
 	] },
 

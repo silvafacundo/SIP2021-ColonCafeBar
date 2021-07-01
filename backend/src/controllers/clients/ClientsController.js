@@ -133,7 +133,7 @@ module.exports = class ClientController {
 	}
 
 	async addPoints(clientId, pointsToAdd) {
-		const client = await this.getClient({ usersId: Number(clientId) });
+		const client = await this.getClient({ userId: Number(clientId) });
 		client.availablePoints = client.availablePoints + Number(pointsToAdd);
 		await client.save();
 	}

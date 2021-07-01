@@ -25,8 +25,12 @@ module.exports = (sequelize, DataTypes) => {
 							return 9;
 						case 'inPreparation':
 							return 8
-						default:
+						case 'onTheWay':
 							return 7
+						case 'cancelled':
+							return 1
+						default:
+							return 6
 					}
 				}
 			}

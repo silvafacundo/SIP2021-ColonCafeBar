@@ -6,11 +6,19 @@
 				<cart-product :product="product" />
 			</li>
 		</ul>
-		<p>Total: ${{ order.total + order.deliveryPrice }}</p>
-		<p>Estado: {{ order.status }}</p>
-		<p>Método de pago: {{ order.paymentMethod }}</p>
-		<p>Estado del Pago: {{ order.isPaid ? 'Pago': 'Pendiente' }}</p>
-		<p>Tipo de entrega: {{ order.withDelivery ? 'delivery' : 'Take Away' }} </p>
+		<div class="receipt">
+			<p>Subtotal: <span>${{ subtotal }}</span></p>
+			<p v-if="order.withDelivery">Envío: <span>${{ order.deliveryPrice }}</span></p>
+			<p class="total">Total: <span>${{ order.total }}</span></p>
+		</div>
+		<b-field label="Forma de pago">
+			{{ order.paymentMethod }}
+		</b-field>
+		<b-field custom-class="delivery" label="Entrega a">
+			<p> {{ clientFullName }} </p>
+			<p v-if="order.withDelivery"> {{ address }} </p>
+			<p v-else>Retira por el local</p>
+		</b-field>
 		<a v-if="!order.isPaid && order.paymentMethod === 'online'"
 			class="button is-primary"
 			target="_blank"
@@ -26,7 +34,7 @@
 <script>
 import CartProduct from '../components/CartProduct.vue';
 export default {
-	name: 'Order',
+	name: 'LiveOrder',
 	components: { CartProduct },
 	props: {
 		orderId: {
@@ -49,9 +57,21 @@ export default {
 		hasGrantablePoints() {
 			return this.order.paymentMethod !== 'points'
 		},
+		clientFullName() {
+			let name = this.order.client.firstName;
+			if (this.order.client.lastName) name += ' ' + this.order.client.lastName;
+			return name;
+		},
+		address() {
+			if ( !this.order.withDelivery || !this.order.address) return;
+			return 'Parana hacer 566 1c la dirección';
+		},
 		parsedProducts () {
 			if (!this.order) return [];
 			return this.order.products.map(product => ({ ...product.product, amount: product.amount, price: product.price }));
+		},
+		subtotal() {
+			return this.parsedProducts.reduce((acc, val) => acc + (val.amount * val.price), 0);
 		}
 	},
 	mounted() {
@@ -85,6 +105,23 @@ export default {
 		border-radius: 3em;
 		background-color: #fafafa;
 		text-align: left;
+		.receipt {
+			border-bottom: 1px solid rgba(0,0,0,.1);
+			border-top: 1px solid rgba(0,0,0,.1);
+			padding: .5rem;
+			p {
+				font-size: .9rem;
+				margin: .3rem;
+				color: gray;
+				&.total {
+					color: black;
+					font-weight: bold;
+					font-size:1rem;
+					margin:.5rem .3rem;
+					margin-bottom: 0;
+				}
+			}
+		}
 		a {
 			background-color: var(--rojo);
 		}
