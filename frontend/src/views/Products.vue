@@ -298,7 +298,6 @@ export default {
 	width: 100%;
 	max-width: 750px;
 	justify-self: center;
-	align-self: center;
 }
 .categories-container{
 	border: none;
