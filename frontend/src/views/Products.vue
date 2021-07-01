@@ -170,6 +170,7 @@ export default {
 			fromPrice: null,
 			toPrice: null,
 		},
+		perPage: 1000,
 		searchTimeout: null,
 	}),
 	computed: {
@@ -220,7 +221,7 @@ export default {
 		async fecthProducts() {
 			try {
 				this.isLoading = true;
-				await this.$store.dispatch('Products/fetchProducts', { filters: this.filters });
+				await this.$store.dispatch('Products/fetchProducts', { filters: this.filters, perPage: this.perPage });
 				await this.$store.dispatch('Products/fetchCategories');
 				this.isLoading = false;
 			} catch (err) {
