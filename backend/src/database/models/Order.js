@@ -90,7 +90,7 @@ module.exports = (sequelize, DataTypes) => {
 			total: {
 				type: DataTypes.VIRTUAL,
 				get() {
-					return this.products.reduce((prev, product) => prev + product.price * product.amount, 0);
+					return this.products.reduce((prev, product) => prev + product.price * product.amount, 0) + (this.deliveryPrice || 0);
 				}
 			}
 		},

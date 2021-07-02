@@ -12,7 +12,7 @@ import Profile from '../views/Profile';
 
 
 import Products from '../views/Products';
-import Order from '../views/Order';
+import LiveOrder from '../views/LiveOrder';
 import Checkout from '../views/Checkout';
 import ClientOrders from '../views/ClientOrders';
 import Help from '../views/Help';
@@ -33,6 +33,7 @@ import Schedule from '../views/admin/Schedule';
 import AdminStore from '../views/admin/Store';
 import AdminClients from '../views/admin/Clients';
 import Metrics from '../views/admin/Metrics';
+import ProductPriceHistory from '../views/admin/ProductPriceHistory';
 //
 
 Vue.use(VueRouter)
@@ -57,7 +58,7 @@ const routes = [
 		{ path: 'me', name: 'me', component: Profile },
 		{ path: 'checkout', name: 'checkout', component: Checkout },
 		{ path: 'orders', name: 'orders', component: ClientOrders },
-		{ path: 'order/:orderId', props: true, name: 'order', component: Order },
+		{ path: 'order/:orderId', props: true, name: 'order', component: LiveOrder },
 		{ path: 'help', name: 'help', component: Help }
 	] },
 
@@ -75,6 +76,7 @@ const routes = [
 		{ path: 'clients', name: 'adminClients', component: AdminClients },
 		{ path: 'schedules', name: 'adminSchedule', component: Schedule },
 		{ path: 'metrics', name: 'adminMetrics', component: Metrics },
+		{ path: 'products/history/:productId', name: 'ProductPriceHistory', props: true, component: ProductPriceHistory },
 	] }
 ]
 

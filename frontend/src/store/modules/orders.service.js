@@ -15,8 +15,9 @@ const mutations = {
 	setOrders(state, orders) {
 		state.orders = orders || [];
 	},
-	setPossibleStatus(state, possibleStatus) {
-		state.possibleStatus = possibleStatus || [];
+	setPossibleStatus(state, possibleStatus = []) {
+		possibleStatus = possibleStatus.sort((a, b) => b.priorityService - a.priorityService)
+		state.possibleStatus = possibleStatus;
 	}
 };
 const actions = {
