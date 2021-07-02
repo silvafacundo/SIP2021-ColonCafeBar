@@ -115,6 +115,15 @@ const actions = {
 			console.error('Failed to create product', err);
 			throw err;
 		}
+	},
+	async fetchProductPriceHistory(context, { productId }) {
+		try {
+			const response = await Vue.axios.get(`/admin/product/history?productId=${productId}`);
+			return response.data.product;
+		} catch (err) {
+			console.error('Failed to fetch product', err)
+			throw err;
+		}
 	}
 }
 

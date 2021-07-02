@@ -57,6 +57,14 @@
 				<b-field>
 					<b-checkbox v-model="selectedProduct.isActive">Visible</b-checkbox>
 				</b-field>
+				<b-field>
+					<b-button
+						icon-left="history"
+						type="is-success"
+						@click="openHistoryPrices()">
+						Ver histórico de precios
+					</b-button>
+				</b-field>
 				<b-field label="Precio">
 					<b-input v-model="selectedProduct.price"
 						icon="dollar-sign"
@@ -293,6 +301,9 @@ export default {
 		pageChange(page) {
 			this.pagination.page = page;
 			this.fetchProducts();
+		},
+		openHistoryPrices() {
+			window.open(`${window.location.pathname}/history/${this.selectedProduct.id}`, '_blank');
 		}
 	}
 }

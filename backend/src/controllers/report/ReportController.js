@@ -44,28 +44,25 @@ module.exports = class ReportController
 		if (options.paymentMethod) knex.where('orders.paymentMethod', options.paymentMethod);
 	}
 
-	async productsPriceHistory() {
-		const productsPricesHistory = await this.db('productPrices')
-			.orderBy('productId', 'asc')
-			.orderBy('createdAt', 'asc');
+	async productPriceHistory(productId) {
+		const product = await this.db('products').where('id', productId).first();
+		if (!product) return {};
 
-		const productPointsPricesHistory = await this.db('productPoints')
-			.orderBy('productId', 'asc')
-			.orderBy('createdAt', 'asc');
+		const productHistory = await this.db('productPoints')
+			.select([
+				'productPoints.*', 'productPrices.*', 'productPoints.price as pointsPrice'
+			])
+			.leftJoin('productPrices', 'productPrices.id', 'productPoints.id')
+			.where('productPoints.productId', productId)
+			.orderBy('productPoints.createdAt', 'desc');
 
-		const products = await this.db('products').orderBy('id', 'asc');
 
-		const finalProducts = [];
+		const finalProduct = {
+			...product,
+			productHistory,
+		};
 
-		for (const product of products) {
-			finalProducts.push({
-				...product,
-				priceHistory: productsPricesHistory.filter(productPrice => Number(productPrice.productId) === Number(product.id)),
-				pointsPricesHistory: productPointsPricesHistory.filter(productPrice => Number(productPrice.productId) === Number(product.id))
-			})
-		}
-
-		return finalProducts;
+		return finalProduct;
 	}
 
 	async totalSells(options = {}) {

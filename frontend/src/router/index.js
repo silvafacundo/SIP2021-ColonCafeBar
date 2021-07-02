@@ -33,6 +33,7 @@ import Schedule from '../views/admin/Schedule';
 import AdminStore from '../views/admin/Store';
 import AdminClients from '../views/admin/Clients';
 import Metrics from '../views/admin/Metrics';
+import ProductPriceHistory from '../views/admin/ProductPriceHistory';
 //
 
 Vue.use(VueRouter)
@@ -75,6 +76,7 @@ const routes = [
 		{ path: 'clients', name: 'adminClients', component: AdminClients },
 		{ path: 'schedules', name: 'adminSchedule', component: Schedule },
 		{ path: 'metrics', name: 'adminMetrics', component: Metrics },
+		{ path: 'products/history/:productId', name: 'ProductPriceHistory', props: true, component: ProductPriceHistory },
 	] }
 ]
 
