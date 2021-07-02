@@ -16,7 +16,7 @@
 					type="password"
 					placeholder="Contraseña">
 				<br>
-				<button>Crear cuenta</button>
+				<button :disabled="isLoading">Crear cuenta</button>
 			</form>
 			<p class="error">{{ error && 'Error: ' + error }}</p>
 			<router-link to="/login">Ingresar</router-link>
@@ -30,11 +30,13 @@ export default {
 		email: '',
 		firstName: '',
 		password: '',
-		error: ''
+		error: '',
+		isLoading: false
 	}),
 	methods: {
 		async register() {
 			this.error = '';
+			this.isLoading = true;
 			try {
 				await this.$store.dispatch('Auth/registerClient', { email: this.email, firstName: this.firstName, password: this.password });
 				this.$router.push({ name: 'login' });
@@ -43,6 +45,7 @@ export default {
 				if (err && err.response && err.response.data) this.error = err.response.data.message;
 				else this.error = 'Ocurrió un error'
 			}
+			this.isLoading = false;
 		}
 	}
 
@@ -94,9 +97,13 @@ h3{
 	border-radius: 3em;
 }
 
-.form-div > form > button:hover{
+.form-div > form > button:hover:not(:disabled) {
 	cursor:pointer;
 	background-color: #c0392b;
+}
+.form-div > form > button:disabled {
+	background-color: #ac5861
+
 }
 
 .form-div > a{

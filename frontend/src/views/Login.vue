@@ -15,7 +15,7 @@
 					placeholder="Contraseña"
 					title="Ingrese contraseña">
 				<br>
-				<button>Ingresar</button>
+				<button :disabled="isLoading">Ingresar</button>
 			</form>
 			<router-link to="/register" title="Crear una cuenta">¿No tenes cuenta? ¡Regístrese haciendo click aquí!</router-link>
 			<br>
@@ -27,6 +27,7 @@
 <script>
 export default {
 	data: () => ({
+		isLoading: false,
 		email: '',
 		password: ''
 	}),
@@ -34,6 +35,7 @@ export default {
 	},
 	methods: {
 		async login() {
+			this.isLoading = true;
 			try {
 				await this.$store.dispatch('Auth/clientLogin', { email: this.email, password: this.password });
 				this.$router.push({ name: 'home' });
@@ -41,6 +43,7 @@ export default {
 				console.error('Failed to log in', err);
 				this.danger();
 			}
+			this.isLoading = false;
 		},
 		danger() {
 			this.$buefy.toast.open({
@@ -93,9 +96,12 @@ div:nth-child(1){
 	border-radius: 10px;
 }
 
-.form-div > form > button:hover{
+.form-div > form > button:hover:not(:disabled) {
 	cursor:pointer;
 	background-color: #c0392b;
+}
+.form-div > form > button:disabled {
+	background-color: #ac5861
 }
 
 .form-div > a{

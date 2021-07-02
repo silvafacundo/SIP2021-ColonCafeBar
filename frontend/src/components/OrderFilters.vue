@@ -1,5 +1,5 @@
 <template>
-	<div class="card toolbar">
+	<div class="card toolbar" :class="{ overflow: canOverflow }">
 		<b-field v-if="!ignoreFields.includes('fromDate')"
 			label="Desde"
 			custom-class="is-small">
@@ -45,10 +45,10 @@
 						Selected ({{ filters.statusesId ? filters.statusesId.length : 0 }})
 					</b-button>
 				</template>
-				<b-dropdown-item v-for="(status, index) of localStatus"
+				<b-dropdown-item v-for="(lstatus, index) of localStatus"
 					:key="index"
-					:value="status.id">
-					<span> {{ status.statusName }}</span>
+					:value="lstatus.id">
+					<span> {{ lstatus.statusName }}</span>
 				</b-dropdown-item>
 			</b-dropdown>
 		</b-field>
@@ -122,7 +122,8 @@ export default {
 		clientsAutocomplete: [],
 		clientText: '',
 		clientTimeout: null,
-		autocompleteLoading: false
+		autocompleteLoading: false,
+		canOverflow: false
 	}),
 	computed: {
 		filters() {
@@ -136,11 +137,18 @@ export default {
 			return this.$store.getters['Delivery/deliveries'];
 		},
 	},
+	beforeMount() {
+		this.handleResize();
+		window.addEventListener('resize', this.handleResize.bind(this))
+	},
 	mounted() {
 		if (this.queryClient) {
 			this.$emit('input', { ...this.filters, clientsId: [this.queryClient.id] })
 			this.clientText = this.queryClient.email;
 		}
+	},
+	beforeDestroy() {
+		window.removeEventListener('resize', this.handleResize.bind(this))
 	},
 	methods: {
 		updateFilter(key, value) {
@@ -164,6 +172,9 @@ export default {
 			this.clientTimeout = setTimeout(()=> {
 				this.fetchClients();
 			}, 1000)
+		},
+		handleResize() {
+			this.canOverflow = window.innerWidth < 1024;
 		}
 	}
 }
@@ -174,7 +185,9 @@ export default {
 		padding: 1rem;
 		display: flex;
 		gap: .5rem;
-		overflow-y: auto;
+		&.overflow {
+			overflow-y: auto;
+		}
 	}
 	.autocomplete-name {
 		font-weight: bold;

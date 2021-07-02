@@ -88,7 +88,6 @@ export default {
 		parsedLiveOrders() {
 			const ordered = [...this.liveOrders];
 
-
 			return ordered.sort((a, b) => {
 				const { priorityService: aVal } = a.orderStatus;
 				const { priorityService: bVal } = b.orderStatus;
@@ -104,17 +103,21 @@ export default {
 		}*/
 	},
 	watch: {
-		selectedTab(newVal) {
+		selectedTab(newVal, oldVal) {
 			window.location.hash = newVal;
+			if (newVal === 'history')
+				this.fetchOrders(true);
 		}
+	},
+	beforeMount() {
+		const hash = window.location.hash.replace('#', '');
+		if (hash) this.selectedTab = hash;
 	},
 	mounted() {
 		this.fetchOrders();
 		this.fetchDeliveries();
 		this.liveInterval = setInterval(this.fetchLiveOrders.bind(this), 500);
 		window.addEventListener('scroll', this.handleScroll.bind(this))
-		const hash = window.location.hash.replace('#', '');
-		if (hash) this.selectedTab = hash;
 	},
 	beforeDestroy() {
 		window.removeEventListener('scroll', this.handleScroll.bind(this));

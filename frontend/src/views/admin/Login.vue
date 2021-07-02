@@ -15,7 +15,7 @@
 					placeholder="Contraseña"
 					title="Ingrese contraseña">
 				<br>
-				<button>Ingresar</button>
+				<button :disabled="isLoading">Ingresar</button>
 			</form>
 			<!-- <router-link to="/register" title="Crear una cuenta">¿No tenes cuenta? ¡Regístrese haciendo click aquí!</router-link> -->
 		</div>
@@ -26,12 +26,14 @@
 export default {
 	data: () => ({
 		username: '',
-		password: ''
+		password: '',
+		isLoading: false
 	}),
 	mounted() {
 	},
 	methods: {
 		async login() {
+			this.isLoading = true;
 			try {
 				await this.$store.dispatch('Auth/adminLogin', { username: this.username, password: this.password });
 				await this.$router.push({ name: 'adminDashboard' });
@@ -39,6 +41,7 @@ export default {
 				console.error('Failed to log in', err);
 				this.danger();
 			}
+			this.isLoading = false;
 		},
 		danger() {
 			this.$buefy.toast.open({
@@ -91,9 +94,12 @@ div:nth-child(1){
 	border-radius: 10px;
 }
 
-.form-div > form > button:hover{
+.form-div > form > button:hover:not(:disabled) {
 	cursor:pointer;
 	background-color: #c0392b;
+}
+.form-div > form > button:disabled {
+	background-color: #ac5861
 }
 
 .form-div > a{

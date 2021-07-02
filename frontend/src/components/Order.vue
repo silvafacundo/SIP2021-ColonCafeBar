@@ -60,7 +60,9 @@
 				</div>
 				<div class="order-info">
 					<div class="client">
-						<p class="title">Cliente:</p>
+						<p class="title">
+							Cliente:
+						</p>
 						<p>
 							<b-icon icon="user" /> {{ order.client.firstName }} {{ order.client.lastName }}
 						</p>
@@ -78,6 +80,7 @@
 								{{ order.client.email }}
 							</a>
 						</p>
+						<router-link class="button is-text is-small" :to="{ name: 'adminClients', query: { search: order.client.email } }">ver cliente</router-link>
 					</div>
 					<div v-if="order.withDelivery" class="address">
 						<p class="title">Dirección</p>

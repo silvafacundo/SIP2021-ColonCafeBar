@@ -1,5 +1,4 @@
 <template>
-	<!-- TODO: Hacer los filtros -->
 	<div class="client-orders">
 		<h3>Mis Ordenes</h3>
 		<OrderFilters v-model="filters"
@@ -11,6 +10,7 @@
 				<order-preview :order="order" />
 			</li>
 		</ul>
+		<h3 v-if="orders.length <= 0">No hay órdenes</h3>
 	</div>
 </template>
 
