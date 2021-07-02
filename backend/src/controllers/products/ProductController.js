@@ -197,8 +197,7 @@ module.exports = class ProductController {
 	//Delete specific product
 	async deleteProduct(id) {
 		const product = await this.getProduct(id);
-		product.isActive = false;
-		await product.save();
+		product.destroy();
 		this.utils.logger.info('Product '+id+' deleted');
 		return (true);
 	}
@@ -266,7 +265,7 @@ module.exports = class ProductController {
 				}
 			}
 
-			if (typeof price !== 'undefined' && price !== null) {
+			if (typeof price !== 'undefined' && price !== null && price !== product.price) {
 				const productPrice = await this.models.ProductPrice.create({
 					productId: product.id,
 					price
@@ -274,8 +273,8 @@ module.exports = class ProductController {
 				product.priceId = productPrice.id;
 			}
 
-			if ((typeof pointsPrice !== 'undefined' && pointsPrice !== null)
-				|| (typeof grantablePoints !== 'undefined' && grantablePoints !== null)) {
+			if ((typeof pointsPrice !== 'undefined' && pointsPrice !== null && pointsPrice !== product.pointsPrice)
+				|| (typeof grantablePoints !== 'undefined' && grantablePoints !== null && grantablePoints !== product.grantablePoints)) {
 				const toInsert = {
 					price: product.pointsPrice,
 					grant: product.grantablePoints

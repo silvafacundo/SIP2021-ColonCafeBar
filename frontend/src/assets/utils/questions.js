@@ -9,7 +9,7 @@ module.exports = [
 	},
 	{
 		'question':	'¿Cómo uso mis puntos?',
-		'answer':	'Al momento de realizar el pago, podes elegir la opción de hacerlo con tus puntos acumlados.'
+		'answer':	'Al momento de realizar el pago, podes elegir la opción de hacerlo con tus puntos acumulados.'
 	},
 	{
 		'question':	'¿Por qué puedo cambiar los puntos?',

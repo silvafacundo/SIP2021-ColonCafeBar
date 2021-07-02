@@ -12,7 +12,8 @@
 				:key="index"
 				:client="client"
 				@revokeToken="revokeToken"
-				@updatePoints="updatePoints" />
+				@updatePoints="updatePoints"
+				@updateClient="updateClient" />
 			<h4 v-if="!isLoading && clients.length <= 0">No se han encontrado resultados...</h4>
 		</div>
 	</div>
@@ -110,6 +111,40 @@ export default {
 				this.$showToast('Puntos actualizados correctamente')
 			} catch (err) {
 				this.$showToast('Error al actualizar los puntos', true)
+			}
+		},
+		updateClient({ client, isActive }) {
+			if (!isActive) this.deleteClient(client);
+			else this.activateClient(client);
+		},
+		deleteClient(client) {
+			this.$buefy.dialog.confirm({
+				message: `Al realizar esta acción estarás dando de baja al cliente y no podrá volver a iniciar sesión. ¿Desea continuar?`,
+				onConfirm: () => this._deleteClient(client.id)
+			})
+		},
+		async _deleteClient(clientId) {
+			try {
+				await this.$store.dispatch('Client/adminUpdateClient', { clientId, isActive: false });
+				this.fetchClients(true);
+				this.$showToast('Cliente dado de baja con éxito');
+			} catch (err) {
+				this.$showToast('Error al eliminar el cliente', true);
+			}
+		},
+		activateClient(client) {
+			this.$buefy.dialog.confirm({
+				message: `Al realizar esta acción estarás dando de alta al cliente. ¿Desea continuar?`,
+				onConfirm: () => this._activateClient(client.id)
+			})
+		},
+		async _activateClient(clientId) {
+			try {
+				await this.$store.dispatch('Client/adminUpdateClient', { clientId, isActive: true });
+				this.fetchClients(true);
+				this.$showToast('Cliente dado de alta con éxito');
+			} catch (err) {
+				this.$showToast('Error al dar de alta al cliente', true);
 			}
 		},
 		handleScroll() {

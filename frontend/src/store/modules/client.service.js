@@ -76,7 +76,7 @@ const actions = {
 	},
 	async adminUpdateClient(ctx, { clientId, ...values }) {
 		try {
-			const response = await Vue.axios.put(`/admin/client/${clientId}`);
+			const response = await Vue.axios.put(`/admin/client/${clientId}`, { ...values });
 		} catch (err) {
 			console.error('failed to update client');
 			throw err;

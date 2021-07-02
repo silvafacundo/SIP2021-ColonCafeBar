@@ -104,6 +104,15 @@ const actions = {
 			throw err;
 		}
 	},
+	async deleteProduct({ dispatch }, { productId }) {
+		try {
+			await Vue.axios.delete(`/admin/product?productId=${productId}`);
+			await dispatch('fetchAdminProducts');
+		} catch (err) {
+			console.error('Failed to delete product', err);
+			throw err;
+		}
+	},
 	async createProduct({ dispatch }, { ...values }) {
 		try {
 			const response = await Vue.axios.post(`/admin/product`, {

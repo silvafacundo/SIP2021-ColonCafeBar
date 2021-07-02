@@ -133,16 +133,23 @@
 				<b-field label="Descripcion">
 					<b-input v-model="selectedProduct.description" type="textarea" />
 				</b-field>
-				<b-button type="is-danger"
-					:disabled="isLoading"
-					@click="closeModal">
-					Cancelar
-				</b-button>
-				<b-button type="is-success"
-					:loading="isLoading"
-					@click="saveProduct">
-					Guardar
-				</b-button>
+				<div class="buttons-container">
+					<b-button type="is-danger"
+						:disabled="isLoading"
+						@click="closeModal">
+						Cancelar
+					</b-button>
+					<b-button type="is-success"
+						:loading="isLoading"
+						@click="saveProduct">
+						Guardar
+					</b-button>
+					<b-button type="is-danger"
+						class="delete-product"
+						@click="deleteProduct">
+						Eliminar producto
+					</b-button>
+				</div>
 			</div>
 		</b-modal>
 	</div>
@@ -193,6 +200,28 @@ export default {
 				this.pagination = { ...this.pagination, ...pagination };
 			} catch (err) {
 				this.$showToast('Error al traer los productos', true);
+			}
+			this.isLoading = false;
+		},
+		async deleteProduct() {
+			this.$buefy.dialog.confirm({
+				title: 'Eliminando producto',
+				message: '<b>¿Seguro que desea eliminar este producto?</b><br><b>Recuerda que no podrás volver a ver ni modificar este producto</b>',
+				confirmText: 'Sí',
+				cancelText: 'Cancelar',
+				type: 'is-danger',
+				hasIcon: true,
+				onConfirm: () => this._deleteProduct(),
+			});
+		},
+		async _deleteProduct() {
+			this.isLoading = true;
+			try {
+				await this.$store.dispatch('Products/deleteProduct', { productId: this.selectedProduct.id });
+				this.closeModal();
+				this.$showToast('Producto eliminado con éxito', false);
+			} catch (err) {
+				this.$showToast('Error al eliminar el producto', true);
 			}
 			this.isLoading = false;
 		},
@@ -339,6 +368,15 @@ export default {
 			margin-top: .5rem;
 		}
 
+		::v-deep .buttons-container {
+			display: flex;
+			flex-direction: row;
+			gap: 1rem;
+
+			:nth-last-child(1) {
+				margin-left: auto;
+			}
+		}
 	}
 
 	@media (max-width: 900px){

@@ -82,7 +82,7 @@ module.exports = class ClientController {
 		if (password) toUpdate.sessionValidDate = new Date();
 		if (typeof isActive === 'boolean') toUpdate.isActive = isActive;
 
-		if (Object.keys(toUpdate).length < 1) throw PublicError('At least one param is required!');
+		if (Object.keys(toUpdate).length < 1) throw new PublicError('At least one param is required!');
 
 		for (const key in toUpdate) {
 			client[key] = toUpdate[key];

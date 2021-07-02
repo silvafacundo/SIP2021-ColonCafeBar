@@ -34,7 +34,7 @@
 			type="is-white"
 			fullheight
 			overlay>
-			<b-menu>
+			<b-menu :activable="false">
 				<b-menu-list label="menú">
 					<b-menu-item icon="home"
 						tag="router-link"
@@ -63,7 +63,8 @@
 						to="/help"
 						label="Ayuda" />
 				</b-menu-list>
-				<b-menu-list label="Acciones">
+				<b-menu-list v-if="user"
+					label="Acciones">
 					<b-menu-item icon="sign-out-alt"
 						label="Cerrar sesión"
 						class="logout"
@@ -202,7 +203,7 @@ export default {
 			display: flex;
 			flex-flow: column;
 
-			> .menu-label:nth-last-child(2) {
+			> .menu-label:not(:first-child) {
 				margin-top: auto;
 			}
 			.menu-list {

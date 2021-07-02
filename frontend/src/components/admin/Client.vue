@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="client-container">
 		<b-collapse :open="false"
 			class="card"
 			animation="slide">
@@ -41,8 +41,18 @@
 								size="is-small"
 								@click="updatePoints" />
 						</b-field>
-						<b-button type="is-warning" @click="revokeToken">Revocar Tokens de accesso</b-button>
 						<router-link class="button" :to="{ name: 'adminOrders', hash: '#history', params: { queryClient: client } }">Ver ordenes</router-link>
+						<b-button type="is-warning" @click="revokeToken">Revocar Tokens de accesso</b-button>
+						<b-button v-if="client.isActive"
+							type="is-danger"
+							@click="() => updateClient(false)">
+							Dar de baja cliente
+						</b-button>
+						<b-button v-else
+							type="is-success"
+							@click="() => updateClient(true)">
+							Dar de alta cliente
+						</b-button>
 					</div>
 				</div>
 			</div>
@@ -95,11 +105,25 @@ export default {
 		updatePoints() {
 			if (!this.isValidPoints) return
 			return this.$emit('updatePoints', this.client, Number(this.localPoints));
+		},
+		updateClient(isActive) {
+			this.$emit('updateClient', { client: this.client, isActive });
 		}
 	}
 }
 </script>
 
-<style>
+<style scoped lang="scss">
+.client-container {
+	margin: .5rem 0;
+}
+.client {
+	display: flex;
+	flex-flow: column;
+	gap: .5rem;
 
+	::v-deep .button {
+		margin-right: auto;
+	}
+}
 </style>
