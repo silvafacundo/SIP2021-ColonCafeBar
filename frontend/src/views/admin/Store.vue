@@ -3,19 +3,19 @@
 		<h3>Tienda</h3>
 		<div class="store-container">
 			<b-field label="Precio mínimo del delivery">
-				<b-input v-model="store.minDeliveryPrice" type="number" />
+				<b-input v-model="store.minDeliveryPrice" type="number" min="0" />
 			</b-field>
 			<b-field label="Precio máximo del delivery">
-				<b-input v-model="store.maxDeliveryPrice" type="number" />
+				<b-input v-model="store.maxDeliveryPrice" type="number" min="0" />
 			</b-field>
 			<b-field label="Precio del delivery por Kilómetro">
-				<b-input v-model="store.deliveryPricePerKm" type="number" />
+				<b-input v-model="store.deliveryPricePerKm" type="number" min="0" />
 			</b-field>
 			<b-field label="Distancia máxima de delivery (Kilómetros)">
-				<b-input v-model="store.maxDeliveryKm" type="number" />
+				<b-input v-model="store.maxDeliveryKm" type="number" min="0" />
 			</b-field>
 			<b-field label="Tiempo de expiracion de las ordenes (Minutos)">
-				<b-input v-model="store.orderTimeoutMinutes" type="number" />
+				<b-input v-model="store.orderTimeoutMinutes" type="number" min="0" />
 			</b-field>
 			<b-field label="Dirección">
 				<div v-if="storeCoordinates" class="address-container">
@@ -36,6 +36,7 @@
 			</b-field>
 			<b-button type="is-success"
 				outlined
+				:disabled="!isStoreDataValid"
 				@click="updateStoreConfig">
 				Guardar
 			</b-button>
@@ -55,6 +56,13 @@ export default {
 		store() {
 			return { ...this.$store.getters['Store/config'] };
 		},
+		isStoreDataValid() {
+			return parseInt(this.store.minDeliveryPrice) >= 0
+				&& parseInt(this.store.maxDeliveryPrice) >= 0
+				&& parseInt(this.store.deliveryPricePerKm) >= 0
+				&& parseInt(this.store.maxDeliveryKm) >= 0
+				&& parseInt(this.store.orderTimeoutMinutes) >= 0;
+		}
 	},
 	mounted() {
 		this.fetchStoreConfig();
