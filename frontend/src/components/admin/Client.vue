@@ -8,7 +8,7 @@
 					<p class="card-header-title">
 						ID: {{ client.id }} - {{ fullName }} - {{ email }}
 					</p>
-					<a href="" class="card-header-icon">
+					<a class="card-header-icon">
 						<b-icon :icon="props.open ? 'caret-down' : 'caret-up'" />
 					</a>
 				</div>
