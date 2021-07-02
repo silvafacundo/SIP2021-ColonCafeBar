@@ -67,16 +67,25 @@ module.exports = class ProductController {
 	}
 
 	async createProduct({ idCategory, name, imageUrl, description, price, variants, pointsPrice, grantablePoints = 0 }) {
-		//Check if parameters are valid
-		if (!idCategory && typeof idCategory !== 'bigint') throw new PublicError('idcategory is required');
-		if (!name && typeof name !== 'string') throw new PublicError('name is required');
-		if (description && typeof description !== 'string') throw new PublicError('description must be a string');
-		if (typeof price === 'undefined' || isNaN(Number(price))) throw new PublicError('price is required');
+		if (typeof idCategory === 'undefined' || idCategory === null) throw new PublicError('La categoria es requerido');
+		if (!name || typeof name !== 'string') throw new PublicError('El nombre es requerido');
+		if (!description && typeof description !== 'string') throw new PublicError('La descripcion debe ser un string');
 		if (typeof variants !== 'undefined' && variants !== null) {
-			if (!this._validVariants(variants)) throw new PublicError('variants wrong format');
+			if (!this._validVariants(variants)) throw new PublicError('Formato erroneo de las variantes');
 		}
-		if (typeof pointsPrice === 'undefined' || isNaN(Number(pointsPrice))) throw new PublicError('pointsPrice is required!');
-		if (typeof grantablePoints !== 'undefined' && isNaN(Number(grantablePoints))) throw new PublicError('grantablePoints not valid!');
+		if (typeof price === 'undefined' || price === null) throw new PublicError('El precio es requerido');
+		if (typeof pointsPrice === 'undefined' || pointsPrice === null) throw new PublicError('El precio en puntos es requerido');
+		if (typeof grantablePoints === 'undefined' || grantablePoints === null) throw new PublicError('Los puntos otorgables es requerido');
+
+		price = Number(price);
+		if (isNaN(price) || price < 0) throw new PublicError('El precio no es valido');
+
+		pointsPrice = Number(pointsPrice);
+		if (isNaN(pointsPrice) || pointsPrice < 0) throw new PublicError('El precio en puntos no es valido');
+
+		pointsPrice = Number(pointsPrice);
+		if (isNaN(pointsPrice) || pointsPrice < 0) throw new PublicError('Los puntos otorgables no es valido');
+
 
 		const category = await this.utils.categories.getCategory(idCategory);
 		if (!category) throw new PublicError('Category doesn\'t exists');
@@ -196,7 +205,31 @@ module.exports = class ProductController {
 
 	//Update specific product
 	async updateProduct( { productId, idCategory, imageUrl, name, description, isActive, price, variants, pointsPrice, grantablePoints }) {
-		if (!productId) throw new PublicError('productId is required!');
+		if (!productId) throw new PublicError('El productId es requerido');
+
+		let category = null;
+		if (idCategory) category = await this.utils.categories.getCategory(idCategory);
+		if (idCategory && !category) throw new PublicError('El categoria dada no existe');
+
+		if (typeof name === 'string' && !name) throw new PublicError('El nombre tiene que se un string valido');
+		if (description && typeof description !== 'string') throw new PublicError('La descripcion no es valida');
+
+		if (typeof isActive !== 'undefined' && typeof isActive !== 'boolean') throw new PublicError('isActive tiene que se un booleano');
+
+		if (typeof price !== 'undefined') {
+			price = Number(price);
+			if (isNaN(price) || price < 0) throw new PublicError('El precio no es valido');
+		}
+
+		if (typeof pointsPrice !== 'undefined') {
+			pointsPrice = Number(pointsPrice);
+			if (isNaN(pointsPrice) || pointsPrice < 0) throw new PublicError('El precio en puntos no es valido');
+		}
+
+		if (typeof grantablePoints !== 'undefined') {
+			grantablePoints = Number(grantablePoints);
+			if (isNaN(grantablePoints) || grantablePoints < 0) throw new PublicError('Los puntos otorgables no es valido');
+		}
 
 		const product = await this.getProduct(productId);
 		if (!product) throw new PublicError('Product doesn\'t exists');

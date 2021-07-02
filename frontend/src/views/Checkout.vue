@@ -188,10 +188,10 @@ export default {
 	mounted() {
 		if (this.products.length <= 0)
 			this.$store.dispatch('Products/fetchProducts');
-		if (this.userAddresses.length > 0)
-			this.selectedAddress = this.userAddresses[0];
-		if (this.selectedAddress)
-			this.updateDeliveryPrice();
+		// if (this.userAddresses.length > 0)
+		// 	this.selectedAddress = this.userAddresses[0];
+		// if (this.selectedAddress)
+		// 	this.updateDeliveryPrice();
 	},
 	methods: {
 		updateCart(productId, newAmount) {
