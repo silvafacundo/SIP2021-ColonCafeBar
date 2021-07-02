@@ -8,7 +8,7 @@
 				>
 			</router-link>
 			<div v-if="user" class="client-points">
-				<p>{{ points }} <span>ptos.</span></p>
+				<p>{{ points }} <span>puntos</span></p>
 			</div>
 			<div class="cart-wrapper">
 				<b-button class="cart-button"

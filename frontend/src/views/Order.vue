@@ -24,7 +24,7 @@
 			target="_blank"
 			:href="order.paymentLink">Pagar</a>
 		<p v-if="hasGrantablePoints && !hasOrderFinalized">Se te otorgaran {{ order.grantablePoints }} ptos cuando la orden finalice.</p>
-		<p v-if="hasGrantablePoints && hasOrderFinalized">Obtuviste {{ order.grantablePoints }} ptos.</p>
+		<p v-if="hasGrantablePoints && hasOrderFinalized">Obtuviste {{ order.grantablePoints }} puntos</p>
 	</div>
 	<div v-else class="order">
 		<p>Loading...</p>

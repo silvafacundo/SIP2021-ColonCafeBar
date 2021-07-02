@@ -39,7 +39,7 @@
 				<p v-else>Su pedido será entregado en <span class="has-text-weight-bold">{{ addressText }}</span>.</p>
 				<h4 v-if="paymentMethod === 'points'">Precio en puntos: {{ totalPointsPrice }}</h4>
 				<h4 v-if="paymentMethod !== 'points'">Total: ${{ totalPrice }}</h4>
-				<h4 v-if="paymentMethod !== 'points'">Recibiras {{ grantablePoints }} ptos.</h4>
+				<h4 v-if="paymentMethod !== 'points'">Recibiras {{ grantablePoints }} puntos</h4>
 			</b-step-item>
 		</b-steps>
 		<footer>
