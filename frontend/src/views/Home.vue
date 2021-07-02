@@ -63,6 +63,12 @@
 						to="/help"
 						label="Ayuda" />
 				</b-menu-list>
+				<b-menu-list label="Acciones">
+					<b-menu-item icon="sign-out-alt"
+						label="Cerrar sesión"
+						class="logout"
+						@click="logOut" />
+				</b-menu-list>
 			</b-menu>
 		</b-sidebar>
 		<router-view />
@@ -145,6 +151,9 @@ export default {
 		goToCart() {
 			this.cartActive = !this.cartActive;
 			// this.$router.push({ name: 'cart' })
+		},
+		async logOut() {
+			await this.$store.dispatch('Auth/logOut', { client: true });
 		}
 	}
 }
@@ -188,5 +197,18 @@ export default {
 		z-index: 35;
 		padding: 1rem;
 		padding-top: 80px;
+		.menu{
+			height: 100%;
+			display: flex;
+			flex-flow: column;
+
+			> .menu-label:nth-last-child(2) {
+				margin-top: auto;
+			}
+			.menu-list {
+				display:flex;
+				flex-flow: column;
+			}
+		}
 	}
 </style>
