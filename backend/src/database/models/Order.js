@@ -127,8 +127,11 @@ module.exports = (sequelize, DataTypes) => {
 			await order.server.utils.orders.refundOrder(order.id);
 		}
 
-		if (order.paymentMethod !== 'points' && (newStatusKey === 'dispatched' || newStatusKey === 'delivered')) {
-			await order.server.utils.clients.addPoints(order.client.id, order.grantablePoints);
+		if (newStatusKey === 'dispatched' || newStatusKey === 'delivered') {
+			if (order.paymentMethod !== 'points')
+				await order.server.utils.clients.addPoints(order.client.id, order.grantablePoints);
+			if (!order.withDelivery)
+				await order.server.utils.orders.updateOrder({ orderId: order.id, isPaid: true });
 		}
 	})
 
