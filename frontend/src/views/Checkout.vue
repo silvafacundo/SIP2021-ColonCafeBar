@@ -21,7 +21,8 @@
 						:address="selectedAddress"
 						@click="openSelectAddress" />
 					<b-button v-else @click="openSelectAddress">Seleccionar Dirección</b-button>
-					<p :style="`color: ${deliveryPrice < 0 ? 'red' : 'black'}`">{{ deliveryPrice >= 0 ? `Envio: $${deliveryPrice}` : 'La distancia entre la tienda y la dirección seleccionada excede la máxima' }}</p>
+					<p v-if="deliveryPrice < 0" class="has-text-danger">La dirección seleccionada no es válida debido a que no se encuentra dentro de la zona de delivery</p>
+					<p v-if="deliveryPrice > 0">Envio: ${{ deliveryPrice }}</p>
 				</div>
 				<p>Subtotal: ${{ subTotalPrice }}</p>
 				<h4 v-if="deliveryPrice >= 0">Total: ${{ totalPrice }}</h4>
@@ -38,7 +39,7 @@
 				<p v-else>Su pedido será entregado en <span class="has-text-weight-bold">{{ addressText }}</span>.</p>
 				<h4 v-if="paymentMethod === 'points'">Precio en puntos: {{ totalPointsPrice }}</h4>
 				<h4 v-if="paymentMethod !== 'points'">Total: ${{ totalPrice }}</h4>
-				<h4 v-if="paymentMethod !== 'points'">Recibiras {{ grantablePoints }} ptos.</h4>
+				<h4 v-if="paymentMethod !== 'points'">Recibiras {{ grantablePoints }} puntos</h4>
 			</b-step-item>
 		</b-steps>
 		<footer>
@@ -264,6 +265,7 @@ export default {
 			}
 		},
 		async updateDeliveryPrice() {
+			this.isLoading = true;
 			try {
 				if (this.takeAway)
 					this.deliveryPrice = 0;
@@ -272,6 +274,7 @@ export default {
 			} catch (err) {
 				this.$showToast('Ocurrió un error al obtener el precio del delivery', true);
 			}
+			this.isLoading = false;
 		}
 	}
 }

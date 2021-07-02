@@ -3,19 +3,34 @@
 		<h3>Tienda</h3>
 		<div class="store-container">
 			<b-field label="Precio mínimo del delivery">
-				<b-input v-model="store.minDeliveryPrice" type="number" min="0" />
+				<b-input :value="store.minDeliveryPrice"
+					type="number"
+					min="0"
+					@input="val => updateField('minDeliveryPrice',val)" />
 			</b-field>
 			<b-field label="Precio máximo del delivery">
-				<b-input v-model="store.maxDeliveryPrice" type="number" min="0" />
+				<b-input :value="store.maxDeliveryPrice"
+					type="number"
+					min="0"
+					@input="val => updateField('maxDeliveryPrice',val)" />
 			</b-field>
 			<b-field label="Precio del delivery por Kilómetro">
-				<b-input v-model="store.deliveryPricePerKm" type="number" min="0" />
+				<b-input :value="store.deliveryPricePerKm"
+					type="number"
+					min="0"
+					@input="val => updateField('deliveryPricePerKm',val)" />
 			</b-field>
 			<b-field label="Distancia máxima de delivery (Kilómetros)">
-				<b-input v-model="store.maxDeliveryKm" type="number" min="0" />
+				<b-input :value="store.maxDeliveryKm"
+					type="number"
+					min="0"
+					@input="val => updateField('maxDeliveryKm',val)" />
 			</b-field>
 			<b-field label="Tiempo de expiracion de las ordenes (Minutos)">
-				<b-input v-model="store.orderTimeoutMinutes" type="number" min="0" />
+				<b-input :value="store.orderTimeoutMinutes"
+					type="number"
+					min="0"
+					@input="val => updateField('orderTimeoutMinutes',val)" />
 			</b-field>
 			<b-field label="Dirección">
 				<div v-if="storeCoordinates" class="address-container">
@@ -35,7 +50,6 @@
 				</div>
 			</b-field>
 			<b-button type="is-success"
-				outlined
 				:disabled="!isStoreDataValid"
 				@click="updateStoreConfig">
 				Guardar
@@ -50,12 +64,10 @@ export default {
 		return {
 			isLoading: false,
 			storeCoordinates: null,
+			store: {}
 		}
 	},
 	computed: {
-		store() {
-			return { ...this.$store.getters['Store/config'] };
-		},
 		isStoreDataValid() {
 			return parseInt(this.store.minDeliveryPrice) >= 0
 				&& parseInt(this.store.maxDeliveryPrice) >= 0
@@ -71,7 +83,7 @@ export default {
 		async fetchStoreConfig() {
 			this.isLoading = true;
 			try {
-				await this.$store.dispatch('Store/fetchConfig');
+				this.store = await this.$store.dispatch('Store/fetchConfig');
 				this.initializeStoreAddress();
 			} catch (err) {
 				this.$showToast('Error al cargar la información de la tienda', true);
@@ -95,6 +107,11 @@ export default {
 				this.$showToast('Error al actualizar la información de la tienda', true);
 			}
 			this.isLoading = false;
+		},
+		updateField(key, value) {
+			const newStore = { ...this.store };
+			newStore[key] = value;
+			this.store = newStore;
 		},
 		addressInput(address) {
 			this.storeCoordinates = {

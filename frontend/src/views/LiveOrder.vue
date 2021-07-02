@@ -25,7 +25,7 @@
 		<div v-if="hasGrantablePoints" class="points">
 			<p class="title">Puntos</p>
 			<p v-if=" !hasOrderFinalized">Se te otorgaran {{ order.grantablePoints }} ptos cuando la orden finalice.</p>
-			<p v-else>Obtuviste {{ order.grantablePoints }} ptos.</p>
+			<p v-else>Obtuviste {{ order.grantablePoints }} puntos</p>
 		</div>
 		<div class="payment-metehod">
 			<p class="title">Método de pago</p>
