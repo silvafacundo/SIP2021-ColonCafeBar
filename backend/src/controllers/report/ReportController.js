@@ -48,18 +48,18 @@ module.exports = class ReportController
 		const product = await this.db('products').where('id', productId).first();
 		if (!product) return {};
 
-		const productHistory = await this.db('productPoints')
-			.select([
-				'productPoints.*', 'productPrices.*', 'productPoints.price as pointsPrice'
-			])
-			.leftJoin('productPrices', 'productPrices.id', 'productPoints.id')
-			.where('productPoints.productId', productId)
-			.orderBy('productPoints.createdAt', 'desc');
+		const productPointsHistory = await this.db('productPoints')
+			.where('productId', productId)
+			.orderBy('createdAt', 'desc');
 
+		const productPriceHistory = await this.db('productPrices')
+			.where('productId', productId)
+			.orderBy('createdAt', 'desc');
 
 		const finalProduct = {
 			...product,
-			productHistory,
+			productPointsHistory,
+			productPriceHistory
 		};
 
 		return finalProduct;
