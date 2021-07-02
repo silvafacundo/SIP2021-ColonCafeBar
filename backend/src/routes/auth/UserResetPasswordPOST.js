@@ -11,8 +11,10 @@ module.exports = class UserResetPasswordPOST extends Route {
 			if (typeof password !== 'string') return res.status(400).json({ message: 'password is required' });
 			if (typeof token !== 'string') return res.status(400).json({ message: 'token is required' });
 
-			await this.utils.auth.resetPassword(password, token);
+			const { accountType } = await this.utils.auth.resetPassword(password, token);
 			return res.json({
+				accountType,
+				token,
 				message: 'Password successfully reseted',
 			});
 		} catch (error) {

@@ -14,7 +14,7 @@
 			</form>
 			<div v-else>
 				<h2 class="my-3">Contraseña restablecida correctamente!</h2>
-				<router-link :to="{ name:'login' }">Iniciar sesión</router-link>
+				<router-link :to="{ name: accountType === 'clients' ? 'login' : 'adminLogin' }">Iniciar sesión</router-link>
 			</div>
 			<p class="error">{{ error && 'Error: ' + error }}</p>
 		</div>
@@ -33,6 +33,7 @@ export default {
 	data: () => ({
 		password: '',
 		repassword: '',
+		accountType: 'clients',
 		success: false,
 		error: ''
 	}),
@@ -51,7 +52,8 @@ export default {
 				this.isLoading = true;
 				const token = this.token;
 				const password = this.password;
-				const { message } = await this.$store.dispatch('Auth/resetPassword', { password, token })
+				const { message, accountType } = await this.$store.dispatch('Auth/resetPassword', { password, token })
+				this.accountType = accountType;
 				this.success = true;
 			} catch (err) {
 				if (err.response && err.response.data) this.error = err.response.data.message;

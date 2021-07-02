@@ -7,7 +7,7 @@
 				<input v-model="email"
 					placeholder="Email"
 					type="email">
-				<button>Solicitar restablecer</button>
+				<button :disabled="isLoading">Solicitar restablecer</button>
 			</form>
 			<div v-else>
 				<h2 class="my-3">Email enviado con éxito</h2>
@@ -30,8 +30,8 @@ export default {
 	methods: {
 		async requestResetPassword() {
 			this.error = '';
+			this.isLoading = true;
 			try {
-				this.isLoading = true;
 				const email = this.email;
 				const { message } = await this.$store.dispatch('Auth/requestResetPassword', { email });
 				this.success = true;
@@ -91,9 +91,13 @@ h3{
 	border-radius: 3em;
 }
 
-.form-div > form > button:hover{
+.form-div > form > button:hover:not(:disabled) {
 	cursor:pointer;
 	background-color: #c0392b;
+}
+.form-div > form > button:disabled {
+	background-color: #ac5861
+
 }
 
 .form-div > a{

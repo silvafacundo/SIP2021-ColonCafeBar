@@ -70,6 +70,7 @@ module.exports = class AuthController {
 		await this.db('resetPassword').where('id', tokenData.id).update({
 			consumed: true
 		});
+		return { ...tokenData };
 	}
 
 	isSafePassword(password) {
