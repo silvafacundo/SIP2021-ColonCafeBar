@@ -75,6 +75,16 @@ const actions = {
 			console.error('Failed to update order', err);
 			throw err;
 		}
+	},
+	async clientCancelOrder({ dispatch }, { orderId }) {
+		try {
+			await Vue.axios.post('/order/cancel', {
+				orderId
+			});
+		} catch (err) {
+			console.error('Failed to update order', err);
+			throw err;
+		}
 	}
 };
 

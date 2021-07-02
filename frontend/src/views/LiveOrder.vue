@@ -41,6 +41,9 @@
 			<p class="title">Entrega a cargo de</p>
 			<p>{{ deliveryName }}</p>
 		</div>
+		<div class="cancel">
+			<b-button v-if="isOrderAtPendingStatus" @click="confirmCancelOrder()">¿Deseas cancelar la orden?</b-button>
+		</div>
 	</div>
 </template>
 
@@ -65,6 +68,9 @@ export default {
 		interval: null
 	}),
 	computed: {
+		isOrderAtPendingStatus() {
+			return this.order.orderStatus.key === 'pending'
+		},
 		hasOrderFinalized() {
 			return this.order.orderStatus.key === 'delivered' || this.order.orderStatus.key === 'dispatched'
 		},
@@ -114,6 +120,22 @@ export default {
 				this.$showToast('Error al cargar la orden', true);
 			}
 			this.isLoading = false
+		},
+		confirmCancelOrder() {
+			this.$buefy.dialog.confirm({
+				title: 'Cancelar orden',
+				message: '¿Estás seguro que deseas cancelar tu orden? Esta acción no se puede deshacer',
+				confirmText: 'Si',
+				cancelText: 'No',
+				type: 'is-danger',
+				hasIcon: true,
+				onConfirm: this.cancelOrder.bind(this)
+			})
+		},
+		async cancelOrder() {
+			await this.$store.dispatch('Orders/clientCancelOrder', {
+				orderId: this.orderId
+			});
 		}
 	}
 }
@@ -177,6 +199,10 @@ export default {
 			color:black;
 			margin-bottom: .8rem;
 		}
+	}
+	.cancel {
+		// margin: .50rem;
+		text-align: center;
 	}
  }
 </style>

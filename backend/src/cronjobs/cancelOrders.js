@@ -23,10 +23,13 @@ module.exports = {
 
 			const orders = await server.db('orders')
 				.where('statusId', pendingStatus.id)
-				.where('createdAt', '<=', actualDate)
-				.update('statusId', cancelledStatus.id);
+				.where('createdAt', '<=', actualDate);
 
-			if (orders) console.log(`${orders} orders cancelled due to inactivity`);
+			for (const order of orders) {
+				await server.utils.orders.updateOrder({ orderId: order.id, statusId: cancelledStatus.id });
+			}
+
+			if (orders.length > 0) console.log(`${orders.length} orders cancelled due to inactivity`);
 
 		} catch (error) {
 			console.error('Cancel Order cronjob failed');
