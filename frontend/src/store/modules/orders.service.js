@@ -42,6 +42,15 @@ const actions = {
 			throw err;
 		}
 	},
+	async fetchOrderStatus({ commit }) {
+		try {
+			const response = await Vue.axios.get('/orderstatus');
+			commit('setPossibleStatus', response.data.orderStatus)
+		} catch (err) {
+			console.error('Failed to fetch order status');
+			throw err;
+		}
+	},
 	async fetchClientOrders({ commit }, { page, perPage, filters, orderBy } = {}) {
 		try {
 			const response = await Vue.axios.post('/client/orders', { page, perPage, filters, orderBy });
