@@ -16,23 +16,10 @@ module.exports = (sequelize, DataTypes) => {
 				require: true
 			},
 			priorityService: {
-				type: DataTypes.VIRTUAL,
-				get() {
-					switch (this.key) {
-						case 'pending':
-							return 10;
-						case 'awaitingPreparation':
-							return 9;
-						case 'inPreparation':
-							return 8
-						case 'onTheWay':
-							return 7
-						case 'cancelled':
-							return 1
-						default:
-							return 6
-					}
-				}
+				type: DataTypes.INTEGER
+			},
+			sortNumber: {
+				type: DataTypes.INTEGER
 			}
 		},
 		{

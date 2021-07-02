@@ -109,9 +109,10 @@
 					<b-field label="Estado:">
 						<b-select :value="order.statusId"
 							placeholder="Estado de la orden"
+							:disabled="isOrderFinished"
 							@input="updateStatus">
-							<option
-								v-for="status in localStatuses"
+							<option v-for="status in localStatuses"
+								:disabled="!isValidStatus(status.key)"
 								:key="status.id"
 								:value="status.id">
 								{{ status.statusName }}
@@ -188,6 +189,12 @@ export default {
 			const [lat, lng] = this.order.address.coordinates.split(';');
 			const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 			return url;
+		},
+		isOrderFinished() {
+			const finalStatus = ['dispatched', 'delivered', 'cancelled'];
+			const orderStatus = this.order.orderStatus.key;
+
+			return finalStatus.includes(orderStatus);
 		}
 	},
 	methods: {
@@ -196,6 +203,24 @@ export default {
 		},
 		updateDelivery(deliveryId) {
 			this.$emit('updateDelivery', deliveryId);
+		},
+		isValidStatus(newStatus) {
+			const actualStatus = this.order.orderStatus.key;
+			const withDelivery = this.order.withDelivery;
+
+			const possibleStatus = ['pending', 'awaitingPreparation', 'inPreparation'];
+
+			if (withDelivery) possibleStatus.push('onTheWay', 'delivered');
+			else possibleStatus.push('awaitingWithdrawal', 'dispatched');
+
+			possibleStatus.push('cancelled');
+
+			if (newStatus === actualStatus) return true;
+
+			const actualStatusIndex = possibleStatus.indexOf(actualStatus);
+			const newStatusIndex = possibleStatus.indexOf(newStatus);
+
+			return actualStatusIndex <= newStatusIndex;
 		}
 	}
 }
@@ -228,6 +253,11 @@ export default {
 		p {
 			margin-bottom: .3rem;
 		}
+
+		.select select option:disabled {
+			color: #c3c3c3;
+		}
+
 		.order-info {
 			display: grid;
 			grid-template-columns: 1fr 1fr;

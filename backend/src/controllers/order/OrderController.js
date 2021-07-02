@@ -64,8 +64,10 @@ module.exports = class OrderController {
 			const isAddressFromClient = await this.utils.addresses.isAddressFromClient(addressId, clientId);
 			if (!isAddressFromClient) throw new PublicError('The provided address is not from the given client');
 
-			deliveryPrice = await this.getDeliveryPrice(address.id);
-			if (deliveryPrice === -1) throw new PublicError('The distance between the given address and the bar address exceeds the max');
+			if (paymentMethod !== 'points') {
+				deliveryPrice = await this.getDeliveryPrice(address.id);
+				if (deliveryPrice === -1) throw new PublicError('The distance between the given address and the bar address exceeds the max');
+			}
 		}
 
 		let productsId = new Set(products.map(product => product.id));
@@ -129,15 +131,24 @@ module.exports = class OrderController {
 		}
 	}
 
-	validateStatus(newStatus, oldStatus) {
+	validateStatus(newStatus, oldStatus, withDelivery) {
+		if (newStatus === oldStatus) return true;
+
 		const finalStatus = ['dispatched', 'delivered', 'cancelled'];
-		if (newStatus === 'cancelled') return true;
-		if (oldStatus === 'canceled' && newStatus !== 'cancelled') return false;
-		if (oldStatus === 'inPreparation' && newStatus === 'awaitingPreparation') return false;
-		if (newStatus === 'pending' && oldStatus !== 'pending') return false;
-		if (oldStatus === 'awaitingWithdrawal' && !finalStatus.includes(newStatus)) return false;
-		if (finalStatus.includes(oldStatus) && newStatus !== oldStatus) return false;
-		return true;
+		if (finalStatus.includes(oldStatus)) return false;
+
+		const possibleStatus = ['pending', 'awaitingPreparation', 'inPreparation'];
+
+		if (withDelivery) possibleStatus.push('onTheWay', 'delivered');
+		else possibleStatus.push('awaitingWithdrawal', 'dispatched');
+
+		possibleStatus.push('cancelled');
+
+		const actualStatusIndex = possibleStatus.indexOf(oldStatus);
+		if (actualStatusIndex === -1) throw new PublicError(`El estado "${oldStatus}" no es valido`);
+		const newStatusIndex = possibleStatus.indexOf(newStatus);
+		if (newStatusIndex === -1) throw new PublicError(`El estado "${newStatusIndex}" no es valido`);
+		return actualStatusIndex <= newStatusIndex;
 	}
 
 	async updateOrder({ orderId, statusId, isPaid, deliveryId }) {
@@ -148,7 +159,7 @@ module.exports = class OrderController {
 		if (statusId) {
 			status = await this.getOrderStatus({ id: statusId });
 			if (!status) throw new PublicError('the status doesn\'t exists');
-			const isValidStatus = this.validateStatus(status.key, order.orderStatus.key);
+			const isValidStatus = this.validateStatus(status.key, order.orderStatus.key, order.withDelivery);
 			if (!isValidStatus) throw new PublicError(`Can not switch from status "${order.orderStatus.key}" to "${status.key}"`);
 			order.statusId = statusId;
 		}
@@ -241,7 +252,11 @@ module.exports = class OrderController {
 	}
 
 	async getAllOrderStatus() {
-		const status = await this.models.OrderStatus.findAll();
+		const status = await this.models.OrderStatus.findAll({
+			order: [
+				['sortNumber', 'asc']
+			]
+		});
 		return status;
 	}
 
