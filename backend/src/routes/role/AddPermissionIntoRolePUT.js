@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class AddPermissionIntoRolePUT extends Route {
 	constructor() {
-		super('/admin/permission/role', 'put', { permissions: 'roles permissions' });
+		super('/admin/permission/role', 'put', { permissions: 'roles permissions', isPublic: false });
 	}
 
 	async run (req, res, user) {

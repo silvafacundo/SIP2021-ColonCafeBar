@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class CategoryPUT extends Route {
 	constructor() {
-		super('/admin/category', 'put');
+		super('/admin/category', 'put', { permissions: 'categories', isPublic: false });
 	}
 
 	async run(req, res, user) {

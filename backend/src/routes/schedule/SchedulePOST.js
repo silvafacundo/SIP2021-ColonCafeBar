@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class SchedulePOST extends Route {
 	constructor() {
-		super('/admin/schedule', 'POST');
+		super('/admin/schedule', 'post', { permissions: 'schedule', isPublic: false });
 	}
 
 	async run(req, res, user) {

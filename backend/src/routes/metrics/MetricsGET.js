@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class MetricsGET extends Route {
 	constructor() {
-		super('/admin/metrics', 'post', { isPublic: false });
+		super('/admin/metrics', 'post', { permissions: 'metrics', isPublic: false });
 	}
 
 	async run(req, res, user) {

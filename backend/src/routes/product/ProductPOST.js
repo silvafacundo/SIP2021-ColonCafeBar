@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class ProductPOST extends Route {
 	constructor() {
-		super('/admin/product', 'post', { permissions: 'menu' });
+		super('/admin/product', 'post', { permissions: 'menu', isPublic: false });
 	}
 
 	async run(req, res, user) {

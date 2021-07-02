@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class ProductAllGET extends Route {
 	constructor() {
-		super('/admin/products', 'post');
+		super('/admin/products', 'post', { permissions: 'menu', isPublic: false });
 	}
 
 	async run(req, res) {

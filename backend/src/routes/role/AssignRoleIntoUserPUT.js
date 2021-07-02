@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class AssignRoleIntoUserPUT extends Route {
 	constructor() {
-		super('/admin/role/user', 'put', { permissions: 'users roles' });
+		super('/admin/role/user', 'put', { permissions: 'users roles', isPublic: false });
 	}
 
 	async run (req, res, user) {

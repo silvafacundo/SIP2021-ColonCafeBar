@@ -3,7 +3,7 @@ const Route = require('../../models/Route');
 
 module.exports = class ClientsPOST extends Route {
 	constructor() {
-		super('/admin/clients', 'post');
+		super('/admin/clients', 'post', { permissions: 'clients', isPublic: false });
 	}
 
 	async run(req, res, user) {

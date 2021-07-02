@@ -65,7 +65,7 @@ export default {
 			try {
 				await this.$store.dispatch('Products/fetchCategories');
 			} catch (err) {
-				this.$showToast('Error al cargar los usuarios', true);
+				this.$showToast('Error al cargar las categorías', true);
 			}
 			this.isLoading = false;
 		},

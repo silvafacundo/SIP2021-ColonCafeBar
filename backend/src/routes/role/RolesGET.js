@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class RolesGET extends Route {
 	constructor() {
-		super('/admin/roles', 'get', { permissions: 'roles' });
+		super('/admin/roles', 'get', { permissions: 'roles', isPublic: false });
 	}
 
 	async run (req, res, user) {

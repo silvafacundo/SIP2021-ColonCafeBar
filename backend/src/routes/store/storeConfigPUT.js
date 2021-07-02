@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class StoreConfigPUT extends Route {
 	constructor() {
-		super('/admin/store', 'put', { permissions: 'store' });
+		super('/admin/store', 'put', { permissions: 'store', isPublic: false });
 	}
 
 	async run(req, res, user) {

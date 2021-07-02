@@ -86,12 +86,11 @@ module.exports = class UserController {
 
 		const rolesIdSubQuery = this.db('usersRoles')
 			.select('roleId')
-			.where({ userId, isActive: true });
+			.where({ userId });
 
 		const hasPermission = await this.db('permissionsRoles')
 			.innerJoin('permissions', 'permissionsRoles.permissionId', 'permissions.id')
 			.where('permissionsRoles.roleId', 'in', rolesIdSubQuery)
-			.where('permissions.isActive', true)
 			.where('permissions.key', 'in', permissions);
 
 		return hasPermission.length === permissions.length;

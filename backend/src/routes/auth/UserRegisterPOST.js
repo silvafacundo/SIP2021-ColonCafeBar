@@ -7,12 +7,12 @@ module.exports = class UserRegisterPOST extends Route {
 
 	async run(req, res, user) {
 		const { name, username, password } = req.body;
-		if (!name) return res.status(400).json({ message: 'name is required!' });
-		if (!username) return res.status(400).json({ message: 'username is required!' });
-		if (!password) return res.status(400).json({ message: 'password is required!' });
+		if (!name) return res.status(400).json({ message: 'El nombre es necesario' });
+		if (!username) return res.status(400).json({ message: 'El username es necesario' });
+		if (!password) return res.status(400).json({ message: 'La contraseña es necesaria' });
 		try {
 			const exists = await this.utils.users.getUser({ username });
-			if (exists) return res.status(400).json({ message: 'A user already exists with this username' });
+			if (exists) return res.status(400).json({ message: 'Ya existe un usuario con este username' });
 
 			await this.utils.users.createUser({ username, password, name });
 

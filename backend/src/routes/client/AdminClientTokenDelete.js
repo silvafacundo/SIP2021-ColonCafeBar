@@ -3,7 +3,7 @@ const Route = require('../../models/Route');
 
 module.exports = class AdminClientTokenDelete extends Route {
 	constructor() {
-		super('/admin/client/:clientId/token', 'delete');
+		super('/admin/client/:clientId/token', 'delete', { permissions: 'clients', isPublic: false });
 	}
 
 	async run(req, res, user) {

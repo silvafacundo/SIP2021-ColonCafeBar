@@ -26,7 +26,7 @@ module.exports = class DeliveryController {
 		if (!name && typeof name !=='string') throw Error('name is required');
 		if (!lastName && typeof lastName !=='string') throw Error('last name is required');
 		if (!phoneNumber && typeof phoneNumber !=='string') throw Error('phone number is required');
-		if (phoneNumber && !this.isPhoneNumberValid(phoneNumber)) throw new PublicError('phone number not valid');
+		if (phoneNumber && !this.isPhoneNumberValid(phoneNumber)) throw new PublicError('El número de teléfono es invalido');
 
 		const delivery = await this.models.Delivery.create({ name, lastName, phoneNumber });
 		return delivery;

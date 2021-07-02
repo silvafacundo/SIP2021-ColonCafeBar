@@ -2,7 +2,7 @@ const Route = require('../../models/Route');
 
 module.exports = class ScheduleDELETE extends Route {
 	constructor() {
-		super('/admin/schedule', 'delete');
+		super('/admin/schedule', 'delete', { permissions: 'schedule', isPublic: false });
 	}
 
 	async run(req, res, user) {
