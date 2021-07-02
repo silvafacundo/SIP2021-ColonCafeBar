@@ -23,6 +23,7 @@ const actions = {
 
 			if (response.data.metrics)
 				commit('setMetrics', response.data.metrics);
+			return response.data.metrics
 		} catch (err) {
 			console.error('Failed to fetch metrics', err);
 			throw err;

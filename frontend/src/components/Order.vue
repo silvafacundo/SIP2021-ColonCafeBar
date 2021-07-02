@@ -109,11 +109,11 @@
 					<b-field label="Estado:">
 						<b-select :value="order.statusId"
 							placeholder="Estado de la orden"
-							:disabled="isOrderFinished"
+							:disabled="isOrderFinished || !editable"
 							@input="updateStatus">
 							<option v-for="status in localStatuses"
-								:disabled="!isValidStatus(status.key)"
 								:key="status.id"
+								:disabled="!isValidStatus(status.key)"
 								:value="status.id">
 								{{ status.statusName }}
 							</option>
@@ -122,6 +122,7 @@
 					<b-field v-if="order.withDelivery" label="Delivery:">
 						<b-select :value="order.delivery && order.delivery.id"
 							placeholder="Delivery"
+							:disabled="!editable"
 							icon="motorcycle"
 							icon-pack="fas"
 							@input="updateDelivery">
@@ -158,6 +159,11 @@ export default {
 			type: Array,
 			default: () => ([])
 		},
+		editable: {
+			type: Boolean,
+			required: false,
+			default: true
+		}
 	},
 	computed: {
 		localDeliveries() {

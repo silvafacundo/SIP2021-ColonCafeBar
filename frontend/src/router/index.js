@@ -34,6 +34,7 @@ import AdminStore from '../views/admin/Store';
 import AdminClients from '../views/admin/Clients';
 import Metrics from '../views/admin/Metrics';
 import ProductPriceHistory from '../views/admin/ProductPriceHistory';
+import Overview from '../views/admin/Overview';
 //
 
 Vue.use(VueRouter)
@@ -64,7 +65,8 @@ const routes = [
 
 	// ADMIN:
 	{ path: '/admin/login', name: 'adminLogin', component: AdminLogin },
-	{ path: '/admin', name: 'adminDashboard', component: Dashboard, children: [
+	{ path: '/admin', component: Dashboard, children: [
+		{ path: '/', name: 'adminDashboard', component: Overview },
 		{ path: 'users', name: 'adminUsers', component: Users },
 		{ path: 'roles', name: 'adminRoles', component: Roles },
 		{ path: 'permissions', name: 'adminPermissions', component: Permissions },
