@@ -74,10 +74,10 @@ module.exports = class AuthController {
 	}
 
 	isSafePassword(password) {
-		if (password.length < 8) return { status: false, message: 'La contraseña debe tener almenos 8 caracteres' };
-		if (!password.match(/[A-Z]/g)) return { status: false, message: 'La contraseña debe tener almenos 1 letra mayúscula' };
-		if (!password.match(/[a-z]/g)) return { status: false, message: 'La contraseña debe tener almenos 1 letra minúscula' };
-		if (!password.match(/[0-9]/g)) return { status: false, message: 'La contraseña debe tener almenos 1 número' };
+		if (password.length < 8) return { status: false, message: 'La contraseña debe tener al menos 8 caracteres' };
+		if (!password.match(/[A-Z]/g)) return { status: false, message: 'La contraseña debe tener al menos 1 letra mayúscula' };
+		if (!password.match(/[a-z]/g)) return { status: false, message: 'La contraseña debe tener al menos 1 letra minúscula' };
+		if (!password.match(/[0-9]/g)) return { status: false, message: 'La contraseña debe tener al menos 1 número' };
 
 		return { status: true, message: 'ok' };
 	}
