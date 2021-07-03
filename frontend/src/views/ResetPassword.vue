@@ -123,6 +123,4 @@ h3{
 .form-div > a:hover{
 	color:#ea2a3d;
 }
-
-
 </style>

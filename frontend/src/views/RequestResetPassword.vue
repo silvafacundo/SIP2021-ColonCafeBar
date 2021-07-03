@@ -48,6 +48,8 @@ export default {
 
 <style scoped>
 h3{
+	color:black;
+	font-size: 1.3em;
 	text-transform: uppercase;
 }
 
@@ -88,7 +90,8 @@ h3{
 	text-transform: uppercase;
 	color:#fafafa;
 	margin-bottom: 1em;
-	border-radius: 3em;
+	margin-top:1em;
+	border-radius: 2em;
 }
 
 .form-div > form > button:hover:not(:disabled) {
@@ -106,6 +109,26 @@ h3{
 
 .form-div > a:hover{
 	color:#ea2a3d;
+}
+
+@media (max-width: 900px){
+	h3{
+		font-size: 1em;
+	}
+	.form-div{
+		width: 100%;
+		height: 100%;
+		border-radius: 0;
+	}
+	.form-div > form > input, form > button{
+		display:block;
+		width:90%;
+		margin:auto;
+		padding:1em;
+	}
+	form > button{
+		margin-top:1em;
+	}
 }
 
 

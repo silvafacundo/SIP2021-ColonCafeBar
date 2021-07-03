@@ -261,6 +261,7 @@ export default {
 .main-container {
 	position: relative;
 	display: grid;
+	gap: 5em;
 	grid-template-columns: 350px 1fr;
 	flex-wrap: wrap;
 	padding: 2rem 0;
@@ -297,8 +298,8 @@ export default {
 }
 .products-container {
 	width: 100%;
-	max-width: 750px;
-	justify-self: center;
+	max-width: 1000px;
+	justify-self: left;
 }
 .categories-container{
 	border: none;

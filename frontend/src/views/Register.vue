@@ -94,7 +94,7 @@ h3{
 	text-transform: uppercase;
 	color:#fafafa;
 	margin-bottom: 1em;
-	border-radius: 3em;
+	border-radius: 1em;
 }
 
 .form-div > form > button:hover:not(:disabled) {
@@ -112,5 +112,20 @@ h3{
 
 .form-div > a:hover{
 	color:#ea2a3d;
+}
+
+@media (max-width: 900px){
+	.form-div{
+		width: 100%;
+		height: 100%;
+		border-radius: 0;
+		padding:1em;
+	}
+	.form-div > form > input, form > button{
+		display:block;
+		width:95%;
+		margin:auto;
+		padding:1em;
+	}
 }
 </style>

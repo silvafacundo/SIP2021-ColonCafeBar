@@ -50,6 +50,7 @@ export default {
 		width: 100%;
 		height: auto;
 		max-height: 150px;
+		min-height: 150px;
 	}
 	p {
 		font-weight: bold;
