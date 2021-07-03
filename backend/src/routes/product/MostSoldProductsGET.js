@@ -11,7 +11,7 @@ module.exports = class MostSoldProductsGET extends Route {
 			let fromDate = new Date();
 			fromDate.setDate(fromDate.getDate() - 7);
 			const options = { fromDate, toDate };
-			const products = await this.utils.report.mostSelledProducts(options);
+			const products = await this.utils.report.mostSelledProducts(options, true);
 
 			return res.json({
 				message: 'Products successfully retrieved!',

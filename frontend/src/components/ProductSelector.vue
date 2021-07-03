@@ -98,7 +98,7 @@ export default {
 
 			const { productId, amount, ...variants } = this.productConfiguration;
 			this.$store.commit('Cart/addToCart', { productId, amount, variants });
-			const message = this.productConfiguration.amount > 1 ? 'Producto agregado al carrito': 'Productos agregado al carrito';
+			const message = this.productConfiguration.amount > 1 ? 'Productos agregados al carrito' : 'Producto agregado al carrito';
 			this.$showToast(message);
 			this.$emit('addToCart', this.productConfiguration);
 

@@ -1,5 +1,6 @@
 const PublicError = require('../../errors/PublicError');
 const { Op } = require('sequelize');
+const { default: knex } = require('knex');
 
 module.exports = class ReportController
 {
@@ -90,7 +91,7 @@ module.exports = class ReportController
 	}
 
 
-	async mostSelledProducts(options = {}) {
+	async mostSelledProducts(options = {}, isActive = false) {
 		const productsQuery = await this.db('orderProducts')
 			.select([
 				'orderProducts.productId',
@@ -98,6 +99,10 @@ module.exports = class ReportController
 			])
 			.innerJoin('orders', 'orderProducts.orderId', 'orders.id')
 			.innerJoin('products', 'products.id', 'orderProducts.productId')
+			.whereNull('products.deletedAt')
+			.where(builder => {
+				if (isActive) builder.where('products.isActive', true);
+			})
 			.modify(knex => this.filters(knex, options))
 			.groupBy('productId')
 			.orderBy('totalSales', 'desc')
