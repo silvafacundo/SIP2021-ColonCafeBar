@@ -26,7 +26,10 @@
    - Para [frontend](/frontend) se optó por utilizar: 
        - VueJS[4] acompañado con Bueffy[5] y CSS[6]
    
-   - También se utilizó Docker[7] y Kubernetes[8] para montar el sistema en Okteto. 
+   - Para [Testing](/testing) se optó por utilizar: 
+       - MochaJS[7] y Selenium[8]
+   
+   - También se utilizó Docker[9] y Kubernetes[10] para montar el sistema en Okteto. 
 
 #### Referencias
    - [1]. [NodeJS](https://nodejs.org/es/docs/).
@@ -35,5 +38,7 @@
    - [4]. [VueJS](https://vuejs.org/).
    - [5]. [Bueffy](https://buefy.org/).
    - [6]. [CSS](https://developer.mozilla.org/es/docs/Web/CSS).
-   - [7]. [Docker](https://docs.docker.com/).
-   - [8]. [Kubernetes](https://kubernetes.io/es/docs/home/).
+   - [7]. [MochaJS](https://mochajs.org/).
+   - [8]. [Selenium](https://www.selenium.dev/).
+   - [9]. [Docker](https://docs.docker.com/).
+   - [10]. [Kubernetes](https://kubernetes.io/es/docs/home/).
