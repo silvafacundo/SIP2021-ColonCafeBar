@@ -5,11 +5,13 @@ import router from '../../router';
 const state = () => ({
 	products: [],
 	categories: [],
+	mostSoldProducts: [],
 });
 
 const getters = {
 	products: state => state.products,
-	categories: state => state.categories
+	categories: state => state.categories,
+	mostSoldProducts: state => state.mostSoldProducts,
 };
 const mutations = {
 	setProducts(state, products) {
@@ -18,9 +20,12 @@ const mutations = {
 	setCategories(state, categories) {
 		state.categories = categories || [];
 	},
+	setMostSoldProducts(state, mostSoldProducts) {
+		state.mostSoldProducts = mostSoldProducts || [];
+	}
 };
 const actions = {
-	async fetchProducts({ commit }, { filters, page, perPage, orderBy } = {} ) {
+	async fetchProducts({ commit }, { filters, page, perPage, orderBy } = {}) {
 		try {
 			const response = await Vue.axios.post('/products', { filters, page, perPage: 10000, orderBy });
 			const products = response.data.products;
@@ -28,6 +33,17 @@ const actions = {
 			return products;
 		} catch (err) {
 			console.error('Failed to fetch products', err);
+			throw err;
+		}
+	},
+	async fetchMostSoldProducts({ commit }) {
+		try {
+			const response = await Vue.axios.get('/mostSoldProducts');
+			const products = response.data.products;
+			commit('setMostSoldProducts', products);
+			return products;
+		} catch (err) {
+			console.error('Failed to fetch most selled products', err);
 			throw err;
 		}
 	},
