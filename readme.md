@@ -18,6 +18,8 @@
 #### Documentacion
    - Enlace a la [EGR](https://sipunlu2021.atlassian.net/wiki/spaces/CCB/pages/35422209/EGR+-+PROYECTO) + diagrama de clases.
    - Enlace a [JIRA](https://sipunlu2021.atlassian.net/jira/software/c/projects/CCB/boards/1/roadmap)
+
+   - Para acceder a los repositorios, escribir un correo a dpetrocelli@unlu.edu.ar y se le otorgarán las credenciales de acceso
 #### Arquitectura
    - Para el [backend](/backend) se utilizó:
        - Como servidor NodeJS[1]. 
