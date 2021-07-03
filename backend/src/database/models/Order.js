@@ -130,8 +130,8 @@ module.exports = (sequelize, DataTypes) => {
 		if (newStatusKey === 'dispatched' || newStatusKey === 'delivered') {
 			if (order.paymentMethod !== 'points')
 				await order.server.utils.clients.addPoints(order.client.id, order.grantablePoints);
-			if (!order.withDelivery)
-				await order.server.utils.orders.updateOrder({ orderId: order.id, isPaid: true });
+
+			if (order.paymentMethod !== 'online') await order.server.utils.orders.updateOrder({ orderId: order.id, isPaid: true });
 		}
 	})
 
