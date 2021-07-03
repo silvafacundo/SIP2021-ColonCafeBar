@@ -17,9 +17,11 @@
 
 #### Documentacion
    - Enlace a la [EGR](https://sipunlu2021.atlassian.net/wiki/spaces/CCB/pages/35422209/EGR+-+PROYECTO) + diagrama de clases.
-   - Enlace a [JIRA](https://sipunlu2021.atlassian.net/jira/software/c/projects/CCB/boards/1/roadmap)
+   - Enlace a [JIRA](https://sipunlu2021.atlassian.net/jira/software/c/projects/CCB/boards/1/roadmap).
+   - Enlace a la [PPTS](/files) de venta y negocio.
+   - Enlace al [SISTEMA](https://backend-silvafacundo.cloud.okteto.net/).
 
-   - Para acceder a los repositorios, escribir un correo a dpetrocelli@unlu.edu.ar y se le otorgarán las credenciales de acceso
+   - Para acceder a los repositorios o parte administrativa del sistema, escribir un correo a dpetrocelli@unlu.edu.ar y se le otorgarán las credenciales de acceso
 #### Arquitectura
    - Para el [backend](/backend) se utilizó:
        - Como servidor NodeJS[1]. 
