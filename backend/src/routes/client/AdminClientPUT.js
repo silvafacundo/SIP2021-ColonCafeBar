@@ -8,8 +8,8 @@ module.exports = class AdminClientPUT extends Route {
 
 	async run(req, res, user) {
 		const { clientId } = req.params;
-		const { phoneNumber, firstName, lastName, isActive } = req.body;
-		await this.utils.clients.updateClient({ clientId, phoneNumber, firstName, lastName, isActive });
+		const { email, phoneNumber, firstName, lastName, isActive } = req.body;
+		await this.utils.clients.updateClient({ clientId, email, phoneNumber, firstName, lastName, isActive });
 		return res.json({ message: 'Client successfully updated' });
 	}
 }
