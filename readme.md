@@ -15,8 +15,8 @@
    - Facundo Bobadilla - 143482
    - Nicolas Sciarrotta - 141707
 
-#### Links
-   - Enlace a la [EGR](https://sipunlu2021.atlassian.net/wiki/spaces/CCB/pages/35422209/EGR+-+PROYECTO).
+#### Documentacion
+   - Enlace a la [EGR](https://sipunlu2021.atlassian.net/wiki/spaces/CCB/pages/35422209/EGR+-+PROYECTO) + diagrama de clases.
    - Enlace a [JIRA](https://sipunlu2021.atlassian.net/jira/software/c/projects/CCB/boards/1/roadmap)
 #### Arquitectura
    - Para el [backend](/backend) se utilizó:
