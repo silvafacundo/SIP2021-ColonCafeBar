@@ -42,42 +42,51 @@ module.exports = class ReportController
 		knex.where('orders.isPaid', true);
 		if (options.statusId) knex.whereIn('orders.statusId', options.statusId);
 		if (options.paymentMethod) knex.where('orders.paymentMethod', options.paymentMethod);
+
 	}
 
 	async productPriceHistory(productId) {
 		const product = await this.db('products').where('id', productId).first();
 		if (!product) return {};
 
-		const productPointsHistory = await this.db('productPoints')
-			.where('productId', productId)
-			.orderBy('createdAt', 'desc');
+		const productHistory = await this.db('productPoints')
+			.select([
+				'productPoints.*', 'productPrices.*', 'productPoints.price as pointsPrice'
+			])
+			.leftJoin('productPrices', 'productPrices.id', 'productPoints.id')
+			.where('productPoints.productId', productId)
+			.orderBy('productPoints.createdAt', 'desc');
 
-		const productPriceHistory = await this.db('productPrices')
-			.where('productId', productId)
-			.orderBy('createdAt', 'desc');
 
 		const finalProduct = {
 			...product,
-			productPointsHistory,
-			productPriceHistory
+			productHistory,
 		};
 
 		return finalProduct;
 	}
 
-	async totalSells(options = {}) {
+	async totalSales(options = {}) {
 		const dispatchedStatus = await this.utils.orders.getOrderStatus({ key: 'dispatched' });
 		const deliveredStatus = await this.utils.orders.getOrderStatus({ key: 'delivered' });
 		options.statusId = [dispatchedStatus.id, deliveredStatus.id];
 
-		const { totalSells } = await this.db('orders')
-			.select(this.db.raw(`SUM("orderProducts".price * "orderProducts".amount) AS "totalSells"`))
+		let { totalSales } = await this.db('orders')
+			.select(this.db.raw(`SUM("orderProducts".price * "orderProducts".amount) AS "totalSales"`))
 			.innerJoin('orderProducts', 'orders.id', 'orderProducts.orderId')
 			.whereNot('orders.paymentMethod', 'points')
 			.modify(knex => this.filters(knex, options))
 			.first();
 
-		return totalSells;
+		let { deliverySales } = await this.db('orders')
+			.select(this.db.raw(`SUM(orders."deliveryPrice") as "deliverySales"`))
+			.whereNot('orders.paymentMethod', 'points')
+			.modify(knex => this.filters(knex, options))
+			.first();
+
+		totalSales = Number(totalSales) + Number(deliverySales)
+
+		return { totalSales, deliverySales };
 	}
 
 
@@ -85,13 +94,13 @@ module.exports = class ReportController
 		const productsQuery = await this.db('orderProducts')
 			.select([
 				'orderProducts.productId',
-				this.db.raw(`SUM("orderProducts".amount) AS "totalSells"`)
+				this.db.raw(`SUM("orderProducts".amount) AS "totalSales"`)
 			])
 			.innerJoin('orders', 'orderProducts.orderId', 'orders.id')
 			.innerJoin('products', 'products.id', 'orderProducts.productId')
 			.modify(knex => this.filters(knex, options))
 			.groupBy('productId')
-			.orderBy('totalSells', 'desc')
+			.orderBy('totalSales', 'desc')
 			.limit(5);
 
 		const productsIds = [];

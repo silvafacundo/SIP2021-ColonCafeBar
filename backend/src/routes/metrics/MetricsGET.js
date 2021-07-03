@@ -9,7 +9,7 @@ module.exports = class MetricsGET extends Route {
 		const { fromDate, toDate } = req.body;
 		const options = { fromDate, toDate };
 		try {
-			const totalSells = await this.utils.report.totalSells(options);
+			const { totalSales, deliverySales } = await this.utils.report.totalSales(options);
 			const mostSelledProducts = await this.utils.report.mostSelledProducts(options);
 			const amountOfOrdersByTypeOfDelivery = await this.utils.report.amountOfOrdersByTypeOfDelivery(options);
 			const amountOfOrdersByTypeOfPayment = await this.utils.report.amountOfOrdersByTypeOfPayment(options);
@@ -19,7 +19,8 @@ module.exports = class MetricsGET extends Route {
 			return res.json({
 				message: 'Metrics successfully retrieved',
 				metrics: {
-					totalSells,
+					totalSales,
+					deliverySales,
 					mostSelledProducts,
 					amountOfOrdersByTypeOfDelivery,
 					amountOfOrdersByTypeOfPayment,

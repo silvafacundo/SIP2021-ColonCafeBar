@@ -210,7 +210,7 @@ module.exports = class ProductController {
 		if (idCategory) category = await this.utils.categories.getCategory(idCategory);
 		if (idCategory && !category) throw new PublicError('El categoria dada no existe');
 
-		if (typeof name === 'string' && !name) throw new PublicError('El nombre tiene que se un string valido');
+		if (typeof name === 'string' && !name) throw new PublicError('El nombre tiene que ser un string valido');
 		if (description && typeof description !== 'string') throw new PublicError('La descripcion no es valida');
 
 		if (typeof isActive !== 'undefined' && typeof isActive !== 'boolean') throw new PublicError('isActive tiene que se un booleano');

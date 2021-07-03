@@ -59,7 +59,7 @@ export default {
 				awaitingPreparation: {
 					icon: 'clipboard-list',
 					status: 'awaitingPreparation',
-					text: 'El local ha aceptado tu pedido y en breves comenzará a preprarlo'
+					text: 'El local ha aceptado tu pedido y en breves comenzará a prepararlo'
 				},
 				inPreparation: {
 					icon: 'hamburger',

@@ -12,7 +12,7 @@
 				<MetricStat name="Ventas en las últimas 24Hs"
 					:is-loading="isLoading && isFirstLoad"
 					color="rgb(220, 222, 252)"
-					:current-value="metrics && (metrics.totalSells || 0)"
+					:current-value="metrics && (metrics.totalSales || 0)"
 					:is-standalone="true"
 					:has-variation="false"
 					is-currency
