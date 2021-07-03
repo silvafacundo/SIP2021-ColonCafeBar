@@ -7,9 +7,10 @@ module.exports = class ClientPUT extends Route {
 	}
 
 	async run(req, res, user) {
-		const { phoneNumber, firstName, lastName } = req.body;
+		const { email, phoneNumber, firstName, lastName } = req.body;
 		await this.utils.clients.updateClient({
 			clientId: user.id,
+			email,
 			phoneNumber,
 			firstName,
 			lastName
