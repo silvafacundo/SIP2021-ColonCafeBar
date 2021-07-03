@@ -177,6 +177,14 @@ export default {
 		products() {
 			return this.$store.getters['Products/products'];
 		},
+		mostSoldProducts() {
+			const mostSoldProducts = this.$store.getters['Products/mostSoldProducts'];
+			const products = [];
+			for (const product of mostSoldProducts) {
+				products.push(product.product);
+			}
+			return products.splice(0, 3);
+		},
 		cart() {
 			return this.$store.getters['Cart/cart'];
 		},
@@ -200,11 +208,24 @@ export default {
 					'products': prod
 				});
 			}
+			if (this.shouldShowTopProducts) {
+				categoryProducts.unshift({
+					'category': 'Productos mas vendidos',
+					'products': this.mostSoldProducts
+				});
+			}
 			return categoryProducts;
+		},
+		shouldShowTopProducts() {
+			return (!this.filters.query
+				&& this.filters.categoriesId.length <= 0
+				&& !this.filters.fromPrice
+				&& !this.filters.toPrice);
 		}
 	},
 	mounted() {
 		this.fecthProducts();
+		this.fetchMostSoldProducts();
 		window.addEventListener('resize', this.handleResize.bind(this));
 		this.handleResize();
 	},
@@ -228,11 +249,20 @@ export default {
 				this.$showToast('Error al cargar los productos', true);
 			}
 		},
+		async fetchMostSoldProducts() {
+			try {
+				this.isLoading = true;
+				await this.$store.dispatch('Products/fetchMostSoldProducts');
+				this.isLoading = false;
+			} catch (err) {
+				// console.log(err);
+			}
+		},
 		addToCart() {
 			const amount = 1;
 			this.$store.commit('Cart/addToCart', { productId: this.selectedProduct.id, amount });
 			this.closeModal();
-			const message = amount > 1 ? 'Producto agregado al carrito': 'Producto agregado al carrito';
+			const message = amount > 1 ? 'Productos agregados al carrito' : 'Producto agregado al carrito';
 			this.$showToast(message);
 		},
 		searchProduct() {
