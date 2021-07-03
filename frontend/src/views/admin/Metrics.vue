@@ -46,7 +46,7 @@
 			<MetricStat name="Total Ventas"
 				:is-loading="isLoading"
 				color="rgb(220, 222, 252)"
-				:current-value="metrics && metrics.totalSells ? metrics.totalSells : 0"
+				:current-value="metrics && metrics.totalSales ? metrics.totalSales : 0"
 				:is-standalone="true"
 				:has-variation="false"
 				is-currency
@@ -96,7 +96,7 @@
 						${{ props.row.product.price }}
 					</b-table-column>
 					<b-table-column v-slot="props" label="Total Ventas">
-						{{ props.row.totalSells }}
+						{{ props.row.totalSales }}
 					</b-table-column>
 				</b-table>
 			</div>

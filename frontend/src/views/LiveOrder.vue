@@ -133,9 +133,15 @@ export default {
 			})
 		},
 		async cancelOrder() {
-			await this.$store.dispatch('Orders/clientCancelOrder', {
-				orderId: this.orderId
-			});
+			try {
+				await this.$store.dispatch('Orders/clientCancelOrder', {
+					orderId: this.orderId
+				});
+				this.$showToast('La orden se ha cancelado exitosamente');
+			} catch (error) {
+				this.$showToast('Error al cancelar la orden', true);
+			}
+			this.fetchOrder();
 		}
 	}
 }

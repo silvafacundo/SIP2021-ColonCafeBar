@@ -107,7 +107,7 @@
 							<b-icon icon="store" />
 							El cliente retirará el pedido
 						</p>
-						<p><b-icon :icon="paymentMethodIcon" /> Método de pago: {{ order.paymentMethod }}</p>
+						<p><b-icon :icon="paymentMethodIcon" /> Método de pago: {{ paymentMethodName }}</p>
 					</div>
 					<b-field label="Estado:">
 						<b-select :value="order.statusId"
@@ -204,6 +204,9 @@ export default {
 			const orderStatus = this.order.orderStatus.key;
 
 			return finalStatus.includes(orderStatus);
+		},
+		paymentMethodName() {
+			return this.$getPaymentMethod(this.order.paymentMethod).name;
 		}
 	},
 	methods: {
